@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEditor;
+using System.Runtime.InteropServices.WindowsRuntime;
+using System.Linq;
 
 public enum UnitType
 {
@@ -13,6 +15,8 @@ public enum UnitType
 
 public enum StatType
 {
+
+    //체력, 속도, 공격력, 스택 공격력, 방어 관통력, 치명타 확률, 치명타 배율, 방어력, 실드, 스택 실드, 명중, 회피, 치유력, 토큰 지분(3종류)
     Hpm, Speed, Str, StackStr, SkillStr, DefPen, CriCha, CriMul, Def, Shield, StackShield, Acc, Avoid, Healing,
     AtkTokenShare, SkillTokenShare, ShiledTokenShare,
 
@@ -28,14 +32,16 @@ public enum StatForm
 
 public class Unit : MonoBehaviourPun
 {
-    //체력, 속도, 공격력, 스택 공격력, 방어 관통력, 치명타 확률, 치명타 배율, 방어력, 실드, 스택 실드, 명중, 회피, 치유력, 토큰 지분
-
     // 서브 클래스 ////////////////////////////////////////////////////////////
     [Serializable]
-    public class Data {
+    protected class Data {
         public UnitType Type = UnitType.None;
         public int GrowthLevel { get; set; } = 0;
     }
+
+    // 연결 정보 //////////////////////////////////////////////////////////////
+    [SerializeField] protected Token tokenPrefab;
+    [SerializeField] protected Transform tokensParent;
 
     // 개인 정보 //////////////////////////////////////////////////////////////
     // 이름
@@ -45,12 +51,16 @@ public class Unit : MonoBehaviourPun
     [SerializeField] protected Data data;
 
     // 능력치 관련 변수
-    [SerializeField, EnumNamedArrayAttribute(typeof(StatType))] protected float[] baseStats = new float[(int)StatType.Num];
+    [SerializeField, EnumNamedArrayAttribute(typeof(StatType))] protected float[] initStats = new float[(int)StatType.Num];
     protected float[,] stats = new float[(int)StatForm.Num, (int)StatType.Num];
     public UnityAction<Unit>[] OnUpdateFinalStat = new UnityAction<Unit>[(int)StatType.Num];
     public float Hp { get; set; }
 
     // 토큰 관련 변수
+    protected int maxTokens = 5;
+    protected List<Token> tokens = new List<Token>();
+    public UnityAction<Unit, Token> OnCreateToken;
+    public UnityAction<Unit, Token> OnRemoveToken;
 
     // 스킬 관련 변수
 
@@ -58,16 +68,30 @@ public class Unit : MonoBehaviourPun
 
     // 상태이상 관련 변수
 
+    // 배틀페이지와 관련한 이벤트 변수
+    public UnityAction<Unit> OnBeginMyTurn, OnEndMyTurn;
+
     // 유니티 함수 ////////////////////////////////////////////////////////////
     protected void Awake() {
+        UpdateBaseStat(false);
+        UpdateEquipmentStat(false);
+        UpdateAbnormalStat(false);
         UpdateFinalStat();
-        // 장비와 상태이상 관련 능력치도 계산한다.
 
         Hp = GetFinalStat(StatType.Hpm);
-
     }
 
     // 함수 ///////////////////////////////////////////////////////////////////
+    // 프로퍼티
+    public int GrowthLevel {
+        get { return data.GrowthLevel; }
+        set { 
+            data.GrowthLevel = value;
+            UpdateBaseStat(true);
+        }
+    }
+
+    // 능력치 관련 함수
     public float GetFinalStat(StatType type) {
         return stats[(int)StatForm.Final, (int)type];
     }
@@ -75,7 +99,7 @@ public class Unit : MonoBehaviourPun
     public void UpdateFinalStat(StatType type) {
         int index = (int)type;
         stats[(int)StatForm.Final, index] =
-            (stats[(int)StatForm.Base, index] * (1f + 0.01f * data.GrowthLevel)
+            (stats[(int)StatForm.Base, index]
             + stats[(int)StatForm.EquipmentAdd, index]
             + stats[(int)StatForm.AbnormalAdd, index])
             * stats[(int)StatForm.EquipmentMul, index]
@@ -89,6 +113,104 @@ public class Unit : MonoBehaviourPun
         }
     }
 
+    public void UpdateBaseStat(bool updateFinalStat) {
+        // 기본 능력치 계산
+        for (StatType type = 0; type < StatType.Num; ++type) {
+            stats[(int)StatForm.Base, (int)type] = initStats[(int)type] * (1f + 0.01f * GrowthLevel);
+        }
 
+        // 최종 능력치에 적용
+        if (updateFinalStat)
+            UpdateFinalStat();
+    }
+    public void UpdateEquipmentStat(bool updateFinalStat) {
+        // 능력치 초기화
+        for (StatType type = 0; type < StatType.Num; ++type) {
+            stats[(int)StatForm.EquipmentAdd, (int)type] = 0;
+            stats[(int)StatForm.EquipmentMul, (int)type] = 1f;
+        }
 
+        // [추가] 장비의 능력치들 적용
+
+        // 최종 능력치에 적용
+        if (updateFinalStat)
+            UpdateFinalStat();
+    }
+    public void UpdateAbnormalStat(bool updateFinalStat) {
+        // 능력치 초기화
+        for (StatType type = 0; type < StatType.Num; ++type) {
+            stats[(int)StatForm.AbnormalAdd, (int)type] = 0;
+            stats[(int)StatForm.AbnormalMul, (int)type] = 1f;
+        }
+
+        // [추가] 상태이상의 능력치들 적용
+
+        // 최종 능력치에 적용
+        if (updateFinalStat)
+            UpdateFinalStat();
+    }
+
+    // 토큰 관련 함수
+    [PunRPC]
+    protected void CreateTokenRPC(TokenType type) {
+        Token newToken = Instantiate(tokenPrefab, tokensParent);
+        tokens.Add(newToken);
+        newToken.Owner = this;
+        newToken.Type = type;
+    }
+    public void CreateRandomToken() {
+        if (tokens.Count >= maxTokens)  // 최대개수를 넘어서 얻을 수 없다.
+            return;
+
+        float sum = GetFinalStat(StatType.AtkTokenShare) + GetFinalStat(StatType.SkillTokenShare) + GetFinalStat(StatType.ShiledTokenShare);
+        float random = UnityEngine.Random.Range(0f, sum);
+
+        TokenType type = TokenType.None;
+        if (random <= GetFinalStat(StatType.AtkTokenShare))
+            type = TokenType.Atk;
+        else if(random <= GetFinalStat(StatType.AtkTokenShare) + GetFinalStat(StatType.SkillTokenShare))
+            type = TokenType.Skill;
+        else 
+            type = TokenType.Shield;
+
+        photonView.RPC("CreateTokenRPC", RpcTarget.All, type);
+
+        OnCreateToken?.Invoke(this, tokens[tokens.Count - 1]);
+    }
+    public void CreateRandomToken(int num) {
+        for(int i = 0; i < num; ++i) {
+            CreateRandomToken();
+        }
+    }
+    public void CreateToken(TokenType type) {
+        if (tokens.Count >= maxTokens)  // 최대개수를 넘어서 얻을 수 없다.
+            return;
+
+        photonView.RPC("CreateTokenRPC", RpcTarget.All, type);
+
+        OnCreateToken?.Invoke(this, tokens[tokens.Count - 1]);
+    }
+    public void CreateToken(TokenType type, int num) {
+        for (int i = 0; i < num; ++i) {
+            CreateToken(type);
+        }
+    }
+
+    [PunRPC]
+    protected void RemoveTokenRPC(int index) {
+        Token token = tokens[index];
+        tokens.RemoveAt(index);
+        Destroy(token.gameObject);
+    }
+    public void RemoveToken(Token token) {
+        OnRemoveToken?.Invoke(this, token);
+
+        int index = tokens.IndexOf(token);
+        photonView.RPC("RemoveTokenRPC", RpcTarget.All, index);
+    }
+    public void RemoveSelectedToken() {
+        List<Token> selectedTokens = tokens.FindAll(token => token.IsSelected);
+        foreach (Token token in selectedTokens)
+            RemoveToken(token);
+    }
 }

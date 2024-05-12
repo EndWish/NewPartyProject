@@ -7,8 +7,10 @@ using UnityEngine.Events;
 using UnityEditor;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Linq;
+using System.IO;
+using System.Runtime.InteropServices;
 
-public enum UnitType
+public enum UnitType : int
 {
     None, Garuda,
 }
@@ -34,21 +36,54 @@ public class Unit : MonoBehaviourPun
 {
     // 서브 클래스 ////////////////////////////////////////////////////////////
     [Serializable]
-    protected class Data {
+    public class Data {
         public UnitType Type = UnitType.None;
         public int GrowthLevel { get; set; } = 0;
+
+        public Data() { }
+        public Data(UnitType type) {
+            Type = type;
+        }
+        public Data(UnitType type, int growthLevel) : this(type) {
+            GrowthLevel = growthLevel;
+        }
+
+        // Photon 직렬화
+        public static byte[] Serialize(object customObject) {
+            Data data = (Data)customObject;
+
+            // 스트림에 필요한 메모리 사이즈(Byte)
+            MemoryStream ms = new MemoryStream(sizeof(UnitType) + sizeof(int));
+            // 각 변수들을 Byte 형식으로 변환, 마지막은 개별 사이즈
+            ms.Write(BitConverter.GetBytes((int)data.Type), 0, sizeof(UnitType));
+            ms.Write(BitConverter.GetBytes(data.GrowthLevel), 0, sizeof(int));
+
+            // 만들어진 스트림을 배열 형식으로 반환
+            return ms.ToArray();
+        }
+
+        // Photon 역직렬화
+        public static object Deserialize(byte[] bytes) {
+            Data data = new Data();
+            // 바이트 배열을 필요한 만큼 자르고, 원하는 자료형으로 변환
+            data.Type = (UnitType)BitConverter.ToInt32(bytes, 0);
+            data.GrowthLevel = BitConverter.ToInt32(bytes, sizeof(UnitType));
+            return data;
+        }
+
     }
 
     // 연결 정보 //////////////////////////////////////////////////////////////
     [SerializeField] protected Token tokenPrefab;
     [SerializeField] protected Transform tokensParent;
+    public SpriteRenderer profileRenderer;
 
     // 개인 정보 //////////////////////////////////////////////////////////////
     // 이름
     public string Name;
 
     // 저장에 필요한 변수
-    [SerializeField] protected Data data;
+    public Data MyData;
 
     // 능력치 관련 변수
     [SerializeField, EnumNamedArrayAttribute(typeof(StatType))] protected float[] initStats = new float[(int)StatType.Num];
@@ -73,10 +108,7 @@ public class Unit : MonoBehaviourPun
 
     // 유니티 함수 ////////////////////////////////////////////////////////////
     protected void Awake() {
-        UpdateBaseStat(false);
-        UpdateEquipmentStat(false);
-        UpdateAbnormalStat(false);
-        UpdateFinalStat();
+        UpdateAllStat();
 
         Hp = GetFinalStat(StatType.Hpm);
     }
@@ -84,9 +116,9 @@ public class Unit : MonoBehaviourPun
     // 함수 ///////////////////////////////////////////////////////////////////
     // 프로퍼티
     public int GrowthLevel {
-        get { return data.GrowthLevel; }
+        get { return MyData.GrowthLevel; }
         set { 
-            data.GrowthLevel = value;
+            MyData.GrowthLevel = value;
             UpdateBaseStat(true);
         }
     }
@@ -148,6 +180,13 @@ public class Unit : MonoBehaviourPun
         // 최종 능력치에 적용
         if (updateFinalStat)
             UpdateFinalStat();
+    }
+
+    public void UpdateAllStat() {
+        UpdateBaseStat(false);
+        UpdateEquipmentStat(false);
+        UpdateAbnormalStat(false);
+        UpdateFinalStat();
     }
 
     // 토큰 관련 함수
@@ -213,4 +252,18 @@ public class Unit : MonoBehaviourPun
         foreach (Token token in selectedTokens)
             RemoveToken(token);
     }
+
+    [PunRPC]
+    protected void ApplyDataRPC(Unit.Data data) {
+        this.MyData = data;
+        UpdateAllStat();
+    }
+    public void ApplyData(Unit.Data data) {
+        this.MyData = data;
+        UpdateAllStat();
+        if (photonView.IsMine) {    // 동기화 하지 않은 오브젝트일 경우
+            photonView.RPC("ApplyDataRPC", RpcTarget.Others, data);
+        }
+    }
+
 }

@@ -4,24 +4,26 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class InfinitePageView<TData> : MonoBehaviour
+public class PageView<TData> : MonoBehaviour
 {
     // 연결 정보 //////////////////////////////////////////////////////////////
     public List<TData> Datas;
-    public List<PageViewSlot<TData>> PageViewSlots;
+    [SerializeField] protected Transform slotsParent;
+    public List<PageViewSlot<TData>> PageViewSlots { get; set; } = new List<PageViewSlot<TData>>();
 
     // 개인 정보 //////////////////////////////////////////////////////////////
     protected int page = 1;
 
     // 유니티 함수 ////////////////////////////////////////////////////////////
     protected virtual void Awake() {
+        PageViewSlots.AddRange(slotsParent.GetComponentsInChildren<PageViewSlot<TData>>());
+
         UpdatePage(1);
     }
 
     protected virtual void OnEnable() {
         page = Mathf.Min(page, MaxPage);
-        if(0 < page)
-            UpdatePage(page);
+        UpdatePage(page);
     }
 
     // 함수 ///////////////////////////////////////////////////////////////////
@@ -33,7 +35,7 @@ public class InfinitePageView<TData> : MonoBehaviour
         }
     }
 
-    public void UpdatePage(int page) {
+    public virtual void UpdatePage(int page) {
         if (Datas == null || PageViewSlots?.Count == 0)
             return;
 
@@ -53,28 +55,26 @@ public class InfinitePageView<TData> : MonoBehaviour
             }
         }
     }
+    public void UpdatePage() {
+        page = Mathf.Min(page, MaxPage);
+        UpdatePage(page);
+    }
 
-    public bool GoNextPage() {
+    public void GoNextPage() {
         if(page < MaxPage) {
             UpdatePage(++page);
-            return true;
         }
-        return false;
     }
-    public bool GoPrevPage() {
+    public void GoPrevPage() {
         if (1 < page) {
             UpdatePage(--page);
-            return true;
         }
-        return false;
     }
-    public bool GoPage(int page) {
+    public void GoPage(int page) {
         if(1 <= page && page <= MaxPage) {
             this.page = page;
             UpdatePage(page);
-            return true;
         }
-        return false;
     }
 
     protected void GoPageWithWheel() {

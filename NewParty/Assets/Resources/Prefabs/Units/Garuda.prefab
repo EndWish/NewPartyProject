@@ -134,9 +134,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tokenPrefab: {fileID: 8702565092637999532, guid: 882856b875f2a3c4ebca75c3d9971f36, type: 3}
   tokensParent: {fileID: 996433089270864197}
+  profileRenderer: {fileID: 7019370408969965262}
   Name: "\uAC00\uB8E8\uB2E4"
-  data:
-    Type: 1
+  MyData:
+    Type: 0
   initStats:
   - 100
   - 10

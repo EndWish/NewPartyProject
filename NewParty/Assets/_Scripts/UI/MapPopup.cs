@@ -7,19 +7,8 @@ public class MapPopup : MonoBehaviour
     [SerializeField] private Transform nodes;
     public bool IsMovingNodeToCenter { get; set; } = false;
 
-    // Start is called before the first frame update
-    void Start()
+    private void Update()
     {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        if(Input.GetKeyUp(KeyCode.Space)) {
-            IsMovingNodeToCenter = true;
-        }
-
         MoveNodeToCenter();
     }
 

@@ -5,7 +5,7 @@ using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.UIElements;
 
-public class VillageIconBtn : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
+public class IconBtn : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 {
     [SerializeField] protected SpriteRenderer outline;
     public UnityEvent OnClick;

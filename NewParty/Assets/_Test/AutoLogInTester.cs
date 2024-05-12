@@ -12,10 +12,7 @@ public class AutoLogInTester : MonoBehaviourPunCallbacksSingleton<AutoLogInTeste
     protected override void Awake() {
         base.Awake();
 
-        Screen.SetResolution(1920 / 2, 1080 / 2, false);
-        PhotonNetwork.SendRate = 60;
-        PhotonNetwork.SerializationRate = 30;
-        PhotonNetwork.AutomaticallySyncScene = true;
+        GameManager.InitGameSetting();
 
         LogIn(nickname);
     }

@@ -7,6 +7,7 @@ using UnityEngine;
 using TMPro;
 using System.Text.RegularExpressions;
 using System.Text;
+using ExitGames.Client.Photon;
 
 public class LogInManager : MonoBehaviourPunCallbacksSingleton<LogInManager>
 {
@@ -17,8 +18,7 @@ public class LogInManager : MonoBehaviourPunCallbacksSingleton<LogInManager>
 
     readonly int NICKNAME_BYTE_LIMIT = 16;
 
-    private OperatingState operatingState = OperatingState.None;
-    private string ownerOfJoiningRoom;
+    // 연결 정보 /////////////////////////////////////////////////////////////
 
     public GameObject LogInPanel;
     public TMP_InputField LogInNicknameInputField;
@@ -27,15 +27,17 @@ public class LogInManager : MonoBehaviourPunCallbacksSingleton<LogInManager>
     public TextMeshProUGUI NicknameText;
     public TMP_InputField JoinNicknameInputField;
 
+    // 개인 정보 //////////////////////////////////////////////////////////////
+
+    private OperatingState operatingState = OperatingState.None;
+    private string ownerOfJoiningRoom;
+
     // 유니티 함수 ////////////////////////////////////////////////////////////
 
     protected override void Awake() {
         base.Awake();
 
-        Screen.SetResolution(1920 / 2, 1080 / 2, false);
-        PhotonNetwork.SendRate = 60;
-        PhotonNetwork.SerializationRate = 30;
-        PhotonNetwork.AutomaticallySyncScene = true;
+        GameManager.InitGameSetting();
     }
 
     private void Start() {

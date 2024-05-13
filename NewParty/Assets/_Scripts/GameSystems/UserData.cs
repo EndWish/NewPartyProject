@@ -1,15 +1,25 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class UserData : MonoBehaviourSingleton<UserData>
 {
+
+    // 공유 정보 //////////////////////////////////////////////////////////////
+    static public int MaxPartyUnit = 4;
+
+    // 개인 정보 //////////////////////////////////////////////////////////////
     public string Nickname { get; private set; }
     
-    public HashSet<NodeName> ClearNodes { get; private set; }
+    public HashSet<NodeName> ClearNodes { get; private set; }   // 저장 정보
 
-    public List<Unit.Data> UnitDataList { get; private set; }
+    public List<Unit.Data> UnitDataList { get; private set; }   // 저장 정보
     public List<Unit> UnitList = new List<Unit>();
+
+    public Unit[] PartyUnitList = new Unit[MaxPartyUnit];
+
+    // 유니티 함수 ////////////////////////////////////////////////////////////
 
     protected override void Awake() {
         base.Awake();
@@ -26,10 +36,12 @@ public class UserData : MonoBehaviourSingleton<UserData>
     }
 #endif
 
+    // 함수 ///////////////////////////////////////////////////////////////////
+
     public void SetNewPlayerData(string nickname) {
         Nickname = nickname;
-        ClearNodes = GetInitCloearNodes();
-        UnitDataList = GetInitUnitDataList();
+        ClearNodes = GetDefaultCloearNodes();
+        UnitDataList = GetDefaultUnitDataList();
         UnitList = CreateUnitListFrom(UnitDataList);
 
         Save();
@@ -41,9 +53,11 @@ public class UserData : MonoBehaviourSingleton<UserData>
         Nickname = ES3.Load<string>("Nickname", nickname);
 
         HashSet<NodeName> cloearNoes = new HashSet<NodeName>();
-        ClearNodes = ES3.Load<HashSet<NodeName>>("ClearNodes", nickname, GetInitCloearNodes());
-        UnitDataList = ES3.Load<List<Unit.Data>>("UnitDataList", nickname, GetInitUnitDataList());
+        ClearNodes = ES3.Load<HashSet<NodeName>>("ClearNodes", nickname, GetDefaultCloearNodes());
+        UnitDataList = ES3.Load<List<Unit.Data>>("UnitDataList", nickname, GetDefaultUnitDataList());
         UnitList = CreateUnitListFrom(UnitDataList);
+
+        LoadPartyUnit(nickname);
 
         return true;
     }
@@ -51,14 +65,39 @@ public class UserData : MonoBehaviourSingleton<UserData>
         ES3.Save<string>("Nickname", Nickname, Nickname);
         ES3.Save<HashSet<NodeName>>("ClearNodes", ClearNodes, Nickname);
         ES3.Save<List<Unit.Data>>("UnitDataList", UnitDataList, Nickname);
+
+        SavePartyUnit();
     }
 
-    private HashSet<NodeName> GetInitCloearNodes() {
+    public void SavePartyUnit() {
+        int[] partyUnitIndices = GetDefaultPartyUnitIndices();
+
+        for (int i = 0; i < MaxPartyUnit; ++i) {
+            Unit partyUnit = PartyUnitList[i];
+            if (partyUnit != null)
+                partyUnitIndices[i] = UnitDataList.IndexOf(partyUnit.MyData);
+        }
+        ES3.Save<int[]>("PartyUnitIndices", partyUnitIndices, Nickname);
+    }
+    public void LoadPartyUnit(string nickname) {
+        int[] partyUnitIndices = ES3.Load<int[]>("PartyUnitIndices", nickname, GetDefaultPartyUnitIndices());
+
+        for(int i = 0; i < MaxPartyUnit; ++i) {
+            int index = partyUnitIndices[i];
+            if (index != -1) {
+                Unit.Data unitData = UnitDataList[index];
+                PartyUnitList[i] = UnitList.Find(unit => unit.MyData == unitData);
+            }
+        }
+    }
+
+    // Default 정보 불러오는 함수
+    private HashSet<NodeName> GetDefaultCloearNodes() {
         HashSet<NodeName> clearNodes = new HashSet<NodeName>();
         clearNodes.Add(NodeName.Village);
         return clearNodes;
     }
-    private List<Unit.Data> GetInitUnitDataList() {
+    private List<Unit.Data> GetDefaultUnitDataList() {
         List<Unit.Data> unitDataList = new List<Unit.Data> {
             new Unit.Data(UnitType.Garuda, 0),
         };
@@ -71,7 +110,13 @@ public class UserData : MonoBehaviourSingleton<UserData>
 
         return unitDataList;
     }
+    private int[] GetDefaultPartyUnitIndices() {
+        int[] partyUnitIndices = new int[MaxPartyUnit];
+        Array.Fill(partyUnitIndices, -1);
+        return partyUnitIndices;
+    }
 
+    // 유닛 관련 함수
     public Unit CreateUnitFrom(Unit.Data unitData) {
         Unit prefab = Resources.Load<Unit>("Prefabs/Units/" + unitData.Type.ToString());
         Unit unit = Instantiate<Unit>(prefab, this.transform);

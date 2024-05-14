@@ -11,6 +11,8 @@ GameObject:
   - component: {fileID: 5499250001300240210}
   - component: {fileID: 6175449300835795567}
   - component: {fileID: 6215669389552449629}
+  - component: {fileID: 3096687417838399773}
+  - component: {fileID: 2401045018663173398}
   m_Layer: 0
   m_Name: TestSetting
   m_TagString: Untagged
@@ -59,6 +61,46 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b54b305cb674c784eacbca5c37da92b2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  UnitList: []
+  PartyUnitList:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+--- !u!114 &3096687417838399773
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 285852505442747526}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6223803eb5814a84aac08a8acf015cf2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &2401045018663173398
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 285852505442747526}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents: []
+  sceneViewId: 0
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
 --- !u!1 &4603849710273055137
 GameObject:
   m_ObjectHideFlags: 0
@@ -120,7 +162,7 @@ Canvas:
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 100
   m_TargetDisplay: 0
 --- !u!114 &6244315967138226468
 MonoBehaviour:

@@ -42,6 +42,9 @@ MonoBehaviour:
   - CreateTokenRPC
   - RemoveTokenRPC
   - ApplyDataRPC
+  - ReadyRPC
+  - SetDungeonInfo
+  - SetDungeonInfoRPC
   DisableAutoOpenWizard: 1
   ShowSettings: 0
   DevRegionSetOnce: 1

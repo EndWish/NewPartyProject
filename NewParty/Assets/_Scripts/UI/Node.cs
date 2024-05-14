@@ -5,12 +5,18 @@ using UnityEngine.UI;
 
 public class Node : MonoBehaviour
 {
+    [SerializeField] protected Image iconImage;
+    [SerializeField] protected GameObject selectIcon;
+    [SerializeField] protected MapPopup mapPopup;
     [SerializeField] protected NodeInfo nodeInfo;
     [SerializeField] protected List<Node> nextNodes;
     protected Image myImage;
 
     protected void Awake() {
         myImage = GetComponent<Image>();
+
+        selectIcon.SetActive(false);
+        iconImage.sprite = nodeInfo.Icon;
 
         if (!IsClear())
             gameObject.SetActive(false);
@@ -36,8 +42,18 @@ public class Node : MonoBehaviour
         }
     }
 
+    public virtual NodeInfo NodeInfo { get { return nodeInfo; } }
+
     public bool IsClear() {
         return UserData.Instance.ClearNodes.Contains(nodeInfo.Name);
+    }
+
+    public void OnSelected() {
+        if(mapPopup.SelectedNode != null) {
+            mapPopup.SelectedNode.selectIcon.SetActive(false);
+        }
+        mapPopup.SelectedNode = this;
+        selectIcon.SetActive(true);
     }
 
 }

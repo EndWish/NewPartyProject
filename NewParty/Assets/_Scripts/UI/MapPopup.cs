@@ -5,7 +5,9 @@ using UnityEngine;
 public class MapPopup : MonoBehaviour
 {
     [SerializeField] private Transform nodes;
+
     public bool IsMovingNodeToCenter { get; set; } = false;
+    public Node SelectedNode { get; set; } = null;
 
     private void Update()
     {
@@ -26,6 +28,13 @@ public class MapPopup : MonoBehaviour
             gameObject.SetActive(false);
         else
             gameObject.SetActive(true);
+    }
+
+    public void OnClickEnterBtn() {
+        if(SelectedNode != null && SelectedNode is DungeonNode) {
+            GameManager.Instance.SetDungeonInfo((DungeonNodeInfo)SelectedNode.NodeInfo);
+            gameObject.SetActive(false);
+        }
     }
 
 }

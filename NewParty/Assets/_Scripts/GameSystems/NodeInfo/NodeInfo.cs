@@ -13,4 +13,5 @@ public enum NodeName : int
 public class NodeInfo : ScriptableObject
 {
     public NodeName Name;
+    public Sprite Icon;
 }

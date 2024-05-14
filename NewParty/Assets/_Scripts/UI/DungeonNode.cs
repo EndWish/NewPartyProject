@@ -9,5 +9,6 @@ public class DungeonNode : Node
         set { base.nodeInfo = value; }
     }
 
+    public new DungeonNodeInfo NodeInfo { get { return nodeInfo; } }
 
 }

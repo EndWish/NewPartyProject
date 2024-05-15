@@ -77,14 +77,12 @@ public class PageView<TData> : MonoBehaviour
         }
     }
 
-    protected void GoPageWithWheel() {
-        if (EventSystem.current.IsPointerOverGameObject()) {
-            Vector2 wheelInput2 = Input.mouseScrollDelta;
-            if (wheelInput2.y > 0) {    // »Ÿ ¿ß∑Œ
-                GoPrevPage();
-            } else if (wheelInput2.y < 0) {   // »Ÿ æ∆∑°∑Œ
-                GoNextPage();
-            }
+    public void GoPageWithScroll() {
+        Vector2 wheelInput = Input.mouseScrollDelta;
+        if (wheelInput.y > 0) {    // »Ÿ ¿ß∑Œ
+            GoPrevPage();
+        } else if (wheelInput.y < 0) {   // »Ÿ æ∆∑°∑Œ
+            GoNextPage();
         }
     }
 

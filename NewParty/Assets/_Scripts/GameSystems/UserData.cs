@@ -15,9 +15,9 @@ public class UserData : MonoBehaviourSingleton<UserData>
     public HashSet<NodeName> ClearNodes { get; private set; }   // 저장 정보
 
     public List<Unit.Data> UnitDataList { get; private set; }   // 저장 정보
-    public List<Unit> UnitList = new List<Unit>();
+    public List<Unit> UnitList { get; private set; } = new List<Unit>();
 
-    public Unit[] PartyUnitList = new Unit[MaxPartyUnit];
+    public Unit[] PartyUnitList { get; private set; } = new Unit[MaxPartyUnit];
 
     // 유니티 함수 ////////////////////////////////////////////////////////////
 
@@ -117,7 +117,7 @@ public class UserData : MonoBehaviourSingleton<UserData>
     }
 
     // 유닛 관련 함수
-    public Unit CreateUnitFrom(Unit.Data unitData) {
+    private Unit CreateUnitFrom(Unit.Data unitData) {
         Unit prefab = Resources.Load<Unit>("Prefabs/Units/" + unitData.Type.ToString());
         Unit unit = Instantiate<Unit>(prefab, this.transform);
         unit.ApplyData(unitData);
@@ -134,9 +134,11 @@ public class UserData : MonoBehaviourSingleton<UserData>
         return unitList;
     }
 
-    public void AddUnitData(Unit.Data unitData) {
-        Unit unit = CreateUnitFrom(unitData);
+    public Unit AddUnitData(Unit.Data unitData) {
         UnitDataList.Add(unitData);
+        Unit unit = CreateUnitFrom(unitData);
+        UnitList.Add(unit);
+        return unit;
     }
 
     public void RemoveUnitData(Unit.Data unitData) {

@@ -4002,8 +4002,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "\uC900\uBE44\n"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 81bbc6745a6204debbfdd20d0c6b7dca, type: 2}
-  m_sharedMaterial: {fileID: 7512481295523713106, guid: 81bbc6745a6204debbfdd20d0c6b7dca, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 57fa977650e93104d8543407c94c2c4c, type: 2}
+  m_sharedMaterial: {fileID: 2816443162754180101, guid: 57fa977650e93104d8543407c94c2c4c, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -9220,6 +9220,22 @@ MonoBehaviour:
         - m_Target: {fileID: 8164869900450098331}
           m_TargetAssemblyTypeName: Capture, Assembly-CSharp
           m_MethodName: GetCapture
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+  - eventID: 7
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 8164869900450098330}
+          m_TargetAssemblyTypeName: PageView`1[[Unit, Assembly-CSharp
+          m_MethodName: GoPageWithScroll
           m_Mode: 1
           m_Arguments:
             m_ObjectArgument: {fileID: 0}

@@ -205,5 +205,15 @@ public static class ExtensionMethod
     }
     #endregion
 
+    #region Array Rotation
+    public static void Rotate<T>(this List<T> collection, int rightOffset) {
+        List<T> temp = new List<T>(collection);
+
+        for(int i = 0; i < collection.Count; ++i) {
+            collection[i] = temp[(i - rightOffset + collection.Count * 100) % collection.Count];
+        }
+    }
+    #endregion
+
     #endregion
 }

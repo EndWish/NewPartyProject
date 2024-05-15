@@ -95,6 +95,7 @@ GameObject:
   - component: {fileID: 8390421685687491778}
   - component: {fileID: 2033346684923752009}
   - component: {fileID: 6743452321893632350}
+  - component: {fileID: 4022545119115913304}
   m_Layer: 0
   m_Name: Garuda
   m_TagString: Untagged
@@ -178,6 +179,18 @@ MonoBehaviour:
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
+--- !u!210 &4022545119115913304
+SortingGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2956000546201537875}
+  m_Enabled: 1
+  m_SortingLayerID: -1186223569
+  m_SortingLayer: -1
+  m_SortingOrder: 0
+  m_SortAtRoot: 0
 --- !u!1 &4237407943346126112
 GameObject:
   m_ObjectHideFlags: 0

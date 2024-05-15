@@ -45,6 +45,13 @@ MonoBehaviour:
   - ReadyRPC
   - SetDungeonInfo
   - SetDungeonInfoRPC
+  - HasLastRpcRPC
+  - IsAllLoadedRPC
+  - IsLoadedRPC
+  - IsReadyRPC
+  - AddPartyRPC
+  - AddUnitRPC
+  - RemoveUnitRPC
   DisableAutoOpenWizard: 1
   ShowSettings: 0
   DevRegionSetOnce: 1

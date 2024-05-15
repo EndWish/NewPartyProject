@@ -1,0 +1,4 @@
+1. 테스트 하기 위한 폴더는 NewPartyProject/Build 폴더를 생성 후 Build폴더에 빌드하여 테스트 한다.
+
+2. 패키지 메니저 창에서 기본 위치(NewPartyProject/NewParty/Assets)에 아래 항목들을 임포트한다 임포트한다.
+	2-1. GUI Pro - Super Casual(+PSD)

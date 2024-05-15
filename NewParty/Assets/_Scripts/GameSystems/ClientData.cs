@@ -6,7 +6,9 @@ using UnityEngine;
 public class ClientData : MonoBehaviourPun
 {
     public string Nickname {  get; set; }
-    public bool IsReady { get; private set; } = false;
+    private bool isReady = false;
+    private bool hasLastRpc = false;
+    private bool isLoaded  = false;
 
     private void Start() {
         Nickname = photonView.Owner.NickName;
@@ -18,15 +20,37 @@ public class ClientData : MonoBehaviourPun
         GameManager.Instance.RemoveClientData(this);
     }
 
+    // 함수 ///////////////////////////////////////////////////////////////////
+
+    // 레디 관련 함수
     [PunRPC]
-    private void ReadyRPC(bool result) {
-        IsReady = result;
+    private void IsReadyRPC(bool result) {
+        isReady = result;
     }
-    public void Ready(bool result) {
-        photonView.RPC("ReadyRPC", RpcTarget.AllBufferedViaServer, result);
+    public bool IsReady { 
+        get { return isReady; }
+        set { photonView.RPC("IsReadyRPC", RpcTarget.AllBufferedViaServer, value); }
     }
     public void ToggleReady() {
-        photonView.RPC("ReadyRPC", RpcTarget.AllBufferedViaServer, !IsReady);
+        photonView.RPC("IsReadyRPC", RpcTarget.AllBufferedViaServer, !IsReady);
+    }
+
+    [PunRPC]
+    private void HasLastRpcRPC(bool result) {
+        hasLastRpc = result;
+    }
+    public bool HasLastRpc {
+        get { return hasLastRpc; }
+        set { photonView.RPC("HasLastRpcRPC", RpcTarget.All, value); }
+    }
+
+    [PunRPC]
+    private void IsLoadedRPC(bool result) {
+        isLoaded = result;
+    }
+    public bool IsLoaded {
+        get { return isLoaded; }
+        set { photonView.RPC("IsLoadedRPC", RpcTarget.All, value); }
     }
 
 }

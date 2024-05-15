@@ -97,6 +97,10 @@ public class Unit : MonoBehaviourPun
     public UnityAction<Unit, Token> OnCreateToken;
     public UnityAction<Unit, Token> OnRemoveToken;
 
+    // 파티 관련 변수
+    public TeamType TeamType { get; set; } = TeamType.None;
+    public Party MyParty { get; set; }
+
     // 스킬 관련 변수
 
     // 장비 관련 변수
@@ -111,6 +115,21 @@ public class Unit : MonoBehaviourPun
         UpdateAllStat();
 
         Hp = GetFinalStat(StatType.Hpm);
+    }
+
+    protected void Update() {
+        if (TeamType != TeamType.None) {
+            Vector3 pos = Vector3.zero;
+
+            int sign = 0;
+            if (TeamType == TeamType.Player) sign = -1;
+            else if (TeamType == TeamType.Enemy) sign = 1;
+
+            int index = GetIndex();
+            pos += new Vector3(1.5f * sign * index, 0, 0); // 갈수록 작아지도록 하고 싶다
+
+            transform.localPosition = Vector3.MoveTowards(transform.localPosition, pos, 10f * Time.deltaTime);
+        }
     }
 
     // 함수 ///////////////////////////////////////////////////////////////////
@@ -264,6 +283,19 @@ public class Unit : MonoBehaviourPun
         if (photonView.IsMine) {    // 동기화 하지 않은 오브젝트일 경우
             photonView.RPC("ApplyDataRPC", RpcTarget.Others, data);
         }
+    }
+
+    // 파티 관련 함수
+    public void OnSetTeam(TeamType type) {
+        TeamType = type;
+        if(TeamType == TeamType.Player) {
+            profileRenderer.flipX = false;
+        } else if(TeamType == TeamType.Enemy) {
+            profileRenderer.flipX = true;
+        }
+    }
+    public int GetIndex() {
+        return MyParty.Units.IndexOf(this);
     }
 
 }

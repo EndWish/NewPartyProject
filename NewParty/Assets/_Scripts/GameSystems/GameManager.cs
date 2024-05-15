@@ -21,6 +21,10 @@ public class GameManager : MonoBehaviourPunCallbacksSingleton<GameManager>
         PhotonPeer.RegisterType(typeof(Unit.Data), 0, Unit.Data.Serialize, Unit.Data.Deserialize);
     }
 
+    static public string GetUnitPrefabPath() {
+        return "Prefabs/Units/";
+    }
+
     // 연결 변수 //////////////////////////////////////////////////////////////
     public List<ClientData> ClientDataList { get; protected set; } = new List<ClientData>();
     public ClientData MyClientData { get; protected set; } = null;
@@ -61,7 +65,7 @@ public class GameManager : MonoBehaviourPunCallbacksSingleton<GameManager>
     public void SetDungeonInfo(DungeonNodeInfo dungeonNodeInfo) {
         photonView.RPC("SetDungeonInfoRPC", RpcTarget.AllBufferedViaServer, dungeonNodeInfo.Name.ToString());
         foreach (var clientData in ClientDataList)
-            clientData.Ready(false);
+            clientData.IsReady = false;
     }
 
     public bool IsReadyAllClient() {

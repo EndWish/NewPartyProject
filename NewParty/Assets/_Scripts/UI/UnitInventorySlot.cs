@@ -7,31 +7,36 @@ using UnityEngine.UI;
 
 public class UnitInventorySlot : UnitSlot, IBeginDragHandler, IEndDragHandler, IDragHandler
 {
-    [SerializeField] Image draggedProfileImage;
+    static private Image dragImg = null;
+    static private int nUnitSlot = 0;
 
-    protected void Start() {
-        draggedProfileImage.gameObject.SetActive(false);
-        draggedProfileImage.transform.SetParent(StaticOverlayCanvas.Instance.transform);
+    [SerializeField] private Image dragImgPrefab;
+
+    protected void Awake() {
+        ++nUnitSlot;
     }
 
-    protected void OnDestroy() {
-        if(draggedProfileImage != null) {
-            Destroy(draggedProfileImage.gameObject);
+    protected void Start() {
+        if(dragImg == null) {
+            dragImg = Instantiate(dragImgPrefab, StaticOverlayCanvas.Instance.transform);
+            dragImg.gameObject.SetActive(false);
         }
     }
 
-    public override void SlotUpdate(Unit unit, int index) {
-        base.SlotUpdate(unit, index);
-
-        draggedProfileImage.sprite = unit?.profileRenderer.sprite;
+    protected void OnDestroy() {
+        --nUnitSlot;
+        if (nUnitSlot == 0 && dragImg != null) {
+            Destroy(dragImg.gameObject);
+        }
     }
 
     public void OnBeginDrag(PointerEventData eventData) {
-        draggedProfileImage.gameObject.SetActive(true);
+        dragImg.sprite = Data?.profileRenderer.sprite;
+        dragImg.gameObject.SetActive(true);
     }
 
     public void OnDrag(PointerEventData eventData) {
-        draggedProfileImage.transform.position = eventData.position;
+        dragImg.transform.position = eventData.position;
     }
 
     public void OnEndDrag(PointerEventData eventData) {
@@ -52,7 +57,7 @@ public class UnitInventorySlot : UnitSlot, IBeginDragHandler, IEndDragHandler, I
             partyUnitList[index] = Data;
         }
 
-        draggedProfileImage.gameObject.SetActive(false);
+        dragImg.gameObject.SetActive(false);
     }
 
 }

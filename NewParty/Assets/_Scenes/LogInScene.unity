@@ -791,7 +791,7 @@ Canvas:
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 100
   m_TargetDisplay: 0
 --- !u!224 &682635955
 RectTransform:
@@ -2273,12 +2273,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b54b305cb674c784eacbca5c37da92b2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  UnitList: []
-  PartyUnitList:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
 --- !u!4 &1759034992
 Transform:
   m_ObjectHideFlags: 0

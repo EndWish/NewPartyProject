@@ -30,7 +30,7 @@ public class MapPopup : MonoBehaviour
             gameObject.SetActive(true);
     }
 
-    public void OnClickEnterBtn() {
+    public void OnClickSelectBtn() {
         if(SelectedNode != null && SelectedNode is DungeonNode) {
             GameManager.Instance.SetDungeonInfo((DungeonNodeInfo)SelectedNode.NodeInfo);
             gameObject.SetActive(false);

@@ -13,9 +13,19 @@ public class BattleManager : MonoBehaviourPunCallbacksSingleton<BattleManager>
 {
 
     // 연결 정보 //////////////////////////////////////////////////////////////
+    #region ForTest
+#if DEVELOPMENT_BUILD || UNITY_EDITOR
+    [SerializeField] private DungeonNodeInfo testDungeonInfo;
+#endif
+    #endregion
+
     [SerializeField] private Transform playerPartyPos;
     [SerializeField] private Transform enemyPartyPos;
+    [SerializeField] private SpriteRenderer backgroundRenderer;
     public List<Party>[] Parties { get; private set; } = new List<Party>[(int)TeamType.Num];
+
+    private DungeonNodeInfo dungeonNodeInfo;
+    public int Wave { get; private set; } = 0;
 
     // 개인 정보 //////////////////////////////////////////////////////////////
     private bool isAllLoaded = false;
@@ -30,6 +40,16 @@ public class BattleManager : MonoBehaviourPunCallbacksSingleton<BattleManager>
     }
 
     protected void Start() {
+        dungeonNodeInfo = GameManager.Instance.DungeonInfo;
+        backgroundRenderer.sprite = dungeonNodeInfo.BackgroundImg;
+        #region ForTest
+#if DEVELOPMENT_BUILD || UNITY_EDITOR
+        if (testDungeonInfo != null) {
+            dungeonNodeInfo = testDungeonInfo;
+        }
+#endif
+        #endregion
+
         StartCoroutine(CoRun());
     }
 
@@ -37,14 +57,16 @@ public class BattleManager : MonoBehaviourPunCallbacksSingleton<BattleManager>
 
     IEnumerator CoRun() {
 
+    #region ForTest
 #if DEVELOPMENT_BUILD || UNITY_EDITOR
         yield return new WaitUntil(() => PhotonNetwork.InRoom);
 #endif
+    #endregion
 
         List<ClientData> clients = GameManager.Instance.ClientDataList;
         ClientData myClient = GameManager.Instance.MyClientData;
 
-        // 파티 생성하기, (방장)적 파티 생성하기, 확인 메시지 보내기
+        #region 나의 파티 생성하기
         Party myParty = PhotonNetwork.Instantiate("Prefabs/Battles/Party", Vector3.zero, Quaternion.identity).GetComponent<Party>();
         foreach (Unit partyUnit in UserData.Instance.PartyUnitList) {
             if(partyUnit == null)
@@ -56,24 +78,38 @@ public class BattleManager : MonoBehaviourPunCallbacksSingleton<BattleManager>
             myParty.AddUnit(syncUnit);
         }
         AddParty(myParty, TeamType.Player);
-
-        #region 테스트
-        for(int i = 0; i < 3; ++i) {
-            myParty = PhotonNetwork.Instantiate("Prefabs/Battles/Party", Vector3.zero, Quaternion.identity).GetComponent<Party>();
-            foreach (Unit partyUnit in UserData.Instance.PartyUnitList) {
-                if (partyUnit == null)
-                    continue;
-
-                Unit.Data unitData = partyUnit.MyData;
-                Unit syncUnit = PhotonNetwork.Instantiate(GameManager.GetUnitPrefabPath() + unitData.Type.ToString(), Vector3.zero, Quaternion.identity).GetComponent<Unit>();
-                syncUnit.ApplyData(unitData);
-                myParty.AddUnit(syncUnit);
-            }
-            AddParty(myParty, TeamType.Enemy);
-        }
-
         #endregion
 
+        #region (방장)적 파티 생성하기
+        if (PhotonNetwork.IsMasterClient) {
+            Party enemyParty = PhotonNetwork.Instantiate("Prefabs/Battles/Party", Vector3.zero, Quaternion.identity).GetComponent<Party>();
+
+
+            List<DungeonNodeInfo.UnitInfo> unitInfoList = null;
+            // 특정 웨이브 출현정보가 있으면 그대로 생성한다
+            var waveInfo = dungeonNodeInfo.WaveInfoList?.Find((info) => info.Wave == this.Wave);
+            if(waveInfo != null) {
+                unitInfoList = waveInfo.UnitInfoList;
+            }
+            // 특정 웨이브 출현정보가 없으면 랜덤으로 생성한다
+            else {
+                // 몇 명을 생성할지 정하고 유닛을 생성한다
+                int nEnemy = GetRandomEnemyNum();
+                unitInfoList = dungeonNodeInfo.GetRandomUnitInfo(nEnemy);
+            }
+
+            foreach (var unitInfo in unitInfoList) {
+                Unit.Data unitData = unitInfo.ToUnitData();
+                Unit syncUnit = PhotonNetwork.Instantiate(GameManager.GetUnitPrefabPath() + unitData.Type.ToString(), Vector3.zero, Quaternion.identity).GetComponent<Unit>();
+                syncUnit.ApplyData(unitData);
+                enemyParty.AddUnit(syncUnit);
+            }
+            AddParty(enemyParty, TeamType.Enemy);
+        }
+        #endregion
+
+        #region 로딩 처리
+        // 확인 메시지 보내기
         myClient.HasLastRpc = true;
 
         // 다른 클라이언트의 파티가 나에게 생성되었는지 확인하고 확인 메시지 보내기
@@ -93,6 +129,7 @@ public class BattleManager : MonoBehaviourPunCallbacksSingleton<BattleManager>
             }
             yield return null;
         }
+        #endregion
 
         // 게임 시작
         Debug.Log("게임 시작");
@@ -132,6 +169,21 @@ public class BattleManager : MonoBehaviourPunCallbacksSingleton<BattleManager>
             Party party = Parties[(int)teamType][i];
             party.MySortingGroup.sortingOrder = -i;
         }
+    }
+
+    private int GetRandomEnemyNum() {
+        int num = 0;
+        float[] percentageOfNum = new float[4] { 15f, 20f, 40f, 25f };
+        float random = UnityEngine.Random.Range(0f, 100f);
+
+        float stack = 0f;
+        for(int i = 0; i < percentageOfNum.Length; ++i) {
+            if (stack <= random)
+                ++num;
+            stack += percentageOfNum[i];
+        }
+
+        return num;
     }
 
 }

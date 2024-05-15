@@ -9,6 +9,7 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using System.Linq;
 using System.IO;
 using System.Runtime.InteropServices;
+using TMPro;
 
 public enum UnitType : int
 {
@@ -76,6 +77,7 @@ public class Unit : MonoBehaviourPun
     // 연결 정보 //////////////////////////////////////////////////////////////
     [SerializeField] protected Token tokenPrefab;
     [SerializeField] protected Transform tokensParent;
+    [SerializeField] protected TextMeshProUGUI growthLevelText;
     public SpriteRenderer profileRenderer;
 
     // 개인 정보 //////////////////////////////////////////////////////////////
@@ -112,6 +114,7 @@ public class Unit : MonoBehaviourPun
 
     // 유니티 함수 ////////////////////////////////////////////////////////////
     protected void Awake() {
+        growthLevelText.text = GetGrowthLevelStr();
         UpdateAllStat();
 
         Hp = GetFinalStat(StatType.Hpm);
@@ -138,6 +141,7 @@ public class Unit : MonoBehaviourPun
         get { return MyData.GrowthLevel; }
         set { 
             MyData.GrowthLevel = value;
+            growthLevelText.text = GetGrowthLevelStr();
             UpdateBaseStat(true);
         }
     }
@@ -276,11 +280,12 @@ public class Unit : MonoBehaviourPun
     protected void ApplyDataRPC(Unit.Data data) {
         this.MyData = data;
         UpdateAllStat();
+        growthLevelText.text = GetGrowthLevelStr();
+        // 프로필 이미지도 적용
     }
     public void ApplyData(Unit.Data data) {
-        this.MyData = data;
-        UpdateAllStat();
-        if (photonView.IsMine) {    // 동기화 하지 않은 오브젝트일 경우
+        ApplyDataRPC(data);
+        if (photonView.IsMine) {    // 동기화 하지 않은 오브젝트일 경우 실행하지 않는다.
             photonView.RPC("ApplyDataRPC", RpcTarget.Others, data);
         }
     }
@@ -296,6 +301,11 @@ public class Unit : MonoBehaviourPun
     }
     public int GetIndex() {
         return MyParty.Units.IndexOf(this);
+    }
+
+    // 기타
+    protected string GetGrowthLevelStr() {
+        return 0 <= GrowthLevel ? ("+" + GrowthLevel.ToString()) : GrowthLevel.ToString();
     }
 
 }

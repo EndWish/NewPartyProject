@@ -26,6 +26,6 @@ public class UnitSlot : PageViewSlot<Unit>
         if (unit == null)
             growthLevelText.text = string.Empty;
         else
-            growthLevelText.text = 0 < unit.GrowthLevel ? ("+" + unit.GrowthLevel.ToString()) : unit.GrowthLevel.ToString();
+            growthLevelText.text = 0 <= unit.GrowthLevel ? ("+" + unit.GrowthLevel.ToString()) : unit.GrowthLevel.ToString();
     }
 }

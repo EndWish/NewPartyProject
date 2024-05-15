@@ -10105,7 +10105,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 8172327322551211731}
         m_TargetAssemblyTypeName: MapPopup, Assembly-CSharp
-        m_MethodName: OnClickEnterBtn
+        m_MethodName: OnClickSelectBtn
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -10148,7 +10148,7 @@ GameObject:
   - component: {fileID: 8172327322277771110}
   - component: {fileID: 8172327322277771111}
   m_Layer: 0
-  m_Name: EnterBtn
+  m_Name: SelectBtn
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -10248,6 +10248,22 @@ MonoBehaviour:
           m_TargetAssemblyTypeName: MapPopup, Assembly-CSharp
           m_MethodName: set_IsMovingNodeToCenter
           m_Mode: 6
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 1
+          m_CallState: 2
+  - keyCode: 13
+    OnKeyDown:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 8172327322551211731}
+          m_TargetAssemblyTypeName: MapPopup, Assembly-CSharp
+          m_MethodName: OnClickSelectBtn
+          m_Mode: 1
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
             m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -10495,7 +10511,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\uC785\uC7A5"
+  m_text: "\uC120\uD0DD"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 81bbc6745a6204debbfdd20d0c6b7dca, type: 2}
   m_sharedMaterial: {fileID: 7512481295523713106, guid: 81bbc6745a6204debbfdd20d0c6b7dca, type: 2}

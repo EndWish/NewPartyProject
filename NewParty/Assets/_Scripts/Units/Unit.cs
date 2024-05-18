@@ -91,7 +91,10 @@ public class Unit : MonoBehaviourPun
     [SerializeField, EnumNamedArrayAttribute(typeof(StatType))] protected float[] initStats = new float[(int)StatType.Num];
     protected float[,] stats = new float[(int)StatForm.Num, (int)StatType.Num];
     public UnityAction<Unit>[] OnUpdateFinalStat = new UnityAction<Unit>[(int)StatType.Num];
+
     public float Hp { get; set; }
+    public UnityAction<Unit, Ref<float>> OnRecoverHp;   // 유닛, 회복량
+    public UnityAction<Unit, float, float> OnRecoveredHp;   // 유닛, 회복량, 초과량
 
     // 토큰 관련 변수
     protected int maxTokens = 5;
@@ -276,6 +279,7 @@ public class Unit : MonoBehaviourPun
             RemoveToken(token);
     }
 
+    // Data 관련 함수
     [PunRPC]
     protected void ApplyDataRPC(Unit.Data data) {
         this.MyData = data;
@@ -288,6 +292,32 @@ public class Unit : MonoBehaviourPun
         if (photonView.IsMine) {    // 동기화 하지 않은 오브젝트일 경우 실행하지 않는다.
             photonView.RPC("ApplyDataRPC", RpcTarget.Others, data);
         }
+    }
+
+    // 체력 회복
+    [PunRPC]
+    private void RecoverHpRPC(float mount) {
+        Hp += mount;
+    }
+    public void RecoverHp(float baseAmount) {
+        Ref<float> amount = new Ref<float>(baseAmount);
+
+        // 회복할때 (회복수치를 조정가능)
+        OnRecoverHp?.Invoke(this, amount);
+
+        // 회복 초과량 확인하기
+        float overAmount = 0;
+        float lostHp = GetFinalStat(StatType.Hpm) - Hp;
+        if(lostHp < amount.Value) {
+            overAmount = amount.Value - lostHp;
+            amount.Value = lostHp;
+        }
+
+        // Hp에 적용
+        photonView.RPC("RecoverHpRPC", RpcTarget.All, amount.Value);
+
+        // 회복되었을 때 
+        OnRecoveredHp?.Invoke(this, amount.Value, overAmount);
     }
 
     // 파티 관련 함수

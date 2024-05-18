@@ -17,6 +17,7 @@ public class Party : MonoBehaviourPunCallbacks, IScrollHandler
     // 개인 정보 //////////////////////////////////////////////////////////////
     public TeamType TeamType = TeamType.None;
     private bool isMoveStop = false;
+    private int remainRestSkill = 0;
 
     // 유니티 함수 ////////////////////////////////////////////////////////////
     private void Awake() {
@@ -84,6 +85,16 @@ public class Party : MonoBehaviourPunCallbacks, IScrollHandler
     }
     public void RemoveUnit(Unit unit) {
         photonView.RPC("RemoveUnitRPC", RpcTarget.All, unit.photonView.ViewID);
+    }
+
+    // 파티 스킬 횟수
+    [PunRPC]
+    private void RemainRestSkillRPC(int value) {
+        remainRestSkill = value;
+    }
+    public int RemainRestSkill {
+        get { return remainRestSkill; }
+        set { photonView.RPC("RemainRestSkillRPC", RpcTarget.All, value); }
     }
 
     // 팀설정

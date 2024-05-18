@@ -22,7 +22,11 @@ public class BattleManager : MonoBehaviourPunCallbacksSingleton<BattleManager>
     [SerializeField] private Transform playerPartyPos;
     [SerializeField] private Transform enemyPartyPos;
     [SerializeField] private SpriteRenderer backgroundRenderer;
+
+    [SerializeField] private RestSkillManager restSkillManager;
+
     public List<Party>[] Parties { get; private set; } = new List<Party>[(int)TeamType.Num];
+
 
     private DungeonNodeInfo dungeonNodeInfo;
     public int Wave { get; private set; } = 0;
@@ -41,11 +45,12 @@ public class BattleManager : MonoBehaviourPunCallbacksSingleton<BattleManager>
 
     protected void Start() {
         dungeonNodeInfo = GameManager.Instance.DungeonInfo;
-        backgroundRenderer.sprite = dungeonNodeInfo.BackgroundImg;
+        backgroundRenderer.sprite = dungeonNodeInfo?.BackgroundImg;
         #region ForTest
 #if DEVELOPMENT_BUILD || UNITY_EDITOR
         if (testDungeonInfo != null) {
             dungeonNodeInfo = testDungeonInfo;
+            backgroundRenderer.sprite = dungeonNodeInfo.BackgroundImg;
         }
 #endif
         #endregion
@@ -80,41 +85,16 @@ public class BattleManager : MonoBehaviourPunCallbacksSingleton<BattleManager>
         AddParty(myParty, TeamType.Player);
         #endregion
 
-        #region (방장)적 파티 생성하기
-        if (PhotonNetwork.IsMasterClient) {
-            Party enemyParty = PhotonNetwork.Instantiate("Prefabs/Battles/Party", Vector3.zero, Quaternion.identity).GetComponent<Party>();
-
-
-            List<DungeonNodeInfo.UnitInfo> unitInfoList = null;
-            // 특정 웨이브 출현정보가 있으면 그대로 생성한다
-            var waveInfo = dungeonNodeInfo.WaveInfoList?.Find((info) => info.Wave == this.Wave);
-            if(waveInfo != null) {
-                unitInfoList = waveInfo.UnitInfoList;
-            }
-            // 특정 웨이브 출현정보가 없으면 랜덤으로 생성한다
-            else {
-                // 몇 명을 생성할지 정하고 유닛을 생성한다
-                int nEnemy = GetRandomEnemyNum();
-                unitInfoList = dungeonNodeInfo.GetRandomUnitInfo(nEnemy);
-            }
-
-            foreach (var unitInfo in unitInfoList) {
-                Unit.Data unitData = unitInfo.ToUnitData();
-                Unit syncUnit = PhotonNetwork.Instantiate(GameManager.GetUnitPrefabPath() + unitData.Type.ToString(), Vector3.zero, Quaternion.identity).GetComponent<Unit>();
-                syncUnit.ApplyData(unitData);
-                enemyParty.AddUnit(syncUnit);
-            }
-            AddParty(enemyParty, TeamType.Enemy);
-        }
-        #endregion
+        
 
         #region 로딩 처리
         // 확인 메시지 보내기
         myClient.HasLastRpc = true;
 
         // 다른 클라이언트의 파티가 나에게 생성되었는지 확인하고 확인 메시지 보내기
-        yield return new WaitUntil(
-            () => { return UsefulMethod.IsAll(clients, (client) => client.HasLastRpc); });
+        yield return new WaitUntil(() => { 
+            return UsefulMethod.IsAll(clients, (client) => client.HasLastRpc); 
+        });
         myClient.IsLoaded = true;
 
         // (방장)다른 플레이어에게 로딩 완료를 알림, (게스트)로딩 완료 메시지를 받을때 까지 대기
@@ -129,10 +109,75 @@ public class BattleManager : MonoBehaviourPunCallbacksSingleton<BattleManager>
             }
             yield return null;
         }
+
+        // 로딩, 대기 등과 관련된 변수들을 초기화 해준다.
+        myClient.IsLoaded = false;
+        myClient.IsReady = false;
+        myClient.HasLastRpc = false;
+
         #endregion
 
         // 게임 시작
         Debug.Log("게임 시작");
+
+        // 웨이브 준비 -> 웨이브 -> 루프
+        while (true) {
+            #region 웨이브 준비
+
+            // 파티 스킬 횟수 초기화
+            foreach (var party in Parties[(int)TeamType.Player])
+                party.RemainRestSkill = 1;
+
+            // 파티 스킬 UI 활성화
+            restSkillManager.gameObject.SetActive(true);
+
+            // 다음 웨이브 버튼 활성화
+
+
+            // 모든 플레이어가 다음 웨이브 버튼을 누를 때 까지 대기
+            yield return new WaitUntil( () => { 
+                return UsefulMethod.IsAll(clients, (client) => client.IsReady); 
+            });
+
+            // 웨이브 준비에서만 사용되는 UI들 비활성화
+            restSkillManager.gameObject.SetActive(false);
+
+            #endregion
+
+            // 다음 웨이브 시작
+            ++Wave;
+            #region (방장)적 파티 생성하기
+            if (PhotonNetwork.IsMasterClient) {
+                Party enemyParty = PhotonNetwork.Instantiate("Prefabs/Battles/Party", Vector3.zero, Quaternion.identity).GetComponent<Party>();
+
+
+                List<DungeonNodeInfo.UnitInfo> unitInfoList = null;
+                // 특정 웨이브 출현정보가 있으면 그대로 생성한다
+                var waveInfo = dungeonNodeInfo.WaveInfoList?.Find((info) => info.Wave == this.Wave);
+                if (waveInfo != null) {
+                    unitInfoList = waveInfo.UnitInfoList;
+                }
+                // 특정 웨이브 출현정보가 없으면 랜덤으로 생성한다
+                else {
+                    // 몇 명을 생성할지 정하고 유닛을 생성한다
+                    int nEnemy = GetRandomEnemyNum();
+                    unitInfoList = dungeonNodeInfo.GetRandomUnitInfo(nEnemy);
+                }
+
+                foreach (var unitInfo in unitInfoList) {
+                    Unit.Data unitData = unitInfo.ToUnitData();
+                    Unit syncUnit = PhotonNetwork.Instantiate(GameManager.GetUnitPrefabPath() + unitData.Type.ToString(), Vector3.zero, Quaternion.identity).GetComponent<Unit>();
+                    syncUnit.ApplyData(unitData);
+                    enemyParty.AddUnit(syncUnit);
+                }
+                AddParty(enemyParty, TeamType.Enemy);
+            }
+            #endregion
+
+
+
+        }
+
     }
 
     [PunRPC]
@@ -184,6 +229,10 @@ public class BattleManager : MonoBehaviourPunCallbacksSingleton<BattleManager>
         }
 
         return num;
+    }
+
+    public void OnClickNextWaveBtn() {
+        GameManager.Instance.MyClientData.ToggleReady();
     }
 
 }

@@ -35,7 +35,6 @@ public class BattleSelectable : MonoBehaviour, IPointerEnterHandler, IPointerExi
     static public List<Unit> Units { get; private set; } = new List<Unit>();
     static public List<Party> Parties { get; private set; } = new List<Party>();
     static public bool allSelected = false;
-    static private bool isConfirmed = false;
 
     static public Predicate<Unit> SelectionPredicate { get; private set; } = null;
     static public UnityAction OnStop;
@@ -62,8 +61,6 @@ public class BattleSelectable : MonoBehaviour, IPointerEnterHandler, IPointerExi
         Units.Clear();
         Parties.Clear();
         allSelected = false;
-
-        isConfirmed = false;
 
         SelectionPredicate = predicate;
         OnCancel = onCancel;

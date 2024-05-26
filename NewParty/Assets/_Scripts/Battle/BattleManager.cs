@@ -3,6 +3,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
+using static Photon.Pun.UtilityScripts.TabViewManager;
 
 public enum TeamType : int
 {
@@ -27,12 +29,16 @@ public class BattleManager : MonoBehaviourPunCallbacksSingleton<BattleManager>
 
     public List<Party>[] Parties { get; private set; } = new List<Party>[(int)TeamType.Num];
 
-
     private DungeonNodeInfo dungeonNodeInfo;
     public int Wave { get; private set; } = 0;
 
+    public Unit UnitOfTurn { get; private set; } = null;
+    public Unit UnitClicked { get; set; } = null;
+    public Unit UnitOnMouse { get; set; } = null;
+
     // 개인 정보 //////////////////////////////////////////////////////////////
     private bool isAllLoaded = false;
+    
 
     // 유니티 함수 ////////////////////////////////////////////////////////////
     protected override void Awake() {
@@ -46,6 +52,9 @@ public class BattleManager : MonoBehaviourPunCallbacksSingleton<BattleManager>
     protected void Start() {
         dungeonNodeInfo = GameManager.Instance.DungeonInfo;
         backgroundRenderer.sprite = dungeonNodeInfo?.BackgroundImg;
+
+        restSkillManager.gameObject.SetActive(false);
+
         #region ForTest
 #if DEVELOPMENT_BUILD || UNITY_EDITOR
         if (testDungeonInfo != null) {
@@ -120,7 +129,7 @@ public class BattleManager : MonoBehaviourPunCallbacksSingleton<BattleManager>
         // 게임 시작
         Debug.Log("게임 시작");
 
-        // 웨이브 준비 -> 웨이브 -> 루프
+        // (웨이브 준비 -> 웨이브) 반복
         while (true) {
             #region 웨이브 준비
 
@@ -128,23 +137,23 @@ public class BattleManager : MonoBehaviourPunCallbacksSingleton<BattleManager>
             foreach (var party in Parties[(int)TeamType.Player])
                 party.RemainRestSkill = 1;
 
-            // 파티 스킬 UI 활성화
+            // 파티 스킬 UI 활성화, [추가]다음 웨이브 버튼 활성화
             restSkillManager.gameObject.SetActive(true);
-
-            // 다음 웨이브 버튼 활성화
 
 
             // 모든 플레이어가 다음 웨이브 버튼을 누를 때 까지 대기
             yield return new WaitUntil( () => { 
                 return UsefulMethod.IsAll(clients, (client) => client.IsReady); 
             });
+            myClient.IsReady = false;
 
             // 웨이브 준비에서만 사용되는 UI들 비활성화
             restSkillManager.gameObject.SetActive(false);
 
             #endregion
 
-            // 다음 웨이브 시작
+            #region 다음 웨이브 시작
+
             ++Wave;
             #region (방장)적 파티 생성하기
             if (PhotonNetwork.IsMasterClient) {
@@ -173,9 +182,52 @@ public class BattleManager : MonoBehaviourPunCallbacksSingleton<BattleManager>
                 AddParty(enemyParty, TeamType.Enemy);
             }
             #endregion
+            #region 행동 게이지 랜덤으로 세팅
+            ActionAllUnit((unit) => { unit.ActionGauge = UnityEngine.Random.Range(0, Unit.MaxActionGauge); });
+            #endregion
+            #region 토큰 생성하기
+            for (int i = 0; i < 3; ++i) {
+                ActionAllUnit((unit) => { unit.CreateRandomToken(); });
+                yield return new WaitForSeconds(0.5f);
+            }
+
+            #endregion
+
+            // 턴 반복
+            while (true) {
 
 
+                #region 턴 시작 및 토큰 지급
+                // 누구의 턴인지 찾고 행동 게이지를 수정해 준다.
+                UnitOfTurn = GetUnitOfTurn();
+                float gaugeFillingTime = (Unit.MaxActionGauge - UnitOfTurn.ActionGauge) / MathF.Min(UnitOfTurn.GetFinalStat(StatType.Speed), 0.0001f);
+                ActionAllUnit((unit) => {
+                    unit.ActionGauge += gaugeFillingTime * unit.GetFinalStat(StatType.Speed);
+                });
+                UnitOfTurn.ActionGauge = 0;
 
+                // 토큰을 지급한다
+                UnitOfTurn.CreateRandomToken(3);
+
+                #endregion
+
+                #region 토큰 사용 하기
+                while (true) {
+                    // 토큰을 사용하면 루프를 빠져나간다
+                    Debug.Log("토큰 사용을 기다리는 중..");
+                    yield return null;
+                }
+
+                #endregion
+
+                #region 웨이브 클리어/실패 확인
+
+                #endregion
+
+                yield return null;
+            }
+
+            #endregion
         }
 
     }
@@ -234,5 +286,34 @@ public class BattleManager : MonoBehaviourPunCallbacksSingleton<BattleManager>
     public void OnClickNextWaveBtn() {
         GameManager.Instance.MyClientData.ToggleReady();
     }
+
+    private void ActionAllUnit(UnityAction<Unit> action) {
+        for (TeamType type = TeamType.None; type < TeamType.Num; ++type) {
+            if (Parties[(int)type] == null)
+                continue;
+
+            foreach (Party party in Parties[(int)type]) {
+                foreach (Unit unit in party.Units) {
+                    action(unit);
+                }
+            }
+        }
+    }
+
+    private Unit GetUnitOfTurn() {
+        Unit result = null;
+        float minTime = float.MaxValue;
+        ActionAllUnit((unit) => {
+            float unitSpeed = unit.GetFinalStat(StatType.Speed);
+            float time = (Unit.MaxActionGauge - unit.ActionGauge) / MathF.Min(unitSpeed, 0.0001f); // 게이지를 다 채우는데 걸리는 시간, 0으로 나누는 것을 방지
+            if(time < minTime || (time == minTime && result.GetFinalStat(StatType.Speed) > unit.GetFinalStat(StatType.Speed))) {
+                result = unit;
+                minTime = time;
+            }
+        });
+
+        return result;
+    }
+
 
 }

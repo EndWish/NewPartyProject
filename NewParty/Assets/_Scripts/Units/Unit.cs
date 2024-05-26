@@ -74,6 +74,9 @@ public class Unit : MonoBehaviourPun
 
     }
 
+    // 공유 정보 //////////////////////////////////////////////////////////////
+    static public float MaxActionGauge = 100f;
+
     // 연결 정보 //////////////////////////////////////////////////////////////
     [SerializeField] protected Token tokenPrefab;
     [SerializeField] protected Transform tokensParent;
@@ -96,9 +99,11 @@ public class Unit : MonoBehaviourPun
     public UnityAction<Unit, Ref<float>> OnRecoverHp;   // 유닛, 회복량
     public UnityAction<Unit, float, float> OnRecoveredHp;   // 유닛, 회복량, 초과량
 
+    protected float actionGauge = 0;
+
     // 토큰 관련 변수
     protected int maxTokens = 5;
-    protected List<Token> tokens = new List<Token>();
+    public List<Token> Tokens = new List<Token>();
     public UnityAction<Unit, Token> OnCreateToken;
     public UnityAction<Unit, Token> OnRemoveToken;
 
@@ -121,6 +126,7 @@ public class Unit : MonoBehaviourPun
         UpdateAllStat();
 
         Hp = GetFinalStat(StatType.Hpm);
+        actionGauge = 0;
     }
 
     protected void Update() {
@@ -147,6 +153,15 @@ public class Unit : MonoBehaviourPun
             growthLevelText.text = GetGrowthLevelStr();
             UpdateBaseStat(true);
         }
+    }
+    public float ActionGauge { 
+        get { return actionGauge; }
+        set {
+            photonView.RPC("ActionGaugeRPC", RpcTarget.All , value);
+        }
+    }
+    [PunRPC] protected void ActionGaugeRPC(float value) {
+        actionGauge = value;
     }
 
     // 능력치 관련 함수
@@ -216,15 +231,14 @@ public class Unit : MonoBehaviourPun
     }
 
     // 토큰 관련 함수
-    [PunRPC]
-    protected void CreateTokenRPC(TokenType type) {
+    [PunRPC] protected void CreateTokenRPC(TokenType type) {
         Token newToken = Instantiate(tokenPrefab, tokensParent);
-        tokens.Add(newToken);
+        Tokens.Add(newToken);
         newToken.Owner = this;
         newToken.Type = type;
     }
     public void CreateRandomToken() {
-        if (tokens.Count >= maxTokens)  // 최대개수를 넘어서 얻을 수 없다.
+        if (Tokens.Count >= maxTokens)  // 최대개수를 넘어서 얻을 수 없다.
             return;
 
         float sum = GetFinalStat(StatType.AtkTokenShare) + GetFinalStat(StatType.SkillTokenShare) + GetFinalStat(StatType.ShiledTokenShare);
@@ -240,7 +254,7 @@ public class Unit : MonoBehaviourPun
 
         photonView.RPC("CreateTokenRPC", RpcTarget.All, type);
 
-        OnCreateToken?.Invoke(this, tokens[tokens.Count - 1]);
+        OnCreateToken?.Invoke(this, Tokens[Tokens.Count - 1]);
     }
     public void CreateRandomToken(int num) {
         for(int i = 0; i < num; ++i) {
@@ -248,12 +262,12 @@ public class Unit : MonoBehaviourPun
         }
     }
     public void CreateToken(TokenType type) {
-        if (tokens.Count >= maxTokens)  // 최대개수를 넘어서 얻을 수 없다.
+        if (Tokens.Count >= maxTokens)  // 최대개수를 넘어서 얻을 수 없다.
             return;
 
         photonView.RPC("CreateTokenRPC", RpcTarget.All, type);
 
-        OnCreateToken?.Invoke(this, tokens[tokens.Count - 1]);
+        OnCreateToken?.Invoke(this, Tokens[Tokens.Count - 1]);
     }
     public void CreateToken(TokenType type, int num) {
         for (int i = 0; i < num; ++i) {
@@ -261,27 +275,25 @@ public class Unit : MonoBehaviourPun
         }
     }
 
-    [PunRPC]
-    protected void RemoveTokenRPC(int index) {
-        Token token = tokens[index];
-        tokens.RemoveAt(index);
+    [PunRPC] protected void RemoveTokenRPC(int index) {
+        Token token = Tokens[index];
+        Tokens.RemoveAt(index);
         Destroy(token.gameObject);
     }
     public void RemoveToken(Token token) {
         OnRemoveToken?.Invoke(this, token);
 
-        int index = tokens.IndexOf(token);
+        int index = Tokens.IndexOf(token);
         photonView.RPC("RemoveTokenRPC", RpcTarget.All, index);
     }
     public void RemoveSelectedToken() {
-        List<Token> selectedTokens = tokens.FindAll(token => token.IsSelected);
+        List<Token> selectedTokens = Tokens.FindAll(token => token.IsSelected);
         foreach (Token token in selectedTokens)
             RemoveToken(token);
     }
 
     // Data 관련 함수
-    [PunRPC]
-    protected void ApplyDataRPC(Unit.Data data) {
+    [PunRPC] protected void ApplyDataRPC(Unit.Data data) {
         this.MyData = data;
         UpdateAllStat();
         growthLevelText.text = GetGrowthLevelStr();
@@ -295,8 +307,7 @@ public class Unit : MonoBehaviourPun
     }
 
     // 체력 회복
-    [PunRPC]
-    private void RecoverHpRPC(float mount) {
+    [PunRPC] private void RecoverHpRPC(float mount) {
         Hp += mount;
     }
     public void RecoverHp(float baseAmount) {

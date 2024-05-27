@@ -10,6 +10,7 @@ using System.Linq;
 using System.IO;
 using System.Runtime.InteropServices;
 using TMPro;
+using Unity.VisualScripting;
 
 public enum UnitType : int
 {
@@ -83,6 +84,10 @@ public class Unit : MonoBehaviourPun
     [SerializeField] protected TextMeshProUGUI growthLevelText;
     public SpriteRenderer profileRenderer;
 
+    [SerializeField] protected RectTransform actionGaugeFill;
+    [SerializeField] protected RectTransform hpGaugeFill;
+    [SerializeField] protected RectTransform hpGaugeBgFill;
+
     // 개인 정보 //////////////////////////////////////////////////////////////
     // 이름
     public string Name;
@@ -142,6 +147,11 @@ public class Unit : MonoBehaviourPun
 
             transform.localPosition = Vector3.MoveTowards(transform.localPosition, pos, 10f * Time.deltaTime);
         }
+
+        // 게이지
+        hpGaugeFill.localScale = new Vector3(Hp / GetFinalStat(StatType.Hpm), 1, 1);
+        hpGaugeBgFill.localScale = new Vector3(MathF.Max(hpGaugeBgFill.localScale.x - Time.deltaTime * 2, hpGaugeFill.localScale.x), 1, 1);
+        actionGaugeFill.localScale = new Vector3(ActionGauge / MaxActionGauge, 1, 1);
     }
 
     // 함수 ///////////////////////////////////////////////////////////////////
@@ -290,6 +300,23 @@ public class Unit : MonoBehaviourPun
         List<Token> selectedTokens = Tokens.FindAll(token => token.IsSelected);
         foreach (Token token in selectedTokens)
             RemoveToken(token);
+    }
+
+    // 행동 관련 함수
+    public IEnumerator CoPassAction() {
+        yield return new WaitForSeconds(0.5f);
+    }
+    public IEnumerator CoDiscardAction() {
+        RemoveSelectedToken();
+        yield return new WaitForSeconds(0.5f);
+    }
+
+    // 유닛의 소유상태를 반환하는 함수
+    public bool IsMine() {
+        return (MyParty.TeamType == TeamType.Player && photonView.IsMine) || (MyParty.TeamType == TeamType.Enemy && PhotonNetwork.IsMasterClient);
+    }
+    public bool IsAlly() {
+        return MyParty.TeamType == TeamType.Player && !photonView.IsMine;
     }
 
     // Data 관련 함수

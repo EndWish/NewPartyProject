@@ -12,10 +12,9 @@ public class UnitStateUI : MonoBehaviour
         Unit actionBtnUnit = battleManager.UnitOnMouse;
         actionBtnUnit ??= battleManager.UnitClicked;
         actionBtnUnit ??= battleManager.UnitOfTurn;
-        if(actionBtnUnit != null) {
-            foreach(var actionBtn in fixedActionBtns) {
-                actionBtn.UpdateBtn(actionBtnUnit);
-            }
+
+        foreach (var actionBtn in fixedActionBtns) {
+            actionBtn.UpdateBtn(actionBtnUnit);
         }
 
     }

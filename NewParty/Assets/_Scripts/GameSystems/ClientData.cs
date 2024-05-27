@@ -23,8 +23,7 @@ public class ClientData : MonoBehaviourPun
     // 함수 ///////////////////////////////////////////////////////////////////
 
     // 레디 관련 함수
-    [PunRPC]
-    private void IsReadyRPC(bool result) {
+    [PunRPC] private void IsReadyRPC(bool result) {
         isReady = result;
     }
     public bool IsReady { 
@@ -35,8 +34,7 @@ public class ClientData : MonoBehaviourPun
         photonView.RPC("IsReadyRPC", RpcTarget.AllBufferedViaServer, !IsReady);
     }
 
-    [PunRPC]
-    private void HasLastRpcRPC(bool result) {
+    [PunRPC] private void HasLastRpcRPC(bool result) {
         hasLastRpc = result;
     }
     public bool HasLastRpc {
@@ -44,8 +42,7 @@ public class ClientData : MonoBehaviourPun
         set { photonView.RPC("HasLastRpcRPC", RpcTarget.All, value); }
     }
 
-    [PunRPC]
-    private void IsLoadedRPC(bool result) {
+    [PunRPC] private void IsLoadedRPC(bool result) {
         isLoaded = result;
     }
     public bool IsLoaded {

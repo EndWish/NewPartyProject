@@ -5,15 +5,21 @@ using UnityEngine;
 public class PassActionBtn : FixedActionBtn
 {
     protected override void UpdateBtn() {
-        //targetUnit 과 현재 턴을 가진 유닛이 같으면 활성화 한다.
-        if(targetUnit == BattleManager.Instance.UnitOfTurn) {
-            Active = true;
-        } else {
+        BattleManager battleManager = BattleManager.Instance;
+
+        if (targetUnit == null || targetUnit != battleManager.UnitOfTurn) {
             Active = false;
+            return;
         }
+
+        Active = true;
     }
 
     public override void OnClick() {
-        throw new System.NotImplementedException();
+        BattleManager battleManager = BattleManager.Instance;
+
+        if (MeetClickCondition()) {
+            battleManager.ActionCoroutine = targetUnit.CoPassAction();
+        }
     }
 }

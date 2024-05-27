@@ -41,4 +41,13 @@ public abstract class ActionBtn : MonoBehaviour
 
     public abstract void OnClick();
 
+    public virtual bool MeetClickCondition() {
+        BattleManager battleManager = BattleManager.Instance;
+        Debug.Log("targetUnit.IsMine() : " + targetUnit.IsMine()
+            + "\n targetUnit == battleManager.UnitOfTurn : " + (targetUnit == battleManager.UnitOfTurn)
+             + "\n battleManager.ActionCoroutine == null : " + (battleManager.ActionCoroutine == null));
+
+        return targetUnit.IsMine() && targetUnit == battleManager.UnitOfTurn && battleManager.ActionCoroutine == null;
+    }
+
 }

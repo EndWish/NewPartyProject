@@ -32,13 +32,13 @@ public class BattleManager : MonoBehaviourPunCallbacksSingleton<BattleManager>
     private DungeonNodeInfo dungeonNodeInfo;
     public int Wave { get; private set; } = 0;
 
-    public Unit UnitOfTurn { get; private set; } = null;
+    private Unit unitOfTurn = null;
     public Unit UnitClicked { get; set; } = null;
     public Unit UnitOnMouse { get; set; } = null;
 
     // 개인 정보 //////////////////////////////////////////////////////////////
     private bool isAllLoaded = false;
-    
+    public IEnumerator ActionCoroutine { get; set; } = null;
 
     // 유니티 함수 ////////////////////////////////////////////////////////////
     protected override void Awake() {
@@ -131,6 +131,7 @@ public class BattleManager : MonoBehaviourPunCallbacksSingleton<BattleManager>
 
         // (웨이브 준비 -> 웨이브) 반복
         while (true) {
+            // 웨이브 준비 ////////////////////////////////////////////////////
             #region 웨이브 준비
 
             // 파티 스킬 횟수 초기화
@@ -152,8 +153,7 @@ public class BattleManager : MonoBehaviourPunCallbacksSingleton<BattleManager>
 
             #endregion
 
-            #region 다음 웨이브 시작
-
+            // 다음 웨이브 시작 ///////////////////////////////////////////////
             ++Wave;
             #region (방장)적 파티 생성하기
             if (PhotonNetwork.IsMasterClient) {
@@ -182,58 +182,74 @@ public class BattleManager : MonoBehaviourPunCallbacksSingleton<BattleManager>
                 AddParty(enemyParty, TeamType.Enemy);
             }
             #endregion
-            #region 행동 게이지 랜덤으로 세팅
-            ActionAllUnit((unit) => { unit.ActionGauge = UnityEngine.Random.Range(0, Unit.MaxActionGauge); });
-            #endregion
-            #region 토큰 생성하기
-            for (int i = 0; i < 3; ++i) {
-                ActionAllUnit((unit) => { unit.CreateRandomToken(); });
-                yield return new WaitForSeconds(0.5f);
+
+            // (방장) 행동 게이지 랜덤으로 세팅
+            // (방장) 토큰 생성하기
+            if (PhotonNetwork.IsMasterClient) {
+                ActionAllUnit((unit) => { unit.ActionGauge = UnityEngine.Random.Range(0, Unit.MaxActionGauge); });
+                
+                for (int i = 0; i < 3; ++i) {
+                    ActionAllUnit((unit) => { unit.CreateRandomToken(); });
+                    yield return new WaitForSeconds(0.5f);
+                }
             }
 
-            #endregion
-
-            // 턴 반복
+            // 턴 반복 ////////////////////////////////////////////////////////
             while (true) {
 
+                // (방장) 턴 계산 및 토큰 지급
+                if (PhotonNetwork.IsMasterClient) {
+                    // 누구의 턴인지 찾고 행동 게이지를 수정해 준다.
+                    UnitOfTurn = CalculateUnitOfTurn();
+                    float gaugeFillingTime = (Unit.MaxActionGauge - UnitOfTurn.ActionGauge) / MathF.Max(UnitOfTurn.GetFinalStat(StatType.Speed), 0.0001f);
+                    ActionAllUnit((unit) => {
+                        unit.ActionGauge += gaugeFillingTime * unit.GetFinalStat(StatType.Speed);
+                    });
+                    UnitOfTurn.ActionGauge = 0;
 
-                #region 턴 시작 및 토큰 지급
-                // 누구의 턴인지 찾고 행동 게이지를 수정해 준다.
-                UnitOfTurn = GetUnitOfTurn();
-                float gaugeFillingTime = (Unit.MaxActionGauge - UnitOfTurn.ActionGauge) / MathF.Min(UnitOfTurn.GetFinalStat(StatType.Speed), 0.0001f);
-                ActionAllUnit((unit) => {
-                    unit.ActionGauge += gaugeFillingTime * unit.GetFinalStat(StatType.Speed);
-                });
-                UnitOfTurn.ActionGauge = 0;
+                    // 토큰을 지급한다
+                    UnitOfTurn.OnBeginMyTurn?.Invoke(UnitOfTurn);
+                    UnitOfTurn.CreateRandomToken(3);
 
-                // 토큰을 지급한다
-                UnitOfTurn.CreateRandomToken(3);
-
-                #endregion
-
-                #region 토큰 사용 하기
-                while (true) {
-                    // 토큰을 사용하면 루프를 빠져나간다
-                    Debug.Log("토큰 사용을 기다리는 중..");
-                    yield return null;
+                    UsefulMethod.ActionAll(clients, (client) => client.HasLastRpc = true);
                 }
 
-                #endregion
+                // (전부) 턴 계산 및 토큰 지급이 끝날때 까지 대기
+                yield return new WaitUntil(() => { return myClient.HasLastRpc; });
+                myClient.HasLastRpc = false;
+                yield return new WaitUntil(() => { return UsefulMethod.IsAll(clients, (client) => client.HasLastRpc == false); });
 
-                #region 웨이브 클리어/실패 확인
+                // 내 유닛의 턴일 경우 액션 선택하기
+                if (UnitOfTurn.IsMine()) {
+                    ActionCoroutine = null;
+                    while (ActionCoroutine == null) {
+                        yield return null;
+                    }
 
-                #endregion
+                    yield return StartCoroutine(ActionCoroutine);
+                    UnitOfTurn.OnEndMyTurn?.Invoke(UnitOfTurn);
+                    UnitOfTurn = null;
+                    ActionCoroutine = null;
+
+                    UsefulMethod.ActionAll(clients, (client) => client.HasLastRpc = true);
+                }
+
+                // (전부) 대기하기
+                yield return new WaitUntil(() => { return myClient.HasLastRpc; });
+                myClient.HasLastRpc = false;
+                yield return new WaitUntil(() => { return UsefulMethod.IsAll(clients, (client) => client.HasLastRpc == false); });
+
+                // (방장) 웨이브 클리어/실패 확인
+
 
                 yield return null;
             }
 
-            #endregion
         }
 
     }
 
-    [PunRPC]
-    private void IsAllLoadedRPC(bool result) {
+    [PunRPC] private void IsAllLoadedRPC(bool result) {
         isAllLoaded = result;
     }
     public bool IsAllLoaded {
@@ -241,8 +257,7 @@ public class BattleManager : MonoBehaviourPunCallbacksSingleton<BattleManager>
         set { photonView.RPC("IsAllLoadedRPC", RpcTarget.All, value); }
     }
 
-    [PunRPC]
-    private void AddPartyRPC(int partyViewId, TeamType teamType) {
+    [PunRPC] private void AddPartyRPC(int partyViewId, TeamType teamType) {
         Party party = PhotonView.Find(partyViewId).GetComponent<Party>();
         Parties[(int)teamType].Add(party);
         party.MySortingGroup.sortingOrder = -(Parties[(int)teamType].Count - 1);
@@ -300,12 +315,30 @@ public class BattleManager : MonoBehaviourPunCallbacksSingleton<BattleManager>
         }
     }
 
-    private Unit GetUnitOfTurn() {
+    [PunRPC] private void UnitOfTurnRPC(int viewId) {
+        
+        if (viewId == -1) {
+            unitOfTurn = null;
+            Debug.Log(Time.frameCount + " UnitOfTurnRPC = null");
+            return;
+        }
+        unitOfTurn = PhotonView.Find(viewId).GetComponent<Unit>();
+        Debug.Log(Time.frameCount + " UnitOfTurnRPC = " + unitOfTurn.photonView.ViewID);
+    }
+    public Unit UnitOfTurn {
+        get { return unitOfTurn; }
+        private set { 
+            unitOfTurn = value;
+            photonView.RPC("UnitOfTurnRPC", RpcTarget.Others, value?.photonView.ViewID ?? -1); 
+        }
+    }
+
+    private Unit CalculateUnitOfTurn() {
         Unit result = null;
         float minTime = float.MaxValue;
         ActionAllUnit((unit) => {
             float unitSpeed = unit.GetFinalStat(StatType.Speed);
-            float time = (Unit.MaxActionGauge - unit.ActionGauge) / MathF.Min(unitSpeed, 0.0001f); // 게이지를 다 채우는데 걸리는 시간, 0으로 나누는 것을 방지
+            float time = (Unit.MaxActionGauge - unit.ActionGauge) / MathF.Max(unitSpeed, 0.0001f); // 게이지를 다 채우는데 걸리는 시간, 0으로 나누는 것을 방지
             if(time < minTime || (time == minTime && result.GetFinalStat(StatType.Speed) > unit.GetFinalStat(StatType.Speed))) {
                 result = unit;
                 minTime = time;

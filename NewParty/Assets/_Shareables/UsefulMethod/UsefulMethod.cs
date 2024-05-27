@@ -30,5 +30,10 @@ public class UsefulMethod
         }
         return true;
     }
+    static public void ActionAll<T>(IEnumerable<T> targets, Action<T> action) {
+        foreach (T target in targets) {
+            action.Invoke(target);
+        }
+    }
 
 }

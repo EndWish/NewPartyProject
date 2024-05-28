@@ -41,6 +41,9 @@ TagManager:
   - name: Background
     uniqueID: 2100283845
     locked: 0
+  - name: Party
+    uniqueID: 430397547
+    locked: 0
   - name: Unit
     uniqueID: 3108743727
     locked: 0

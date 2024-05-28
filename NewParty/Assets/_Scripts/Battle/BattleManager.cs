@@ -21,11 +21,14 @@ public class BattleManager : MonoBehaviourPunCallbacksSingleton<BattleManager>
 #endif
     #endregion
 
+    public string TestBattlePage = "";
+
     [SerializeField] private Transform playerPartyPos;
     [SerializeField] private Transform enemyPartyPos;
     [SerializeField] private SpriteRenderer backgroundRenderer;
 
     [SerializeField] private RestSkillManager restSkillManager;
+    [SerializeField] private GameObject nextWaveBtn;
 
     public List<Party>[] Parties { get; private set; } = new List<Party>[(int)TeamType.Num];
 
@@ -37,6 +40,7 @@ public class BattleManager : MonoBehaviourPunCallbacksSingleton<BattleManager>
     public Unit UnitOnMouse { get; set; } = null;
 
     // 개인 정보 //////////////////////////////////////////////////////////////
+    private int syncCount = 0;
     private bool isAllLoaded = false;
     public IEnumerator ActionCoroutine { get; set; } = null;
 
@@ -71,8 +75,9 @@ public class BattleManager : MonoBehaviourPunCallbacksSingleton<BattleManager>
 
     IEnumerator CoRun() {
 
-    #region ForTest
+        #region ForTest
 #if DEVELOPMENT_BUILD || UNITY_EDITOR
+        TestBattlePage = "방에 접속할대 까지 대기중...";
         yield return new WaitUntil(() => PhotonNetwork.InRoom);
 #endif
     #endregion
@@ -81,9 +86,10 @@ public class BattleManager : MonoBehaviourPunCallbacksSingleton<BattleManager>
         ClientData myClient = GameManager.Instance.MyClientData;
 
         #region 나의 파티 생성하기
+        TestBattlePage = "나의 파티 생성중...";
         Party myParty = PhotonNetwork.Instantiate("Prefabs/Battles/Party", Vector3.zero, Quaternion.identity).GetComponent<Party>();
         foreach (Unit partyUnit in UserData.Instance.PartyUnitList) {
-            if(partyUnit == null)
+            if (partyUnit == null)
                 continue;
 
             Unit.Data unitData = partyUnit.MyData;
@@ -94,9 +100,10 @@ public class BattleManager : MonoBehaviourPunCallbacksSingleton<BattleManager>
         AddParty(myParty, TeamType.Player);
         #endregion
 
-        
+
 
         #region 로딩 처리
+        TestBattlePage = "로딩중...";
         // 확인 메시지 보내기
         myClient.HasLastRpc = true;
 
@@ -133,16 +140,17 @@ public class BattleManager : MonoBehaviourPunCallbacksSingleton<BattleManager>
         while (true) {
             // 웨이브 준비 ////////////////////////////////////////////////////
             #region 웨이브 준비
-
+            TestBattlePage = "웨이브 준비 시작...";
             // 파티 스킬 횟수 초기화
             foreach (var party in Parties[(int)TeamType.Player])
                 party.RemainRestSkill = 1;
 
-            // 파티 스킬 UI 활성화, [추가]다음 웨이브 버튼 활성화
+            // 파티 스킬 UI 활성화, 다음 웨이브 버튼 활성화
             restSkillManager.gameObject.SetActive(true);
-
+            nextWaveBtn.SetActive(true);
 
             // 모든 플레이어가 다음 웨이브 버튼을 누를 때 까지 대기
+            TestBattlePage = "모든 플레이어가 다음 웨이브 버튼을 누를 때 까지 대기중...";
             yield return new WaitUntil( () => { 
                 return UsefulMethod.IsAll(clients, (client) => client.IsReady); 
             });
@@ -150,6 +158,7 @@ public class BattleManager : MonoBehaviourPunCallbacksSingleton<BattleManager>
 
             // 웨이브 준비에서만 사용되는 UI들 비활성화
             restSkillManager.gameObject.SetActive(false);
+            nextWaveBtn.SetActive(false);
 
             #endregion
 
@@ -157,6 +166,7 @@ public class BattleManager : MonoBehaviourPunCallbacksSingleton<BattleManager>
             ++Wave;
             #region (방장)적 파티 생성하기
             if (PhotonNetwork.IsMasterClient) {
+                TestBattlePage = "적 파티 생성중";
                 Party enemyParty = PhotonNetwork.Instantiate("Prefabs/Battles/Party", Vector3.zero, Quaternion.identity).GetComponent<Party>();
 
 
@@ -186,6 +196,7 @@ public class BattleManager : MonoBehaviourPunCallbacksSingleton<BattleManager>
             // (방장) 행동 게이지 랜덤으로 세팅
             // (방장) 토큰 생성하기
             if (PhotonNetwork.IsMasterClient) {
+                TestBattlePage = "행동 게이지 세팅 및 토큰 생성중...";
                 ActionAllUnit((unit) => { unit.ActionGauge = UnityEngine.Random.Range(0, Unit.MaxActionGauge); });
                 
                 for (int i = 0; i < 3; ++i) {
@@ -199,6 +210,7 @@ public class BattleManager : MonoBehaviourPunCallbacksSingleton<BattleManager>
 
                 // (방장) 턴 계산 및 토큰 지급
                 if (PhotonNetwork.IsMasterClient) {
+                    TestBattlePage = "턴 계산 및 토큰 지급중...";
                     // 누구의 턴인지 찾고 행동 게이지를 수정해 준다.
                     UnitOfTurn = CalculateUnitOfTurn();
                     float gaugeFillingTime = (Unit.MaxActionGauge - UnitOfTurn.ActionGauge) / MathF.Max(UnitOfTurn.GetFinalStat(StatType.Speed), 0.0001f);
@@ -211,33 +223,46 @@ public class BattleManager : MonoBehaviourPunCallbacksSingleton<BattleManager>
                     UnitOfTurn.OnBeginMyTurn?.Invoke(UnitOfTurn);
                     UnitOfTurn.CreateRandomToken(3);
 
-                    UsefulMethod.ActionAll(clients, (client) => client.HasLastRpc = true);
+                    RaiseSyncCount();
+                    //UsefulMethod.ActionAll(clients, (client) => client.HasLastRpc = true);
                 }
 
                 // (전부) 턴 계산 및 토큰 지급이 끝날때 까지 대기
-                yield return new WaitUntil(() => { return myClient.HasLastRpc; });
-                myClient.HasLastRpc = false;
-                yield return new WaitUntil(() => { return UsefulMethod.IsAll(clients, (client) => client.HasLastRpc == false); });
+                TestBattlePage = "턴 계산 및 토큰 지급이 끝날때 까지 대기중...";
+                yield return new WaitUntil(() => { return 0 < SyncCount; });
+                DownSyncCount();
+                //yield return new WaitUntil(() => { return myClient.HasLastRpc; });
+                //myClient.HasLastRpc = false;
+                //yield return new WaitUntil(() => { return UsefulMethod.IsAll(clients, (client) => client.HasLastRpc == false); });
 
                 // 내 유닛의 턴일 경우 액션 선택하기
                 if (UnitOfTurn.IsMine()) {
+                    TestBattlePage = "내 유닛의 턴...";
                     ActionCoroutine = null;
+                    TestBattlePage = "액션 코루틴이 설정되기를 기다리는 중...";
                     while (ActionCoroutine == null) {
                         yield return null;
                     }
 
+                    TestBattlePage = "액션 코루틴 실행중...";
                     yield return StartCoroutine(ActionCoroutine);
+                    TestBattlePage = "액션 코루틴 실행끝";
                     UnitOfTurn.OnEndMyTurn?.Invoke(UnitOfTurn);
                     UnitOfTurn = null;
                     ActionCoroutine = null;
 
-                    UsefulMethod.ActionAll(clients, (client) => client.HasLastRpc = true);
+                    RaiseSyncCount();
+                    //UsefulMethod.ActionAll(clients, (client) => client.HasLastRpc = true);
                 }
 
                 // (전부) 대기하기
-                yield return new WaitUntil(() => { return myClient.HasLastRpc; });
-                myClient.HasLastRpc = false;
-                yield return new WaitUntil(() => { return UsefulMethod.IsAll(clients, (client) => client.HasLastRpc == false); });
+                TestBattlePage = "액션 코루틴 실행 종료를 동기화중...";
+                yield return new WaitUntil(() => { return 0 < SyncCount; });
+                DownSyncCount();
+                //yield return new WaitUntil(() => { return myClient.HasLastRpc; });
+                //myClient.HasLastRpc = false;
+                //yield return new WaitUntil(() => { return UsefulMethod.IsAll(clients, (client) => client.HasLastRpc == false); });
+                TestBattlePage = "액션 코루틴 실행 종료를 동기화 완료";
 
                 // (방장) 웨이브 클리어/실패 확인
 
@@ -247,6 +272,19 @@ public class BattleManager : MonoBehaviourPunCallbacksSingleton<BattleManager>
 
         }
 
+    }
+
+    [PunRPC] private void RaiseSyncCountRPC() {
+        ++syncCount;
+    }
+    public void RaiseSyncCount() {
+        photonView.RPC("RaiseSyncCountRPC", RpcTarget.All);
+    }
+    public void DownSyncCount() {
+        --syncCount;
+    }
+    public int SyncCount {
+        get { return syncCount; }
     }
 
     [PunRPC] private void IsAllLoadedRPC(bool result) {
@@ -260,7 +298,6 @@ public class BattleManager : MonoBehaviourPunCallbacksSingleton<BattleManager>
     [PunRPC] private void AddPartyRPC(int partyViewId, TeamType teamType) {
         Party party = PhotonView.Find(partyViewId).GetComponent<Party>();
         Parties[(int)teamType].Add(party);
-        party.MySortingGroup.sortingOrder = -(Parties[(int)teamType].Count - 1);
         party.OnSetTeam(teamType);
     }
     public void AddParty(Party party, TeamType teamType) {
@@ -279,7 +316,6 @@ public class BattleManager : MonoBehaviourPunCallbacksSingleton<BattleManager>
         Parties[(int)teamType].Rotate(rightOffset);
         for(int i = 0; i < Parties[(int)teamType].Count; ++i) {
             Party party = Parties[(int)teamType][i];
-            party.MySortingGroup.sortingOrder = -i;
         }
     }
 

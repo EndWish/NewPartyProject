@@ -11,6 +11,8 @@ using System.IO;
 using System.Runtime.InteropServices;
 using TMPro;
 using Unity.VisualScripting;
+using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
 public enum UnitType : int
 {
@@ -34,7 +36,7 @@ public enum StatForm
     Num
 }
 
-public class Unit : MonoBehaviourPun
+public class Unit : MonoBehaviourPun, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler
 {
     // 서브 클래스 ////////////////////////////////////////////////////////////
     [Serializable]
@@ -82,7 +84,9 @@ public class Unit : MonoBehaviourPun
     [SerializeField] protected Token tokenPrefab;
     [SerializeField] protected Transform tokensParent;
     [SerializeField] protected TextMeshProUGUI growthLevelText;
-    public SpriteRenderer profileRenderer;
+
+    [SerializeField] protected Image flagBorderImage;
+    public Image profileImage;
 
     [SerializeField] protected RectTransform actionGaugeFill;
     [SerializeField] protected RectTransform hpGaugeFill;
@@ -135,6 +139,7 @@ public class Unit : MonoBehaviourPun
     }
 
     protected void Update() {
+        // 위치
         if (TeamType != TeamType.None) {
             Vector3 pos = Vector3.zero;
 
@@ -143,7 +148,7 @@ public class Unit : MonoBehaviourPun
             else if (TeamType == TeamType.Enemy) sign = 1;
 
             int index = GetIndex();
-            pos += new Vector3(1.5f * sign * index, 0, 0); // 갈수록 작아지도록 하고 싶다
+            pos += new Vector3(1.5f * sign * index, 0, -1); // 갈수록 작아지도록 하고 싶다
 
             transform.localPosition = Vector3.MoveTowards(transform.localPosition, pos, 10f * Time.deltaTime);
         }
@@ -152,6 +157,19 @@ public class Unit : MonoBehaviourPun
         hpGaugeFill.localScale = new Vector3(Hp / GetFinalStat(StatType.Hpm), 1, 1);
         hpGaugeBgFill.localScale = new Vector3(MathF.Max(hpGaugeBgFill.localScale.x - Time.deltaTime * 2, hpGaugeFill.localScale.x), 1, 1);
         actionGaugeFill.localScale = new Vector3(ActionGauge / MaxActionGauge, 1, 1);
+
+        // 크기
+        if (HasTurn()) {
+            transform.localScale = Vector3.MoveTowards(transform.localScale, Vector3.one * 1.3f, Time.deltaTime * 2f);
+        } else {
+            transform.localScale = Vector3.MoveTowards(transform.localScale, Vector3.one, Time.deltaTime * 2f);
+        }
+
+        // 깃발 테두기 색상
+        if (IsClicked()) { flagBorderImage.color = new Color(1, 1, 0); }
+        else if (IsOverOnMouse()) { flagBorderImage.color = new Color(1, 0.7f, 0); }
+        else { flagBorderImage.color = new Color(1, 1, 1); }
+
     }
 
     // 함수 ///////////////////////////////////////////////////////////////////
@@ -172,6 +190,23 @@ public class Unit : MonoBehaviourPun
     }
     [PunRPC] protected void ActionGaugeRPC(float value) {
         actionGauge = value;
+    }
+
+    // 클릭 관련 함수
+    public void OnPointerClick(PointerEventData eventData) {
+        BattleManager battleManager = BattleManager.Instance;
+        if (battleManager.UnitClicked == this)
+            battleManager.UnitClicked = null;
+        else
+            battleManager.UnitClicked = this;
+    }
+    public void OnPointerEnter(PointerEventData eventData) {
+        BattleManager battleManager = BattleManager.Instance;
+        battleManager.UnitOnMouse = this;
+    }
+    public void OnPointerExit(PointerEventData eventData) {
+        BattleManager battleManager = BattleManager.Instance;
+        battleManager.UnitOnMouse = null;
     }
 
     // 능력치 관련 함수
@@ -310,6 +345,15 @@ public class Unit : MonoBehaviourPun
         RemoveSelectedToken();
         yield return new WaitForSeconds(0.5f);
     }
+    public bool HasTurn() {
+        return BattleManager.Instance.UnitOfTurn == this;
+    }
+    public bool IsClicked() {
+        return BattleManager.Instance.UnitClicked == this;
+    }
+    public bool IsOverOnMouse() {
+        return BattleManager.Instance.UnitOnMouse == this;
+    }
 
     // 유닛의 소유상태를 반환하는 함수
     public bool IsMine() {
@@ -362,9 +406,9 @@ public class Unit : MonoBehaviourPun
     public void OnSetTeam(TeamType type) {
         TeamType = type;
         if(TeamType == TeamType.Player) {
-            profileRenderer.flipX = false;
+            profileImage.transform.localScale = new Vector3(1, 1, 1);
         } else if(TeamType == TeamType.Enemy) {
-            profileRenderer.flipX = true;
+            profileImage.transform.localScale = new Vector3(-1, 1, 1);
         }
     }
     public int GetIndex() {

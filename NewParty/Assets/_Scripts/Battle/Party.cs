@@ -11,7 +11,6 @@ public class Party : MonoBehaviourPunCallbacks, IScrollHandler
 {
     // 연결 정보 //////////////////////////////////////////////////////////////
     public List<Unit> Units { get; private set; } = new List<Unit>();
-    public SortingGroup MySortingGroup { get; private set; }
     private BoxCollider2D boxCollider2d;
 
     // 개인 정보 //////////////////////////////////////////////////////////////
@@ -21,7 +20,6 @@ public class Party : MonoBehaviourPunCallbacks, IScrollHandler
 
     // 유니티 함수 ////////////////////////////////////////////////////////////
     private void Awake() {
-        MySortingGroup = GetComponent<SortingGroup>();
         boxCollider2d = GetComponent<BoxCollider2D>();
     }
 

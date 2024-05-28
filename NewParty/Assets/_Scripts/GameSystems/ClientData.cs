@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
@@ -9,6 +10,7 @@ public class ClientData : MonoBehaviourPun
     private bool isReady = false;
     private bool hasLastRpc = false;
     private bool isLoaded  = false;
+    
 
     private void Start() {
         Nickname = photonView.Owner.NickName;

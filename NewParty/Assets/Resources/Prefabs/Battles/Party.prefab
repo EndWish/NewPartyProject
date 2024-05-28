@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 1703287881704463925}
   - component: {fileID: 48656766357824707}
   - component: {fileID: 1344239673766551862}
-  - component: {fileID: 2190351450624766772}
   m_Layer: 0
   m_Name: Party
   m_TagString: Untagged
@@ -99,7 +98,7 @@ BoxCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: -2.25, y: 0}
@@ -115,15 +114,3 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 5.5, y: 2}
   m_EdgeRadius: 0
---- !u!210 &2190351450624766772
-SortingGroup:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5243603815992260820}
-  m_Enabled: 1
-  m_SortingLayerID: -1186223569
-  m_SortingLayer: -1
-  m_SortingOrder: 0
-  m_SortAtRoot: 0

@@ -18,7 +18,7 @@ public class UnitSlot : PageViewSlot<Unit>
             profileImage.color = new Color(0, 0, 0, 0);
         }
         else {
-            profileImage.sprite = unit.profileRenderer.sprite;
+            profileImage.sprite = unit.profileImage.sprite;
             profileImage.color = Color.white;
         }
 

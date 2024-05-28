@@ -31,7 +31,7 @@ public class UnitInventorySlot : UnitSlot, IBeginDragHandler, IEndDragHandler, I
     }
 
     public void OnBeginDrag(PointerEventData eventData) {
-        dragImg.sprite = Data?.profileRenderer.sprite;
+        dragImg.sprite = Data?.profileImage.sprite;
         dragImg.gameObject.SetActive(true);
     }
 

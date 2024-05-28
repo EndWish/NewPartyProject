@@ -32,6 +32,9 @@ public abstract class ActionBtn : MonoBehaviour
         }
     }
 
+    protected bool MeetActiveBasicCondition() {
+        return targetUnit != null && targetUnit.HasTurn() && targetUnit.IsMine();
+    }
     public virtual void OnActive() {
         bg.color = activedBgColor;
     }
@@ -39,15 +42,17 @@ public abstract class ActionBtn : MonoBehaviour
         bg.color = disactivedBgColor;
     }
 
-    public abstract void OnClick();
-
-    public virtual bool MeetClickCondition() {
+    protected virtual bool MeetClickCondition() {
         BattleManager battleManager = BattleManager.Instance;
-        Debug.Log("targetUnit.IsMine() : " + targetUnit.IsMine()
+        Debug.Log("targetUnit.IsMine() : " + targetUnit?.IsMine()
             + "\n targetUnit == battleManager.UnitOfTurn : " + (targetUnit == battleManager.UnitOfTurn)
              + "\n battleManager.ActionCoroutine == null : " + (battleManager.ActionCoroutine == null));
 
-        return targetUnit.IsMine() && targetUnit == battleManager.UnitOfTurn && battleManager.ActionCoroutine == null;
+        return targetUnit != null && targetUnit.IsMine() && targetUnit == battleManager.UnitOfTurn && battleManager.ActionCoroutine == null;
     }
+    public abstract void OnClick();
+    
+
+    
 
 }

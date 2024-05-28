@@ -7,7 +7,7 @@ public class DiscardActionBtn : FixedActionBtn
     protected override void UpdateBtn() {
         BattleManager battleManager = BattleManager.Instance;
 
-        if (targetUnit == null || targetUnit != battleManager.UnitOfTurn) {
+        if (!MeetActiveBasicCondition()) {
             Active = false;
             return;
         }

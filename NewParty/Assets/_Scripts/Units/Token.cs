@@ -79,7 +79,9 @@ public class Token : MonoBehaviour, IPointerClickHandler
     }
 
     public void OnPointerClick(PointerEventData eventData) {
-        IsSelected = !IsSelected;
+        if (Owner.IsMine() && Owner.HasTurn()) {
+            IsSelected = !IsSelected;
+        }
     }
 
     public void OnEndOwnerTurn(Unit owner) {

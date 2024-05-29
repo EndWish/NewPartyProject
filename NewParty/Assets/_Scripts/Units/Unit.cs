@@ -22,9 +22,9 @@ public enum UnitType : int
 public enum StatType
 {
 
-    //체력, 속도, 공격력, 스택 공격력, 방어 관통력, 치명타 확률, 치명타 배율, 방어력, 실드, 스택 실드, 명중, 회피, 치유력, 토큰 지분(3종류)
+    //체력, 속도, 공격력, 스택 공격력, 스킬 공격력, 방어 관통력, 치명타 확률, 치명타 배율, 방어력, 실드, 스택 실드, 명중, 회피, 치유력, 토큰 지분(3종류)
     Hpm, Speed, Str, StackStr, SkillStr, DefPen, CriCha, CriMul, Def, Shield, StackShield, Acc, Avoid, Healing,
-    AtkTokenShare, SkillTokenShare, ShiledTokenShare,
+    AtkTokenWeight, SkillTokenWeight, ShieldTokenWeight,
 
     Num
 }
@@ -286,13 +286,13 @@ public class Unit : MonoBehaviourPun, IPointerClickHandler, IPointerEnterHandler
         if (Tokens.Count >= maxTokens)  // 최대개수를 넘어서 얻을 수 없다.
             return;
 
-        float sum = GetFinalStat(StatType.AtkTokenShare) + GetFinalStat(StatType.SkillTokenShare) + GetFinalStat(StatType.ShiledTokenShare);
+        float sum = GetFinalStat(StatType.AtkTokenWeight) + GetFinalStat(StatType.SkillTokenWeight) + GetFinalStat(StatType.ShieldTokenWeight);
         float random = UnityEngine.Random.Range(0f, sum);
 
         TokenType type = TokenType.None;
-        if (random <= GetFinalStat(StatType.AtkTokenShare))
+        if (random <= GetFinalStat(StatType.AtkTokenWeight))
             type = TokenType.Atk;
-        else if(random <= GetFinalStat(StatType.AtkTokenShare) + GetFinalStat(StatType.SkillTokenShare))
+        else if(random <= GetFinalStat(StatType.AtkTokenWeight) + GetFinalStat(StatType.SkillTokenWeight))
             type = TokenType.Skill;
         else 
             type = TokenType.Shield;
@@ -416,7 +416,7 @@ public class Unit : MonoBehaviourPun, IPointerClickHandler, IPointerEnterHandler
     }
 
     // 기타
-    protected string GetGrowthLevelStr() {
+    public string GetGrowthLevelStr() {
         return 0 <= GrowthLevel ? ("+" + GrowthLevel.ToString()) : GrowthLevel.ToString();
     }
 

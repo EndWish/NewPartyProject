@@ -5,12 +5,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEditor;
-using System.Runtime.InteropServices.WindowsRuntime;
-using System.Linq;
 using System.IO;
-using System.Runtime.InteropServices;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
@@ -99,12 +95,16 @@ public class Unit : MonoBehaviourPun, IPointerClickHandler, IPointerEnterHandler
     // 저장에 필요한 변수
     public Data MyData;
 
+    // 상태를 나타내는 변수
+    private bool isDie = false;
+    private Unit murderer = null;
+
     // 능력치 관련 변수
     [SerializeField, EnumNamedArrayAttribute(typeof(StatType))] protected float[] initStats = new float[(int)StatType.Num];
     protected float[,] stats = new float[(int)StatForm.Num, (int)StatType.Num];
     public UnityAction<Unit>[] OnUpdateFinalStat = new UnityAction<Unit>[(int)StatType.Num];
 
-    public float Hp { get; set; }
+    protected float hp;
     public UnityAction<Unit, Ref<float>> OnRecoverHp;   // 유닛, 회복량
     public UnityAction<Unit, float, float> OnRecoveredHp;   // 유닛, 회복량, 초과량
 
@@ -129,12 +129,15 @@ public class Unit : MonoBehaviourPun, IPointerClickHandler, IPointerEnterHandler
     // 배틀페이지와 관련한 이벤트 변수
     public UnityAction<Unit> OnBeginMyTurn, OnEndMyTurn;
 
+    // 전투 관련 코루틴 변수
+    public Func<Unit, IEnumerator> CoOnDie;
+
     // 유니티 함수 ////////////////////////////////////////////////////////////
     protected void Awake() {
         growthLevelText.text = GetGrowthLevelStr();
         UpdateAllStat();
 
-        Hp = GetFinalStat(StatType.Hpm);
+        hp = GetFinalStat(StatType.Hpm);
         actionGauge = 0;
     }
 
@@ -173,7 +176,6 @@ public class Unit : MonoBehaviourPun, IPointerClickHandler, IPointerEnterHandler
     }
 
     // 함수 ///////////////////////////////////////////////////////////////////
-    // 프로퍼티
     public int GrowthLevel {
         get { return MyData.GrowthLevel; }
         set { 
@@ -182,6 +184,7 @@ public class Unit : MonoBehaviourPun, IPointerClickHandler, IPointerEnterHandler
             UpdateBaseStat(true);
         }
     }
+
     public float ActionGauge { 
         get { return actionGauge; }
         set {
@@ -194,6 +197,9 @@ public class Unit : MonoBehaviourPun, IPointerClickHandler, IPointerEnterHandler
 
     // 클릭 관련 함수
     public void OnPointerClick(PointerEventData eventData) {
+        if (BattleSelectable.IsRunning)
+            return;
+
         BattleManager battleManager = BattleManager.Instance;
         if (battleManager.UnitClicked == this)
             battleManager.UnitClicked = null;
@@ -339,12 +345,35 @@ public class Unit : MonoBehaviourPun, IPointerClickHandler, IPointerEnterHandler
 
     // 행동 관련 함수
     public IEnumerator CoPassAction() {
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(0.3f);
     }
     public IEnumerator CoDiscardAction() {
         RemoveSelectedToken();
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(0.3f);
     }
+    public IEnumerator CoBasicAtk() {
+        Debug.Log("CoBasicAtk 시작");
+        // 토큰을 개수를 세고 삭제한다
+        int tokenStack = Tokens.FindAll(token => token.IsSelected).Count;
+        RemoveSelectedToken();
+
+        // 공격을 생성한다
+        Unit target = BattleSelectable.Units[0];
+        BasicAttack attack = PhotonNetwork.Instantiate(GameManager.GetAttackPrefabPath() + "BasicAttack",
+            target.transform.position, Quaternion.identity)
+            .GetComponent<BasicAttack>();
+        attack.Init(this, target, tokenStack);
+
+        yield return StartCoroutine(attack.Animate());
+        Debug.Log("CoBasicAtk 종료");
+    }
+    public void UseBasicAtk() {
+        BattleManager.Instance.ActionCoroutine = CoBasicAtk();
+    }
+    public bool BasicAtkSelectionPred(Unit unit) {
+        return this.TeamType != unit.TeamType;
+    }
+
     public bool HasTurn() {
         return BattleManager.Instance.UnitOfTurn == this;
     }
@@ -377,10 +406,36 @@ public class Unit : MonoBehaviourPun, IPointerClickHandler, IPointerEnterHandler
         }
     }
 
-    // 체력 회복
-    [PunRPC] private void RecoverHpRPC(float mount) {
-        Hp += mount;
+    // 전투관련 함수
+    public bool IsDie {
+        get { return isDie; }
+        set { photonView.RPC("DieRPC", RpcTarget.All, value); }
     }
+    [PunRPC] private void DieRPC(bool value) {
+        isDie = value;
+    }
+
+    public Unit Murderer { 
+        get { return murderer; }
+        set {
+            murderer = value;
+            photonView.RPC("MurdererRPC", RpcTarget.Others, value.photonView.ViewID); 
+        }
+    }
+    [PunRPC] private void MurdererRPC(int viewId) {
+        murderer = viewId == -1 ? null : PhotonView.Find(viewId).GetComponent<Unit>();
+    }
+
+    public float Hp {  
+        get { return hp; } 
+        set { photonView.RPC("HpRPC", RpcTarget.All, value); } 
+    }
+    [PunRPC] private void HpRPC(float value) {
+        hp = value;
+    }
+
+    public float RemainHp { get { return GetFinalStat(StatType.Hpm) - hp; } }
+
     public void RecoverHp(float baseAmount) {
         Ref<float> amount = new Ref<float>(baseAmount);
 
@@ -396,10 +451,25 @@ public class Unit : MonoBehaviourPun, IPointerClickHandler, IPointerEnterHandler
         }
 
         // Hp에 적용
-        photonView.RPC("RecoverHpRPC", RpcTarget.All, amount.Value);
+        Hp += amount.Value;
 
         // 회복되었을 때 
         OnRecoveredHp?.Invoke(this, amount.Value, overAmount);
+    }
+
+    public IEnumerator TakeDmg(float dmg, DamageCalculator damageCalculator) {
+        if (IsDie)
+            yield break;
+
+        Hp -= dmg;
+
+        if(Hp <= 0) {
+            IsDie = true;
+            Murderer = damageCalculator.Attacker;
+
+            foreach (Func<Unit,IEnumerator> func in CoOnDie?.GetInvocationList())
+                yield return StartCoroutine(func(this));
+        }
     }
 
     // 파티 관련 함수

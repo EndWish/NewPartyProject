@@ -5,16 +5,19 @@ using UnityEngine.UI;
 
 public abstract class ActionBtn : MonoBehaviour
 {
-    [SerializeField] protected Image bg;
+    [SerializeField] protected Image bgImg;
     protected Color activedBgColor;
     protected Color disactivedBgColor;
 
     protected Unit targetUnit;
 
+    [SerializeField] protected Image outlineImg;
+    private Unit actionUnit;
+
     private bool active = true;
 
     protected virtual void Awake() {
-        activedBgColor = bg.color;
+        activedBgColor = bgImg.color;
         disactivedBgColor = new Color(0.2f, 0.2f, 0.2f);
     }
 
@@ -31,15 +34,25 @@ public abstract class ActionBtn : MonoBehaviour
                 OnDisactive();
         }
     }
+    protected Unit ActionUnit {
+        get { return actionUnit; }
+        set { 
+            actionUnit = value;
+            if (actionUnit == null)
+                outlineImg.color = new Color(1, 1, 1);
+            else
+                outlineImg.color = new Color(1, 1, 0);
+        }
+    }
 
     protected bool MeetActiveBasicCondition() {
         return targetUnit != null && targetUnit.HasTurn() && targetUnit.IsMine();
     }
     public virtual void OnActive() {
-        bg.color = activedBgColor;
+        bgImg.color = activedBgColor;
     }
     public virtual void OnDisactive() {
-        bg.color = disactivedBgColor;
+        bgImg.color = disactivedBgColor;
     }
 
     protected virtual bool MeetClickCondition() {
@@ -51,8 +64,13 @@ public abstract class ActionBtn : MonoBehaviour
         return targetUnit != null && targetUnit.IsMine() && targetUnit == battleManager.UnitOfTurn && battleManager.ActionCoroutine == null;
     }
     public abstract void OnClick();
-    
 
-    
+    protected virtual void OnCompleteSelection() {
+        ActionUnit = null;
+    }
+    protected virtual void OnCancel() {
+        ActionUnit = null;
+    }
+
 
 }

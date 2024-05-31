@@ -31,6 +31,35 @@ public class AtkActionBtn : FixedActionBtn
     }
 
     public override void OnClick() {
-        throw new System.NotImplementedException();
+        BattleManager battleManager = BattleManager.Instance;
+
+        if (MeetClickCondition()) {
+            if (BattleSelectable.IsRunning) {
+                if (ActionUnit == null) {
+                    BattleSelectable.StopSelectMode();
+                    RunSelectMode();
+                } else {
+                    BattleSelectable.StopSelectMode();
+                }
+            } else {
+                RunSelectMode();
+            }
+
+        }
     }
+
+    protected void RunSelectMode() {
+        ActionUnit = targetUnit;
+
+        BattleSelectable.RunSelectMode(BattleSelectionType.Unit, 1,
+            ActionUnit.BasicAtkSelectionPred,
+            OnCompleteSelection,
+            OnCancel);
+    }
+
+    protected override void OnCompleteSelection() {
+        ActionUnit.UseBasicAtk();
+        base.OnCompleteSelection();
+    }
+
 }

@@ -1832,6 +1832,23 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 668587857}
   m_CullTransparentMesh: 1
+--- !u!1 &685487669 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 285852505442747526, guid: 3da842c263179914899df8f78fffbb9d, type: 3}
+  m_PrefabInstance: {fileID: 5344222582355878655}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &685487676
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 685487669}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b0524e71d3303a40b96f6cee779097c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &730678329
 GameObject:
   m_ObjectHideFlags: 0
@@ -6223,7 +6240,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 2100283845
-  m_SortingLayer: -3
+  m_SortingLayer: -4
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: f0c7d1197b837b74db65096b6c0a46ac, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -6878,6 +6895,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 668587858}
     m_Modifications:
+    - target: {fileID: 5099421613690791977, guid: 7b02fedb265819a49a25b31c6ea6ddeb, type: 3}
+      propertyPath: m_Color.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5099421613690791977, guid: 7b02fedb265819a49a25b31c6ea6ddeb, type: 3}
+      propertyPath: m_Color.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5099421613690791977, guid: 7b02fedb265819a49a25b31c6ea6ddeb, type: 3}
+      propertyPath: m_Color.r
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5526766309134056597, guid: 7b02fedb265819a49a25b31c6ea6ddeb, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -6997,7 +7026,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 285852505442747526, guid: 3da842c263179914899df8f78fffbb9d, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2401045018663173398, guid: 3da842c263179914899df8f78fffbb9d, type: 3}
       propertyPath: sceneViewId
@@ -7047,7 +7076,10 @@ PrefabInstance:
     - {fileID: 7176202129406552274, guid: 3da842c263179914899df8f78fffbb9d, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 285852505442747526, guid: 3da842c263179914899df8f78fffbb9d, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 685487676}
   m_SourcePrefab: {fileID: 100100000, guid: 3da842c263179914899df8f78fffbb9d, type: 3}
 --- !u!224 &5767550467920048882 stripped
 RectTransform:

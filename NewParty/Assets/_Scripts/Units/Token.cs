@@ -79,7 +79,7 @@ public class Token : MonoBehaviour, IPointerClickHandler
     }
 
     public void OnPointerClick(PointerEventData eventData) {
-        if (Owner.IsMine() && Owner.HasTurn()) {
+        if (Owner.IsMine() && Owner.HasTurn() && !BattleSelectable.IsRunning) {
             IsSelected = !IsSelected;
         }
     }

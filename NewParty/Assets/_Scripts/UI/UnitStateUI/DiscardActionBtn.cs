@@ -28,6 +28,7 @@ public class DiscardActionBtn : FixedActionBtn
         BattleManager battleManager = BattleManager.Instance;
 
         if (MeetClickCondition()) {
+            BattleSelectable.StopSelectMode();
             battleManager.ActionCoroutine = targetUnit.CoDiscardAction();
         }
     }

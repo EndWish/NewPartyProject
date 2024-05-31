@@ -201,7 +201,7 @@ public class BattleManager : MonoBehaviourPunCallbacksSingleton<BattleManager>
                 
                 for (int i = 0; i < 3; ++i) {
                     ActionAllUnit((unit) => { unit.CreateRandomToken(); });
-                    yield return new WaitForSeconds(0.5f);
+                    yield return new WaitForSeconds(0.3f);
                 }
             }
 

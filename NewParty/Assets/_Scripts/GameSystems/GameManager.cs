@@ -24,6 +24,9 @@ public class GameManager : MonoBehaviourPunCallbacksSingleton<GameManager>
     static public string GetUnitPrefabPath() {
         return "Prefabs/Units/";
     }
+    static public string GetAttackPrefabPath() {
+        return "Prefabs/Attacks/";
+    }
 
     // 연결 변수 //////////////////////////////////////////////////////////////
     public List<ClientData> ClientDataList { get; protected set; } = new List<ClientData>();

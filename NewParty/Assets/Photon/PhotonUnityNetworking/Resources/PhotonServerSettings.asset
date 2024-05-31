@@ -57,6 +57,9 @@ MonoBehaviour:
   - ActionGaugeRPC
   - UnitOfTurnRPC
   - RaiseSyncCountRPC
+  - DieRPC
+  - HpRPC
+  - MurdererRPC
   DisableAutoOpenWizard: 1
   ShowSettings: 0
   DevRegionSetOnce: 1

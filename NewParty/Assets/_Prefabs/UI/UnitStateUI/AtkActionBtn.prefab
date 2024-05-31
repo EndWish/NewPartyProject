@@ -241,7 +241,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 811fceab2ec3863459a70b75e05f7d78, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bg: {fileID: 5119220246127453447}
+  bgImg: {fileID: 5119220246127453447}
+  outlineImg: {fileID: 5099421613690791977}
 --- !u!114 &4563660854931995389
 MonoBehaviour:
   m_ObjectHideFlags: 0

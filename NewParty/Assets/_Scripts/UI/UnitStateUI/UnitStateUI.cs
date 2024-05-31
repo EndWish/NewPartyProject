@@ -23,7 +23,7 @@ public class UnitStateUI : MonoBehaviour
 
         // 액션 버튼 업데이트
         foreach (var actionBtn in fixedActionBtns) {
-            actionBtn.UpdateBtn(targetUnit);
+            actionBtn.UpdateBtn(battleManager.UnitOfTurn);
         }
 
         // 프로필 업데이트

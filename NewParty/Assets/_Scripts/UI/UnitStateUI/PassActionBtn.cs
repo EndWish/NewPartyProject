@@ -19,6 +19,7 @@ public class PassActionBtn : FixedActionBtn
         BattleManager battleManager = BattleManager.Instance;
 
         if (MeetClickCondition()) {
+            BattleSelectable.StopSelectMode();
             battleManager.ActionCoroutine = targetUnit.CoPassAction();
         }
     }

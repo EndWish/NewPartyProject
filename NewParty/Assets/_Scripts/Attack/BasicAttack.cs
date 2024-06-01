@@ -14,12 +14,6 @@ public class BasicAttack : MonoBehaviourPun
     public int TokenStack { get; set; } = 0;
 
     protected int remainHitNum = 1;
-    
-    private void Update() {
-        if (fx == null) {
-            Destroy(this.gameObject);
-        }
-    }
 
     public BasicAttack Init(Unit caster, Unit target, int tokenStack) {
         Caster = caster;
@@ -32,6 +26,8 @@ public class BasicAttack : MonoBehaviourPun
     public IEnumerator Animate() {
         yield return StartCoroutine(Hit());
         yield return new WaitUntil(() => fx == null);
+
+        PhotonNetwork.Destroy(this.gameObject);
     }
 
     public IEnumerator Hit() {

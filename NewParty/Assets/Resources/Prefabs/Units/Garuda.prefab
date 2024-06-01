@@ -274,6 +274,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 40978b0007ec1c246a1ab5185cb9eccd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  damageTextPrefab: {fileID: 2881550184623929366, guid: f5d1e68190a73d8418c5b39401d9e5c6, type: 3}
   tokenPrefab: {fileID: 8702565092637999532, guid: 882856b875f2a3c4ebca75c3d9971f36, type: 3}
   tokensParent: {fileID: 996433089270864197}
   growthLevelText: {fileID: 6047687233491762427}
@@ -394,7 +395,7 @@ SortingGroup:
   m_GameObject: {fileID: 2956000546201537875}
   m_Enabled: 0
   m_SortingLayerID: -1186223569
-  m_SortingLayer: -2
+  m_SortingLayer: -3
   m_SortingOrder: 0
   m_SortAtRoot: 0
 --- !u!1 &3530754540832985520

@@ -50,6 +50,9 @@ TagManager:
   - name: Attack
     uniqueID: 1655968087
     locked: 0
+  - name: DamageText
+    uniqueID: 1169988583
+    locked: 0
   - name: Default
     uniqueID: 0
     locked: 0

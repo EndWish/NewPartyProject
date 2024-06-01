@@ -3,7 +3,16 @@ guid: 40978b0007ec1c246a1ab5185cb9eccd
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - damageTextPrefab: {fileID: 2881550184623929366, guid: f5d1e68190a73d8418c5b39401d9e5c6, type: 3}
+  - tokenPrefab: {instanceID: 0}
+  - tokensParent: {instanceID: 0}
+  - growthLevelText: {instanceID: 0}
+  - flagBorderImage: {instanceID: 0}
+  - profileImage: {instanceID: 0}
+  - actionGaugeFill: {instanceID: 0}
+  - hpGaugeFill: {instanceID: 0}
+  - hpGaugeBgFill: {instanceID: 0}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

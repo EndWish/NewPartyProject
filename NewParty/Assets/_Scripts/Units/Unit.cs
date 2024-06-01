@@ -77,6 +77,8 @@ public class Unit : MonoBehaviourPun, IPointerClickHandler, IPointerEnterHandler
     static public float MaxActionGauge = 100f;
 
     // 연결 정보 //////////////////////////////////////////////////////////////
+    [SerializeField] protected DamageText damageTextPrefab;
+
     [SerializeField] protected Token tokenPrefab;
     [SerializeField] protected Transform tokensParent;
     [SerializeField] protected TextMeshProUGUI growthLevelText;
@@ -352,7 +354,6 @@ public class Unit : MonoBehaviourPun, IPointerClickHandler, IPointerEnterHandler
         yield return new WaitForSeconds(0.3f);
     }
     public IEnumerator CoBasicAtk() {
-        Debug.Log("CoBasicAtk 시작");
         // 토큰을 개수를 세고 삭제한다
         int tokenStack = Tokens.FindAll(token => token.IsSelected).Count;
         RemoveSelectedToken();
@@ -365,7 +366,6 @@ public class Unit : MonoBehaviourPun, IPointerClickHandler, IPointerEnterHandler
         attack.Init(this, target, tokenStack);
 
         yield return StartCoroutine(attack.Animate());
-        Debug.Log("CoBasicAtk 종료");
     }
     public void UseBasicAtk() {
         BattleManager.Instance.ActionCoroutine = CoBasicAtk();
@@ -462,14 +462,22 @@ public class Unit : MonoBehaviourPun, IPointerClickHandler, IPointerEnterHandler
             yield break;
 
         Hp -= dmg;
+        CreateDmgText((int)dmg, new Vector3(1, 0.92f, 0.016f));
 
-        if(Hp <= 0) {
+        if (Hp <= 0) {
             IsDie = true;
             Murderer = damageCalculator.Attacker;
 
             foreach (Func<Unit,IEnumerator> func in CoOnDie?.GetInvocationList())
                 yield return StartCoroutine(func(this));
         }
+    }
+    [PunRPC] private void CreateDmgTextRPC(int dmg, Vector3 color) {
+        DamageText damageText = Instantiate(damageTextPrefab, transform.position, Quaternion.identity);
+        damageText.SetFormat(dmg, color);
+    }
+    public void CreateDmgText(int dmg, Vector3 color) {
+        photonView.RPC("CreateDmgTextRPC", RpcTarget.All, dmg, color);
     }
 
     // 파티 관련 함수

@@ -46,7 +46,7 @@ public class Token : MonoBehaviour, IPointerClickHandler
 
     private void OnDestroy() {
         if(Owner != null) {
-            Owner.OnEndMyTurn -= OnEndOwnerTurn;
+            Owner.CoOnEndMyTurn -= OnEndOwnerTurn;
         }
     }
 
@@ -68,11 +68,11 @@ public class Token : MonoBehaviour, IPointerClickHandler
             owner = value;
             if (owner != null) {
                 newAdditionIcon.SetActive(true);
-                owner.OnEndMyTurn += OnEndOwnerTurn;
+                owner.CoOnEndMyTurn += OnEndOwnerTurn;
             } else {
                 newAdditionIcon.SetActive(false);
                 if(prevOwner != null) {
-                    prevOwner.OnEndMyTurn -= OnEndOwnerTurn;
+                    prevOwner.CoOnEndMyTurn -= OnEndOwnerTurn;
                 }
             }
         }
@@ -84,9 +84,10 @@ public class Token : MonoBehaviour, IPointerClickHandler
         }
     }
 
-    public void OnEndOwnerTurn(Unit owner) {
+    public IEnumerator OnEndOwnerTurn(Unit owner) {
         newAdditionIcon.SetActive(false);
         IsSelected = false;
+        yield break;
     }
 
 }

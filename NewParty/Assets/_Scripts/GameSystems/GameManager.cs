@@ -24,8 +24,22 @@ public class GameManager : MonoBehaviourPunCallbacksSingleton<GameManager>
     static public string GetUnitPrefabPath() {
         return "Prefabs/Units/";
     }
+    static public string GetUnitPrefabPath(string prefabName) {
+        return GetUnitPrefabPath() + prefabName;
+    }
+
     static public string GetAttackPrefabPath() {
         return "Prefabs/Attacks/";
+    }
+    static public string GetAttackPrefabPath(string prefabName) {
+        return GetAttackPrefabPath() + prefabName;
+    }
+
+    static public string GetBarrierPrefabPath() {
+        return "Prefabs/Barriers/";
+    }
+    static public string GetBarrierPrefabPath(string prefabName) {
+        return GetBarrierPrefabPath() + prefabName;
     }
 
     // 연결 변수 //////////////////////////////////////////////////////////////

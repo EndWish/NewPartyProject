@@ -31,7 +31,7 @@ public class BasicAttack : MonoBehaviourPun
     }
 
     public IEnumerator Hit() {
-        float dmg = Caster.GetFinalStat(StatType.Str) * (1f + Caster.GetFinalStat(StatType.StackStr) * TokenStack);
+        float dmg = Caster.GetFinalStat(StatType.Str) * (1f + Caster.GetFinalStat(StatType.StackStr) * (TokenStack - 1));
 
         DamageCalculator dc = new GameObject("DamageCalculator").AddComponent<DamageCalculator>();
         yield return StartCoroutine(dc.Advance(dmg, Caster, Target));

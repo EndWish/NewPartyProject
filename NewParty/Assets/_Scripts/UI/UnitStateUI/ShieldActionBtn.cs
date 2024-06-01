@@ -30,6 +30,11 @@ public class ShieldActionBtn : FixedActionBtn
     }
 
     public override void OnClick() {
-        throw new System.NotImplementedException();
+        BattleManager battleManager = BattleManager.Instance;
+
+        if (MeetClickCondition()) {
+            BattleSelectable.StopSelectMode();
+            battleManager.ActionCoroutine = targetUnit.CoBasicBarrier();
+        }
     }
 }

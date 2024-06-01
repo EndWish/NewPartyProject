@@ -220,7 +220,10 @@ public class BattleManager : MonoBehaviourPunCallbacksSingleton<BattleManager>
                     UnitOfTurn.ActionGauge = 0;
 
                     // 토큰을 지급한다
-                    UnitOfTurn.OnBeginMyTurn?.Invoke(UnitOfTurn);
+                    if (UnitOfTurn.CoOnBeginMyTurn != null) {
+                        foreach (Func<Unit, IEnumerator> func in UnitOfTurn.CoOnBeginMyTurn.GetInvocationList())
+                            yield return StartCoroutine(func(UnitOfTurn));
+                    }
                     UnitOfTurn.CreateRandomToken(3);
 
                     RaiseSyncCount();
@@ -231,9 +234,9 @@ public class BattleManager : MonoBehaviourPunCallbacksSingleton<BattleManager>
                 TestBattlePage = "턴 계산 및 토큰 지급이 끝날때 까지 대기중...";
                 yield return new WaitUntil(() => { return 0 < SyncCount; });
                 DownSyncCount();
-                //yield return new WaitUntil(() => { return myClient.HasLastRpc; });
-                //myClient.HasLastRpc = false;
-                //yield return new WaitUntil(() => { return UsefulMethod.IsAll(clients, (client) => client.HasLastRpc == false); });
+
+                // (방장) 유닛의 턴시작 이벤트를 수행한다
+
 
                 // 내 유닛의 턴일 경우 액션 선택하기
                 if (UnitOfTurn.IsMine()) {
@@ -247,7 +250,10 @@ public class BattleManager : MonoBehaviourPunCallbacksSingleton<BattleManager>
                     TestBattlePage = "액션 코루틴 실행중...";
                     yield return StartCoroutine(ActionCoroutine);
                     TestBattlePage = "액션 코루틴 실행끝";
-                    UnitOfTurn.OnEndMyTurn?.Invoke(UnitOfTurn);
+                    if (UnitOfTurn.CoOnEndMyTurn != null) {
+                        foreach (Func<Unit, IEnumerator> func in UnitOfTurn.CoOnEndMyTurn.GetInvocationList())
+                            yield return StartCoroutine(func(UnitOfTurn));
+                    }
                     UnitOfTurn = null;
                     ActionCoroutine = null;
 
@@ -259,9 +265,6 @@ public class BattleManager : MonoBehaviourPunCallbacksSingleton<BattleManager>
                 TestBattlePage = "액션 코루틴 실행 종료를 동기화중...";
                 yield return new WaitUntil(() => { return 0 < SyncCount; });
                 DownSyncCount();
-                //yield return new WaitUntil(() => { return myClient.HasLastRpc; });
-                //myClient.HasLastRpc = false;
-                //yield return new WaitUntil(() => { return UsefulMethod.IsAll(clients, (client) => client.HasLastRpc == false); });
                 TestBattlePage = "액션 코루틴 실행 종료를 동기화 완료";
 
                 // (방장) 웨이브 클리어/실패 확인

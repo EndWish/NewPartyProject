@@ -61,6 +61,12 @@ MonoBehaviour:
   - HpRPC
   - MurdererRPC
   - CreateDmgTextRPC
+  - AmountRPC
+  - CasterRPC
+  - TargetRPC
+  - AddBarrierRPC
+  - RemoveBarrierRPC
+  - RemainTurnRPC
   DisableAutoOpenWizard: 1
   ShowSettings: 0
   DevRegionSetOnce: 1

@@ -9,6 +9,7 @@ using System.IO;
 using TMPro;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using System.Runtime.InteropServices.WindowsRuntime;
 
 public enum UnitType : int
 {
@@ -89,6 +90,7 @@ public class Unit : MonoBehaviourPun, IPointerClickHandler, IPointerEnterHandler
     [SerializeField] protected RectTransform actionGaugeFill;
     [SerializeField] protected RectTransform hpGaugeFill;
     [SerializeField] protected RectTransform hpGaugeBgFill;
+    [SerializeField] protected RectTransform barrierGaugeFill;
 
     // 개인 정보 //////////////////////////////////////////////////////////////
     // 이름
@@ -122,14 +124,19 @@ public class Unit : MonoBehaviourPun, IPointerClickHandler, IPointerEnterHandler
     public TeamType TeamType { get; set; } = TeamType.None;
     public Party MyParty { get; set; }
 
+    // 배리어 관련 변수
+    public List<Barrier> Barriers { get; protected set; } = new List<Barrier>();
+
+    // 상태이상 관련 변수
+
     // 스킬 관련 변수
 
     // 장비 관련 변수
 
-    // 상태이상 관련 변수
+
 
     // 배틀페이지와 관련한 이벤트 변수
-    public UnityAction<Unit> OnBeginMyTurn, OnEndMyTurn;
+    public Func<Unit, IEnumerator> CoOnBeginMyTurn, CoOnEndMyTurn;
 
     // 전투 관련 코루틴 변수
     public Func<Unit, IEnumerator> CoOnDie;
@@ -139,8 +146,12 @@ public class Unit : MonoBehaviourPun, IPointerClickHandler, IPointerEnterHandler
         growthLevelText.text = GetGrowthLevelStr();
         UpdateAllStat();
 
-        hp = GetFinalStat(StatType.Hpm);
+        
         actionGauge = 0;
+    }
+
+    protected void Start() {
+        hp = GetFinalStat(StatType.Hpm);    //  growthLevel가 Awake에서는 적용되지 않아 Start에서 초기화한다.
     }
 
     protected void Update() {
@@ -162,6 +173,9 @@ public class Unit : MonoBehaviourPun, IPointerClickHandler, IPointerEnterHandler
         hpGaugeFill.localScale = new Vector3(Hp / GetFinalStat(StatType.Hpm), 1, 1);
         hpGaugeBgFill.localScale = new Vector3(MathF.Max(hpGaugeBgFill.localScale.x - Time.deltaTime * 2, hpGaugeFill.localScale.x), 1, 1);
         actionGaugeFill.localScale = new Vector3(ActionGauge / MaxActionGauge, 1, 1);
+        float sumBarrierAmount = 0;
+        UsefulMethod.ActionAll(Barriers, (barrier) => { sumBarrierAmount += barrier.Amount; });
+        barrierGaugeFill.localScale = new Vector3( Mathf.Min(1, sumBarrierAmount / GetFinalStat(StatType.Hpm)), 1, 1);
 
         // 크기
         if (HasTurn()) {
@@ -171,26 +185,24 @@ public class Unit : MonoBehaviourPun, IPointerClickHandler, IPointerEnterHandler
         }
 
         // 깃발 테두기 색상
-        if (IsClicked()) { flagBorderImage.color = new Color(1, 1, 0); }
-        else if (IsOverOnMouse()) { flagBorderImage.color = new Color(1, 0.7f, 0); }
-        else { flagBorderImage.color = new Color(1, 1, 1); }
+        if (IsClicked()) { flagBorderImage.color = new Color(1, 1, 0); } else if (IsOverOnMouse()) { flagBorderImage.color = new Color(1, 0.7f, 0); } else { flagBorderImage.color = new Color(1, 1, 1); }
 
     }
 
     // 함수 ///////////////////////////////////////////////////////////////////
     public int GrowthLevel {
         get { return MyData.GrowthLevel; }
-        set { 
+        set {
             MyData.GrowthLevel = value;
             growthLevelText.text = GetGrowthLevelStr();
             UpdateBaseStat(true);
         }
     }
 
-    public float ActionGauge { 
+    public float ActionGauge {
         get { return actionGauge; }
         set {
-            photonView.RPC("ActionGaugeRPC", RpcTarget.All , value);
+            photonView.RPC("ActionGaugeRPC", RpcTarget.All, value);
         }
     }
     [PunRPC] protected void ActionGaugeRPC(float value) {
@@ -234,7 +246,7 @@ public class Unit : MonoBehaviourPun, IPointerClickHandler, IPointerEnterHandler
         OnUpdateFinalStat[index]?.Invoke(this);
     }
     public void UpdateFinalStat() {
-        for(StatType type = 0; type < StatType.Num; ++type) {
+        for (StatType type = 0; type < StatType.Num; ++type) {
             UpdateFinalStat(type);
         }
     }
@@ -300,9 +312,9 @@ public class Unit : MonoBehaviourPun, IPointerClickHandler, IPointerEnterHandler
         TokenType type = TokenType.None;
         if (random <= GetFinalStat(StatType.AtkTokenWeight))
             type = TokenType.Atk;
-        else if(random <= GetFinalStat(StatType.AtkTokenWeight) + GetFinalStat(StatType.SkillTokenWeight))
+        else if (random <= GetFinalStat(StatType.AtkTokenWeight) + GetFinalStat(StatType.SkillTokenWeight))
             type = TokenType.Skill;
-        else 
+        else
             type = TokenType.Shield;
 
         photonView.RPC("CreateTokenRPC", RpcTarget.All, type);
@@ -310,7 +322,7 @@ public class Unit : MonoBehaviourPun, IPointerClickHandler, IPointerEnterHandler
         OnCreateToken?.Invoke(this, Tokens[Tokens.Count - 1]);
     }
     public void CreateRandomToken(int num) {
-        for(int i = 0; i < num; ++i) {
+        for (int i = 0; i < num; ++i) {
             CreateRandomToken();
         }
     }
@@ -360,7 +372,7 @@ public class Unit : MonoBehaviourPun, IPointerClickHandler, IPointerEnterHandler
 
         // 공격을 생성한다
         Unit target = BattleSelectable.Units[0];
-        BasicAttack attack = PhotonNetwork.Instantiate(GameManager.GetAttackPrefabPath() + "BasicAttack",
+        BasicAttack attack = PhotonNetwork.Instantiate(GameManager.GetAttackPrefabPath("BasicAttack"),
             target.transform.position, Quaternion.identity)
             .GetComponent<BasicAttack>();
         attack.Init(this, target, tokenStack);
@@ -372,6 +384,21 @@ public class Unit : MonoBehaviourPun, IPointerClickHandler, IPointerEnterHandler
     }
     public bool BasicAtkSelectionPred(Unit unit) {
         return this.TeamType != unit.TeamType;
+    }
+    public IEnumerator CoBasicBarrier() {
+        // 토큰을 개수를 세고 삭제한다
+        int tokenStack = Tokens.FindAll(token => token.IsSelected).Count;
+        RemoveSelectedToken();
+
+        BasicBarrier barrier = PhotonNetwork.Instantiate(GameManager.GetBarrierPrefabPath("BasicBarrier"), 
+            transform.position, Quaternion.identity)
+            .GetComponent<BasicBarrier>();
+        barrier.Amount = GetFinalStat(StatType.Shield) * (1f + GetFinalStat(StatType.StackShield) * (tokenStack - 1));
+        barrier.Caster = this;
+
+        AddBarrier(barrier);
+
+        yield break;
     }
 
     public bool HasTurn() {
@@ -461,16 +488,32 @@ public class Unit : MonoBehaviourPun, IPointerClickHandler, IPointerEnterHandler
         if (IsDie)
             yield break;
 
-        Hp -= dmg;
-        CreateDmgText((int)dmg, new Vector3(1, 0.92f, 0.016f));
+        // 배리어가 있으면 배리어부터 데미지를 입는다.
+        while(0 < Barriers.Count && 0 < dmg) {
+            Barrier barrier = Barriers[Barriers.Count - 1];
 
-        if (Hp <= 0) {
-            IsDie = true;
-            Murderer = damageCalculator.Attacker;
+            float applyDmg = Mathf.Min(barrier.Amount, dmg);
 
-            foreach (Func<Unit,IEnumerator> func in CoOnDie?.GetInvocationList())
-                yield return StartCoroutine(func(this));
+            CreateDmgText((int)applyDmg, new Vector3(0.49f, 0.78f, 0.94f));
+            yield return StartCoroutine(barrier.TakeDmg(applyDmg));
+            dmg -= applyDmg;
         }
+
+        // 배리어를 까고 남은 데미지를 hp에 적용한다
+        if(0 < dmg) {
+            Hp -= dmg;
+            CreateDmgText((int)dmg, new Vector3(1, 0.92f, 0.016f));
+
+            if (Hp <= 0) {
+                IsDie = true;
+                Murderer = damageCalculator.Attacker;
+
+                if(CoOnDie != null)
+                    foreach (Func<Unit, IEnumerator> func in CoOnDie.GetInvocationList())
+                        yield return StartCoroutine(func(this));
+            }
+        }
+
     }
     [PunRPC] private void CreateDmgTextRPC(int dmg, Vector3 color) {
         DamageText damageText = Instantiate(damageTextPrefab, transform.position, Quaternion.identity);
@@ -478,6 +521,34 @@ public class Unit : MonoBehaviourPun, IPointerClickHandler, IPointerEnterHandler
     }
     public void CreateDmgText(int dmg, Vector3 color) {
         photonView.RPC("CreateDmgTextRPC", RpcTarget.All, dmg, color);
+    }
+
+    // 배리어 추가/삭제
+    [PunRPC] protected void AddBarrierRPC(int viewId) {
+        if (viewId == -1)
+            return;
+
+        Barrier barrier = PhotonView.Find(viewId).GetComponent<Barrier>();
+
+        Barriers.Add(barrier);
+        Barriers.Sort((a, b) => {
+            float diff = a.GetPriority() - b.GetPriority();
+            return diff < 0 ? -1 : 1;
+            });
+    }
+    public void AddBarrier(Barrier barrier) {
+        barrier.Target = this;
+        photonView.RPC("AddBarrierRPC", RpcTarget.All, barrier.photonView.ViewID);
+    }
+    [PunRPC] protected void RemoveBarrierRPC(int viewId) {
+        if (viewId == -1)
+            return;
+
+        Barrier barrier =PhotonView.Find(viewId).GetComponent<Barrier>();
+        Barriers.Remove(barrier);
+    }
+    public void RemoveBarrier(Barrier barrier) {
+        photonView.RPC("RemoveBarrierRPC", RpcTarget.All, barrier.photonView.ViewID);
     }
 
     // 파티 관련 함수

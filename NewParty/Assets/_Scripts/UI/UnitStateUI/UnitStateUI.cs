@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -8,11 +9,22 @@ public class UnitStateUI : MonoBehaviour
 {
     [SerializeField] private List<FixedActionBtn> fixedActionBtns;
 
+    [SerializeField] private Transform skillActionsParent;
+    private List<SkillActionBtn> skillActionBtns = new List<SkillActionBtn>();
+    private int skillActionBtnOffset = 0;
+    private int skillActionBtnMaxOffset = 0;
+
+    [SerializeField] private GameObject leftArrow, rightArrow;
+
     [SerializeField] private Image profileImg;
     [SerializeField] private TextMeshProUGUI growthLevelText;
     [SerializeField] private TextMeshProUGUI HpmText, SpeedText, StrText, StackStrText, DefPenText, SkillStrText;
     [SerializeField] private TextMeshProUGUI DefText, ShieldText, StackShieldText, CriChaText, CriMulText, HealingText;
     [SerializeField] private TextMeshProUGUI AccText, AvoidText, AtkTokenWeightText, SkillTokenWeightText, ShiledTokenWeightText;
+
+    private void Awake() {
+        skillActionBtns.InsertRange(0, skillActionsParent.GetComponentsInChildren<SkillActionBtn>());
+    }
 
     private void Update() {
         BattleManager battleManager = BattleManager.Instance;
@@ -22,9 +34,21 @@ public class UnitStateUI : MonoBehaviour
         targetUnit ??= battleManager.UnitOfTurn;
 
         // 액션 버튼 업데이트
+        Unit UnitOfTurn = battleManager.UnitOfTurn;
         foreach (var actionBtn in fixedActionBtns) {
-            actionBtn.UpdateBtn(battleManager.UnitOfTurn);
+            actionBtn.UpdateBtn(UnitOfTurn);
         }
+
+        skillActionBtnMaxOffset = Mathf.Max(0, (UnitOfTurn?.Skills.Count ?? 0) - skillActionBtns.Count);
+        skillActionBtnOffset = Mathf.Clamp(skillActionBtnOffset, 0, skillActionBtnMaxOffset);
+        for(int btnIndex = 0; btnIndex < skillActionBtns.Count; ++btnIndex) {
+            int skillIndex = skillActionBtnOffset + btnIndex;
+            Skill skill = (skillIndex < UnitOfTurn?.Skills.Count) ? UnitOfTurn.Skills[skillIndex] : null;
+            skillActionBtns[btnIndex].UpdateBtn(UnitOfTurn, skill);
+        }
+
+        leftArrow.SetActive(skillActionBtnOffset != 0);
+        rightArrow.SetActive(skillActionBtnOffset != skillActionBtnMaxOffset);
 
         // 프로필 업데이트
         profileImg.sprite = targetUnit?.profileImage.sprite;
@@ -68,6 +92,21 @@ public class UnitStateUI : MonoBehaviour
     }
     private string FloatToPercentStr(float value) {
         return string.Format("{0:F1}%", value * 100f);
+    }
+
+    public void RaiseSkillActionBtnOffset() {
+        skillActionBtnOffset = Mathf.Min(skillActionBtnOffset + 1, skillActionBtnMaxOffset);
+    }
+    public void DownSkillActionBtnOffset() {
+        skillActionBtnOffset = Mathf.Max(skillActionBtnOffset - 1, 0);
+    }
+    public void OnScrollSkillActionBtns() {
+        Vector2 wheelInput = Input.mouseScrollDelta;
+        if (wheelInput.y > 0) {    // 휠 위로
+            DownSkillActionBtnOffset();
+        } else if (wheelInput.y < 0) {   // 휠 아래로
+            RaiseSkillActionBtnOffset();
+        }
     }
 
 }

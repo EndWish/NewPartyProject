@@ -67,6 +67,8 @@ MonoBehaviour:
   - AddBarrierRPC
   - RemoveBarrierRPC
   - RemainTurnRPC
+  - AddSkillRPC
+  - OwnerRPC
   DisableAutoOpenWizard: 1
   ShowSettings: 0
   DevRegionSetOnce: 1

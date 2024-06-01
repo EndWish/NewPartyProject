@@ -10,6 +10,7 @@ using TMPro;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading;
 
 public enum UnitType : int
 {
@@ -92,6 +93,8 @@ public class Unit : MonoBehaviourPun, IPointerClickHandler, IPointerEnterHandler
     [SerializeField] protected RectTransform hpGaugeBgFill;
     [SerializeField] protected RectTransform barrierGaugeFill;
 
+    [SerializeField] protected Transform skillsParent;
+
     // 개인 정보 //////////////////////////////////////////////////////////////
     // 이름
     public string Name;
@@ -127,9 +130,10 @@ public class Unit : MonoBehaviourPun, IPointerClickHandler, IPointerEnterHandler
     // 배리어 관련 변수
     public List<Barrier> Barriers { get; protected set; } = new List<Barrier>();
 
-    // 상태이상 관련 변수
-
     // 스킬 관련 변수
+    public List<Skill> Skills { get; protected set; } = new List<Skill>();
+
+    // 상태이상 관련 변수
 
     // 장비 관련 변수
 
@@ -145,9 +149,13 @@ public class Unit : MonoBehaviourPun, IPointerClickHandler, IPointerEnterHandler
     protected void Awake() {
         growthLevelText.text = GetGrowthLevelStr();
         UpdateAllStat();
-
         
         actionGauge = 0;
+
+        foreach (Skill skill in skillsParent.GetComponentsInChildren<Skill>(true)) {
+            skill.Owner = this;
+            Skills.Add(skill);
+        }
     }
 
     protected void Start() {
@@ -532,7 +540,7 @@ public class Unit : MonoBehaviourPun, IPointerClickHandler, IPointerEnterHandler
 
         Barriers.Add(barrier);
         Barriers.Sort((a, b) => {
-            float diff = a.GetPriority() - b.GetPriority();
+            float diff = b.GetPriority() - a.GetPriority();
             return diff < 0 ? -1 : 1;
             });
     }

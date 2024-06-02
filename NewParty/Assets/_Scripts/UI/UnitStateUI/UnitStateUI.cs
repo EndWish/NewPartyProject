@@ -55,7 +55,7 @@ public class UnitStateUI : MonoBehaviour
         growthLevelText.text = targetUnit?.GetGrowthLevelStr();
 
         // 능력치 텍스트 표시
-        HpmText.text = targetUnit == null ? "-" : targetUnit.Hp + "/" + targetUnit.GetFinalStat(StatType.Hpm);
+        HpmText.text = targetUnit == null ? "-" : FloatToNormalStr(targetUnit.Hp) + "/" + FloatToNormalStr(targetUnit.GetFinalStat(StatType.Hpm));
 
         float speed = targetUnit?.GetFinalStat(StatType.Speed) ?? 0;
         SpeedText.text = targetUnit == null ? "-" : FloatToNormalStr(speed) + string.Format(" ({0:F2}s)", (Unit.MaxActionGauge - targetUnit.ActionGauge) / speed);

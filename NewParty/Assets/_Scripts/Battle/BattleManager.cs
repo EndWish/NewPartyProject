@@ -2,6 +2,7 @@ using Photon.Pun;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 using static Photon.Pun.UtilityScripts.TabViewManager;
@@ -13,7 +14,6 @@ public enum TeamType : int
 
 public class BattleManager : MonoBehaviourPunCallbacksSingleton<BattleManager>
 {
-
     // 연결 정보 //////////////////////////////////////////////////////////////
     #region ForTest
 #if DEVELOPMENT_BUILD || UNITY_EDITOR
@@ -148,6 +148,7 @@ public class BattleManager : MonoBehaviourPunCallbacksSingleton<BattleManager>
             // 파티 스킬 UI 활성화, 다음 웨이브 버튼 활성화
             restSkillManager.gameObject.SetActive(true);
             nextWaveBtn.SetActive(true);
+            nextWaveBtn.GetComponentInChildren<TextMeshProUGUI>().text = "다음 웨이브( " + (Wave + 1) + ") ▶";
 
             // 모든 플레이어가 다음 웨이브 버튼을 누를 때 까지 대기
             TestBattlePage = "모든 플레이어가 다음 웨이브 버튼을 누를 때 까지 대기중...";
@@ -232,9 +233,6 @@ public class BattleManager : MonoBehaviourPunCallbacksSingleton<BattleManager>
                 yield return new WaitUntil(() => { return 0 < SyncCount; });
                 DownSyncCount();
 
-                // (방장) 유닛의 턴시작 이벤트를 수행한다
-
-
                 // 내 유닛의 턴일 경우 액션 선택하기
                 if (UnitOfTurn.IsMine()) {
                     TestBattlePage = "내 유닛의 턴...";
@@ -253,7 +251,6 @@ public class BattleManager : MonoBehaviourPunCallbacksSingleton<BattleManager>
                     ActionCoroutine = null;
 
                     RaiseSyncCount();
-                    //UsefulMethod.ActionAll(clients, (client) => client.HasLastRpc = true);
                 }
 
                 // (전부) 대기하기
@@ -262,10 +259,56 @@ public class BattleManager : MonoBehaviourPunCallbacksSingleton<BattleManager>
                 DownSyncCount();
                 TestBattlePage = "액션 코루틴 실행 종료를 동기화 완료";
 
-                // (방장) 웨이브 클리어/실패 확인
+                #region 유닛, 파티 삭제하기
+                // (방장) 죽은 유닛을 삭제한다
+                if (PhotonNetwork.IsMasterClient) {
+                    ActionAllUnit((unit) => {
+                        if (unit.IsDie) { unit.Destroy(); }
+                    });
+                    RaiseSyncCount();
+                }
 
+                // (전부) 유닛 삭제 동기화
+                yield return new WaitUntil(() => { return 0 < SyncCount; });
+                DownSyncCount();
 
-                yield return null;
+                // (전부) 파티의 Units에서 null이 된 요소들을  제거한다
+                ActionAllParty((party) => { party.Units.RemoveAll(unit => unit == null); });
+
+                // (방장) 비어버린 Party를 전부 삭제한다
+                if(PhotonNetwork.IsMasterClient) {
+                    ActionAllParty((party) => {
+                        if (party.Units.Count == 0) { party.Destroy(); }
+                    });
+                    RaiseSyncCount();
+                }
+
+                // (전부) 파티 삭제 동기화
+                yield return new WaitUntil(() => { return 0 < SyncCount; });
+                DownSyncCount();
+
+                // (전부) null이 된 요소들을  제거한다
+                for (TeamType type = TeamType.None; type < TeamType.Num; ++type) {
+                    Parties[(int)type]?.RemoveAll((party) => party == null);
+                }
+                #endregion
+
+                // (전부) 웨이브 결과 확인
+                if (Parties[(int)TeamType.Player].Count == 0) {
+                    // 패배
+                    yield return new WaitForSeconds(1f);
+                    if(PhotonNetwork.IsMasterClient) {
+                        PhotonNetwork.LoadLevel("VillageScene");
+                    }
+                    yield break;
+                }
+                else if(Parties[(int)TeamType.Enemy].Count == 0) {
+                    // 승리
+                    break;
+                } 
+                else {
+                    yield return null;
+                }
             }
 
         }
@@ -285,6 +328,8 @@ public class BattleManager : MonoBehaviourPunCallbacksSingleton<BattleManager>
         get { return syncCount; }
     }
 
+
+
     [PunRPC] private void IsAllLoadedRPC(bool result) {
         isAllLoaded = result;
     }
@@ -300,6 +345,13 @@ public class BattleManager : MonoBehaviourPunCallbacksSingleton<BattleManager>
     }
     public void AddParty(Party party, TeamType teamType) {
         photonView.RPC("AddPartyRPC", RpcTarget.All, party.photonView.ViewID, teamType);
+    }
+    [PunRPC] private void RemovePartyRPC(int partyViewId, TeamType teamType) {
+        Party party = PhotonView.Find(partyViewId).GetComponent<Party>();
+        Parties[(int)teamType].Remove(party);
+    }
+    public void RemoveParty(Party party, TeamType teamType) {
+        photonView.RPC("RemovePartyRPC", RpcTarget.All, party.photonView.ViewID, teamType);
     }
 
     public Vector3 GetPartyPos(TeamType teamType) {
@@ -345,6 +397,16 @@ public class BattleManager : MonoBehaviourPunCallbacksSingleton<BattleManager>
                 foreach (Unit unit in party.Units) {
                     action(unit);
                 }
+            }
+        }
+    }
+    private void ActionAllParty(UnityAction<Party> action) {
+        for (TeamType type = TeamType.None; type < TeamType.Num; ++type) {
+            if (Parties[(int)type] == null)
+                continue;
+
+            foreach (Party party in Parties[(int)type]) {
+                action(party);
             }
         }
     }

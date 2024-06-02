@@ -110,6 +110,14 @@ public class Party : MonoBehaviourPunCallbacks, IScrollHandler
         }
     }
 
+    // 삭제
+    [PunRPC] private void DestroyRPC() {
+        Destroy(gameObject);
+    }
+    public void Destroy() {
+        photonView.RPC("DestroyRPC", RpcTarget.AllBuffered);
+    }
+
     // IScroll, 오브젝트 위에서 스크롤 되었을 때
     public void OnScroll(PointerEventData eventData) {
         if (isMoveStop) {

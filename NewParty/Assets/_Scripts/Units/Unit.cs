@@ -9,9 +9,6 @@ using System.IO;
 using TMPro;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
-using System.Runtime.InteropServices.WindowsRuntime;
-using System.Threading;
-using UnityEditor.AnimatedValues;
 
 public enum UnitType : int
 {
@@ -138,8 +135,6 @@ public class Unit : MonoBehaviourPun, IPointerClickHandler, IPointerEnterHandler
     // 상태이상 관련 변수
 
     // 장비 관련 변수
-
-
 
     // 배틀페이지와 관련한 이벤트 변수
     public Func<Unit, IEnumerator> CoOnBeginMyTurn, CoOnEndMyTurn;
@@ -578,6 +573,14 @@ public class Unit : MonoBehaviourPun, IPointerClickHandler, IPointerEnterHandler
     }
     public int GetIndex() {
         return MyParty.Units.IndexOf(this);
+    }
+
+    // 삭제
+    [PunRPC] private void DestroyRPC() {
+        Destroy(gameObject);
+    }
+    public void Destroy() {
+        photonView.RPC("DestroyRPC", RpcTarget.AllBuffered);
     }
 
     // 기타

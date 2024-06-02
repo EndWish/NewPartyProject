@@ -31,6 +31,7 @@ public class BattleSelectable : MonoBehaviour, IPointerEnterHandler, IPointerExi
     static private Coroutine coroutine = null;
 
     static public bool IsRunning { get; private set; } = false;
+    static public UnityAction OnStartRunning, OnEndRunning;
 
     static public List<Unit> Units { get; private set; } = new List<Unit>();
     static public List<Party> Parties { get; private set; } = new List<Party>();
@@ -49,6 +50,7 @@ public class BattleSelectable : MonoBehaviour, IPointerEnterHandler, IPointerExi
             return;
 
         InitRunning(selectionType, maxNumTarget, predicate, onCancel);
+        OnStartRunning?.Invoke();
 
         coroutine = Instance.StartCoroutine(CoRunSelectMode(onCompleteSelection));
     }
@@ -122,11 +124,18 @@ public class BattleSelectable : MonoBehaviour, IPointerEnterHandler, IPointerExi
 
     // 개인 변수 //////////////////////////////////////////////////////////////
     private int numSelection = 0;
+    private bool isOnMouse = false;
 
     // 유니티 함수 ////////////////////////////////////////////////////////////
     private void Start() {
         SelectionUI.SetActive(false);
         myUnit = GetComponent<Unit>();
+
+        BattleSelectable.OnStartRunning += this.OnExecuteRunning;
+    }
+
+    private void OnDestroy() {
+        BattleSelectable.OnStartRunning -= this.OnExecuteRunning;
     }
 
     // 함수 ///////////////////////////////////////////////////////////////////
@@ -144,12 +153,15 @@ public class BattleSelectable : MonoBehaviour, IPointerEnterHandler, IPointerExi
     }
 
     public void OnPointerEnter(PointerEventData eventData) {
+        isOnMouse = true;
         if (IsRunning && (SelectionPredicate?.Invoke(myUnit) ?? true)) {
             AddNumSelectionOfSelectionType(+1);
+            
         }
     }
 
     public void OnPointerExit(PointerEventData eventData) {
+        isOnMouse = false;
         if (IsRunning && (SelectionPredicate?.Invoke(myUnit) ?? true)) {
             AddNumSelectionOfSelectionType(-1);
         }
@@ -196,6 +208,12 @@ public class BattleSelectable : MonoBehaviour, IPointerEnterHandler, IPointerExi
     public void ResetNumSelection() {
         NumSelection = 0;
         BattleSelectable.OnStop -= ResetNumSelection;
+    }
+
+    protected void OnExecuteRunning() {
+        if (isOnMouse && (SelectionPredicate?.Invoke(myUnit) ?? true)) {
+            AddNumSelectionOfSelectionType(+1);
+        }
     }
 
 }

@@ -83,6 +83,18 @@ public class UnitStateUI : MonoBehaviour
         SkillTokenWeightText.text = targetUnit == null ? "-" : string.Format("{0:F1} ({1:F1}%)", tokenWeight[1], tokenWeight[1] / sumTokenWeight * 100f);
         ShiledTokenWeightText.text = targetUnit == null ? "-" : string.Format("{0:F1} ({1:F1}%)", tokenWeight[2], tokenWeight[2] /sumTokenWeight * 100f);
 
+        // 키보드 입력
+        List<KeyCode> keyCodes = new List<KeyCode> { KeyCode.Q, KeyCode.W, KeyCode.E, KeyCode.R, KeyCode.T, KeyCode.Y, KeyCode.U };
+        for(int i = 0; i < keyCodes.Count; i++) {
+            KeyCode keyCode = keyCodes[i];
+            if (Input.GetKeyUp(keyCode)) {
+                if(i < fixedActionBtns.Count)
+                    fixedActionBtns[i].OnClick();
+                else
+                    skillActionBtns[i - fixedActionBtns.Count].OnClick();
+            }
+        }
+
     }
 
     private string FloatToNormalStr(float value) {

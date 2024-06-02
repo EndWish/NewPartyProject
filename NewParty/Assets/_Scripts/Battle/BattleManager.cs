@@ -71,6 +71,23 @@ public class BattleManager : MonoBehaviourPunCallbacksSingleton<BattleManager>
         StartCoroutine(CoRun());
     }
 
+    protected void Update() {
+        // 키보드로 토큰 선택하기
+        if(unitOfTurn != null && unitOfTurn.IsMine()) {
+            for(KeyCode keyCode = KeyCode.Alpha1; keyCode <= KeyCode.Alpha9; ++keyCode) {
+                if (Input.GetKeyUp(keyCode)) {
+                    int index = keyCode - KeyCode.Alpha1;
+                    if(index < unitOfTurn.Tokens.Count) {
+                        Token token = unitOfTurn.Tokens[index];
+                        token.IsSelected = !token.IsSelected;
+                    }
+                }
+            }
+        }
+
+
+    }
+
     // 함수 ///////////////////////////////////////////////////////////////////
 
     IEnumerator CoRun() {

@@ -1,5 +1,6 @@
 using ExitGames.Client.Photon;
 using Photon.Pun;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
@@ -41,6 +42,32 @@ public class GameManager : MonoBehaviourPunCallbacksSingleton<GameManager>
     static public string GetBarrierPrefabPath(string prefabName) {
         return GetBarrierPrefabPath() + prefabName;
     }
+
+    static public IEnumerator CoInvoke(Func<IEnumerator> coFunc) {
+        if (coFunc != null) {
+            foreach (Func<IEnumerator> func in coFunc.GetInvocationList())
+                yield return Instance.StartCoroutine(func());
+        }
+    }
+    static public IEnumerator CoInvoke<Arg>(Func<Arg, IEnumerator> coFunc, Arg arg) {
+        if (coFunc != null) {
+            foreach (Func<Arg, IEnumerator> func in coFunc.GetInvocationList())
+                yield return Instance.StartCoroutine(func(arg));
+        }
+    }
+    static public IEnumerator CoInvoke<Arg1, Arg2>(Func<Arg1, Arg2, IEnumerator> coFunc, Arg1 arg1, Arg2 arg2) {
+        if (coFunc != null) {
+            foreach (Func<Arg1, Arg2, IEnumerator> func in coFunc.GetInvocationList())
+                yield return Instance.StartCoroutine(func(arg1, arg2));
+        }
+    }
+    static public IEnumerator CoInvoke<Arg1, Arg2, Arg3>(Func<Arg1, Arg2, Arg3, IEnumerator> coFunc, Arg1 arg1, Arg2 arg2, Arg3 arg3) {
+        if (coFunc != null) {
+            foreach (Func<Arg1, Arg2, Arg3, IEnumerator> func in coFunc.GetInvocationList())
+                yield return Instance.StartCoroutine(func(arg1, arg2, arg3));
+        }
+    }
+
 
     // 연결 변수 //////////////////////////////////////////////////////////////
     public List<ClientData> ClientDataList { get; protected set; } = new List<ClientData>();

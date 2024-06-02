@@ -1,4 +1,5 @@
 using Photon.Pun.Demo.Procedural;
+using System;
 using System.Collections;
 using UnityEngine;
 
@@ -11,6 +12,7 @@ public class DamageCalculator : MonoBehaviour
     public float FinalDmg { get; set; }  // 최종 데미지
     public float DefRate { get; set; }   // 방어비율
     public float CriRate { get; set; }   // 치명배율
+    //public bool IsHit{ get; set; }   // 명중 여부
     public int CriStack { get; set; } // 치명타 중첩횟수
 
     public float Dmg { get; set; }       // 데미지
@@ -18,8 +20,10 @@ public class DamageCalculator : MonoBehaviour
     public float CriCha { get; set; }  // 치명타 확률
     public float CriMul{ get; set; }  // 치명타 배수
     public float SkillStr { get; set; } // 스킬 공격력
-
+    public float Acc { get; set; }
+    
     public float Def { get; set; }       // 방어력
+    public float Avoid { get; set; }    // 회피
 
     public bool CriOption { get; set; } = false;
 
@@ -37,14 +41,23 @@ public class DamageCalculator : MonoBehaviour
         CriCha = attacker.GetFinalStat(StatType.CriCha);
         CriMul = attacker.GetFinalStat(StatType.CriMul);
         SkillStr = attacker.GetFinalStat(StatType.SkillStr);
-        Def = defender.GetFinalStat(StatType.Def);
+        Acc = attacker.GetFinalStat(StatType.Acc);
 
-        // 명중 여부를 계산한다
+        Def = defender.GetFinalStat(StatType.Def);
+        Avoid = defender.GetFinalStat(StatType.Avoid);
+
+        // 이벤트를 호출한다
+        attacker.OnBeforeCalculateDmg?.Invoke(this);
+        defender.OnBeforeCalculateDmg?.Invoke(this);
 
         // 최종 데미지를 계산한다.
         CalculateDefRate();
         CalculateCriRate();
         CalculateFinalDmg();
+
+        // 이벤트를 호출한다
+        attacker.OnAfterCalculateDmg?.Invoke(this);
+        defender.OnAfterCalculateDmg?.Invoke(this);
 
         yield return StartCoroutine(defender.TakeDmg(FinalDmg, this));
 
@@ -71,7 +84,7 @@ public class DamageCalculator : MonoBehaviour
     public void CalculateCriRate() {
         int integerPart = (int)CriCha;
         float decimalPart = CriCha - integerPart;
-        int exponent = integerPart + (Random.Range(0f, 1f) < decimalPart ? 1 : 0);
+        int exponent = integerPart + (UnityEngine.Random.Range(0f, 1f) < decimalPart ? 1 : 0);
         CriRate = Mathf.Max(1, Mathf.Pow(CriMul, exponent));
     }
 

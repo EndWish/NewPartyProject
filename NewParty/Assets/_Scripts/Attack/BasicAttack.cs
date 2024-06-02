@@ -24,7 +24,7 @@ public class BasicAttack : Attack
     }
 
     public override IEnumerator Animate() {
-        yield return StartCoroutine(Hit(Targets[0]));
+        yield return StartCoroutine(CalculateAndHit(Targets[0]));
         yield return new WaitUntil(() => fx == null);
 
         PhotonNetwork.Destroy(this.gameObject);

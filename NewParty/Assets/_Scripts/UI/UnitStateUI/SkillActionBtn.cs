@@ -35,11 +35,9 @@ public class SkillActionBtn : ActionBtn
     }
 
     public override void OnClick() {
-        Debug.Log("OnClick");
         BattleManager battleManager = BattleManager.Instance;
 
         if (MeetClickCondition()) {
-            Debug.Log("OnClick/MeetClickCondition()Åë°ú");
             if (BattleSelectable.IsRunning) {
                 if (ActionUnit == null) {
                     BattleSelectable.StopSelectMode();
@@ -54,8 +52,6 @@ public class SkillActionBtn : ActionBtn
     }
 
     protected void RunSelectMode() {
-        Debug.Log("RunSelectMode");
-
         ActionUnit = targetUnit;
 
         BattleSelectable.RunSelectMode(targetSkill.GetSelectionType(),

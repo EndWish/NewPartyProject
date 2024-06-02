@@ -11,6 +11,7 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading;
+using UnityEditor.AnimatedValues;
 
 public enum UnitType : int
 {
@@ -144,7 +145,12 @@ public class Unit : MonoBehaviourPun, IPointerClickHandler, IPointerEnterHandler
     public Func<Unit, IEnumerator> CoOnBeginMyTurn, CoOnEndMyTurn;
 
     // 전투 관련 코루틴 변수
-    public Func<Unit, IEnumerator> CoOnDie;
+    public Action<HitCalculator> OnBeforeCalculateHit;
+    public Action<DamageCalculator> OnBeforeCalculateDmg, OnAfterCalculateDmg;
+    public Func<IEnumerator> CoOnAvoid, CoOnDie;
+    public Func<Unit, IEnumerator> CoOnKill; // 매개변수(죽인 대상)
+    public Func<Unit, IEnumerator> CoOnHit; // 매개변수(명중한 대상)
+    public Func<Unit, float, float, IEnumerator> CoOnHitHp; // 매개변수(때린 대상, hp에 준 피해, 초과 피해)
 
     // 유니티 함수 ////////////////////////////////////////////////////////////
     protected void Awake() {
@@ -163,6 +169,7 @@ public class Unit : MonoBehaviourPun, IPointerClickHandler, IPointerEnterHandler
 
     protected void Start() {
         hp = GetFinalStat(StatType.Hpm);    //  growthLevel가 Awake에서는 적용되지 않아 Start에서 초기화한다.
+        CoOnAvoid += CoCreateAvoidText;
     }
 
     protected void Update() {
@@ -219,6 +226,35 @@ public class Unit : MonoBehaviourPun, IPointerClickHandler, IPointerEnterHandler
     [PunRPC] protected void ActionGaugeRPC(float value) {
         actionGauge = value;
     }
+
+    public bool IsDie {
+        get { return isDie; }
+        set { photonView.RPC("DieRPC", RpcTarget.All, value); }
+    }
+    [PunRPC] private void DieRPC(bool value) {
+        isDie = value;
+    }
+
+    public Unit Murderer {
+        get { return murderer; }
+        set {
+            murderer = value;
+            photonView.RPC("MurdererRPC", RpcTarget.Others, value.photonView.ViewID);
+        }
+    }
+    [PunRPC] private void MurdererRPC(int viewId) {
+        murderer = viewId == -1 ? null : PhotonView.Find(viewId).GetComponent<Unit>();
+    }
+
+    public float Hp {
+        get { return hp; }
+        set { photonView.RPC("HpRPC", RpcTarget.All, value); }
+    }
+    [PunRPC] private void HpRPC(float value) {
+        hp = value;
+    }
+
+    public float RemainHp { get { return GetFinalStat(StatType.Hpm) - hp; } }
 
     // 클릭 관련 함수
     public void OnPointerClick(PointerEventData eventData) {
@@ -424,36 +460,7 @@ public class Unit : MonoBehaviourPun, IPointerClickHandler, IPointerEnterHandler
         }
     }
 
-    // 전투관련 함수
-    public bool IsDie {
-        get { return isDie; }
-        set { photonView.RPC("DieRPC", RpcTarget.All, value); }
-    }
-    [PunRPC] private void DieRPC(bool value) {
-        isDie = value;
-    }
-
-    public Unit Murderer { 
-        get { return murderer; }
-        set {
-            murderer = value;
-            photonView.RPC("MurdererRPC", RpcTarget.Others, value.photonView.ViewID); 
-        }
-    }
-    [PunRPC] private void MurdererRPC(int viewId) {
-        murderer = viewId == -1 ? null : PhotonView.Find(viewId).GetComponent<Unit>();
-    }
-
-    public float Hp {  
-        get { return hp; } 
-        set { photonView.RPC("HpRPC", RpcTarget.All, value); } 
-    }
-    [PunRPC] private void HpRPC(float value) {
-        hp = value;
-    }
-
-    public float RemainHp { get { return GetFinalStat(StatType.Hpm) - hp; } }
-
+    // 데미지/회복 관련 함수
     public void RecoverHp(float baseAmount) {
         Ref<float> amount = new Ref<float>(baseAmount);
 
@@ -474,7 +481,6 @@ public class Unit : MonoBehaviourPun, IPointerClickHandler, IPointerEnterHandler
         // 회복되었을 때 
         OnRecoveredHp?.Invoke(this, amount.Value, overAmount);
     }
-
     public IEnumerator TakeDmg(float dmg, DamageCalculator damageCalculator) {
         if (IsDie)
             yield break;
@@ -492,26 +498,45 @@ public class Unit : MonoBehaviourPun, IPointerClickHandler, IPointerEnterHandler
 
         // 배리어를 까고 남은 데미지를 hp에 적용한다
         if(0 < dmg) {
-            Hp -= dmg;
+            float applyDmg = Mathf.Min(dmg, Hp);
+            float overDmg = Mathf.Max(0, dmg - applyDmg);
+
+            Hp -= applyDmg;
             CreateDmgText((int)dmg, new Vector3(1, 0.92f, 0.016f));
+
+            // 공격자의 CoOnHitDamage 이벤트를 실행한다
+            yield return StartCoroutine(GameManager.CoInvoke(damageCalculator.Attacker.CoOnHitHp, this, applyDmg, overDmg));
 
             if (Hp <= 0) {
                 IsDie = true;
                 Murderer = damageCalculator.Attacker;
 
-                if(CoOnDie != null)
-                    foreach (Func<Unit, IEnumerator> func in CoOnDie.GetInvocationList())
-                        yield return StartCoroutine(func(this));
+                yield return StartCoroutine(GameManager.CoInvoke(Murderer.CoOnKill, this));
+                yield return StartCoroutine(GameManager.CoInvoke(CoOnDie));
             }
         }
 
     }
+
+    // 데미지 텍스쳐 생성
     [PunRPC] private void CreateDmgTextRPC(int dmg, Vector3 color) {
         DamageText damageText = Instantiate(damageTextPrefab, transform.position, Quaternion.identity);
         damageText.SetFormat(dmg, color);
     }
     public void CreateDmgText(int dmg, Vector3 color) {
         photonView.RPC("CreateDmgTextRPC", RpcTarget.All, dmg, color);
+    }
+
+    [PunRPC] private void CreateDmgTextRPC(DamageText.Type type) {
+        DamageText damageText = Instantiate(damageTextPrefab, transform.position, Quaternion.identity);
+        damageText.SetFormat(type);
+    }
+    public void CreateDmgText(DamageText.Type type) {
+        photonView.RPC("CreateDmgTextRPC", RpcTarget.All, type);
+    }
+    public IEnumerator CoCreateAvoidText() {
+        CreateDmgText(DamageText.Type.Avoid);
+        yield break;
     }
 
     // 배리어 추가/삭제

@@ -52,13 +52,13 @@ public class AtkActionBtn : FixedActionBtn
         ActionUnit = targetUnit;
 
         BattleSelectable.RunSelectMode(BattleSelectionType.Unit, 1,
-            ActionUnit.BasicAtkSelectionPred,
+            ActionUnit.BasicAtkSkill.SelectionPred,
             OnCompleteSelection,
             OnCancel);
     }
 
     protected override void OnCompleteSelection() {
-        ActionUnit.UseBasicAtk();
+        ActionUnit.BasicAtkSkill.Use();
         base.OnCompleteSelection();
     }
 

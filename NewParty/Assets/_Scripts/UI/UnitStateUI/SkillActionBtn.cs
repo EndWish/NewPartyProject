@@ -1,11 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class SkillActionBtn : ActionBtn
 {
     [SerializeField] protected Image IconImg;
+    [SerializeField] protected TextMeshProUGUI CostText;
     protected Skill targetSkill;
 
     public void UpdateBtn(Unit unit, Skill skill) {
@@ -19,6 +21,7 @@ public class SkillActionBtn : ActionBtn
         targetUnit = unit;
         targetSkill = skill;
         IconImg.sprite = targetSkill.IconSp;
+        CostText.text = targetSkill.IsPassive ? "" : targetSkill.Cost.ToString();
 
         BattleManager battleManager = BattleManager.Instance;
 

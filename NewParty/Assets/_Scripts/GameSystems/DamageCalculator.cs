@@ -6,7 +6,7 @@ public class DamageCalculator : MonoBehaviour
 {
     public Unit Attacker { get; set; }
     public Unit Defender { get; set; }
-    //public Attack Attack { get; set; }
+    public Attack Attack { get; set; }
 
     public float FinalDmg { get; set; }  // 최종 데미지
     public float DefRate { get; set; }   // 방어비율
@@ -17,21 +17,26 @@ public class DamageCalculator : MonoBehaviour
     public float DefPen { get; set; }    // 방어관통력
     public float CriCha { get; set; }  // 치명타 확률
     public float CriMul{ get; set; }  // 치명타 배수
+    public float SkillStr { get; set; } // 스킬 공격력
 
     public float Def { get; set; }       // 방어력
 
-    public IEnumerator Advance(float dmg, Unit attacker, Unit defender) {
+    public bool CriOption { get; set; } = false;
+
+    public IEnumerator Advance(float dmg, Unit attacker, Unit defender, Attack attack) {
         if (defender.IsDie)
             yield break;
 
         Attacker = attacker; 
         Defender = defender;
+        Attack = attack;
 
         // 능력치를 가져온다
         Dmg = dmg;
         DefPen = attacker.GetFinalStat(StatType.DefPen);
         CriCha = attacker.GetFinalStat(StatType.CriCha);
         CriMul = attacker.GetFinalStat(StatType.CriMul);
+        SkillStr = attacker.GetFinalStat(StatType.SkillStr);
         Def = defender.GetFinalStat(StatType.Def);
 
         // 명중 여부를 계산한다
@@ -47,7 +52,18 @@ public class DamageCalculator : MonoBehaviour
     }
 
     public void CalculateFinalDmg() {
-        FinalDmg = Dmg * (1f - DefRate) * CriRate;
+        FinalDmg = Dmg * (1f - DefRate);
+
+        // 기본 공격일 경우 크리티컬 적용
+        if (Attack.Tags.ContainsAtLeastOne(new Tags(Tag.기본공격, Tag.치명타적용))) {
+            FinalDmg *= CriRate;
+        }
+
+        // 스킬 공격일 경우 스킬 공격력 적용
+        if (Attack.Tags.Contains(Tag.스킬공격)) {
+            FinalDmg *= SkillStr;
+        }
+            
     }
     public void CalculateDefRate() {
         DefRate = Mathf.Min(1f, (DefPen + Def == 0) ? 0 : Def / (DefPen + Def));

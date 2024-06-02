@@ -3,40 +3,31 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
-public class BasicAttack : MonoBehaviourPun
+public class BasicAttack : Attack
 {
     [SerializeField] protected GameObject fx;
-
-    public Unit Caster { get; set; }
-    public Unit Target { get; set; }
 
     public int TokenStack { get; set; } = 0;
 
     protected int remainHitNum = 1;
 
-    public BasicAttack Init(Unit caster, Unit target, int tokenStack) {
+    public void Init(Unit caster, Unit target, int tokenStack, float dmg) {
         Caster = caster;
-        Target = target;
+        if (Targets.Count == 0)
+            Targets.Add(target);
+        else
+            Targets[0] = target;
         TokenStack = tokenStack;
-
-        return this;
+        Dmg = dmg;
     }
 
-    public IEnumerator Animate() {
-        yield return StartCoroutine(Hit());
+    public override IEnumerator Animate() {
+        yield return StartCoroutine(Hit(Targets[0]));
         yield return new WaitUntil(() => fx == null);
 
         PhotonNetwork.Destroy(this.gameObject);
     }
-
-    public IEnumerator Hit() {
-        float dmg = Caster.GetFinalStat(StatType.Str) * (1f + Caster.GetFinalStat(StatType.StackStr) * (TokenStack - 1));
-
-        DamageCalculator dc = new GameObject("DamageCalculator").AddComponent<DamageCalculator>();
-        yield return StartCoroutine(dc.Advance(dmg, Caster, Target));
-    }
-
-
 
 }

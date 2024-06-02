@@ -18,7 +18,7 @@ public enum Tag
         출혈, 화상, 젖음, 감전, 중독, 상태이상유형끝 = 02_01_99,
 
     공격형태시작 = 03_01_00,
-        기본공격, 스킬공격, 근거리, 원거리, 광역기, 공격형태끝 = 03_01_99,
+        기본공격, 스킬공격, 근거리, 원거리, 광역기, 치명타적용, 공격형태끝 = 03_01_99,
 
     종족시작 = 04_01_00,
         인간, 견족, 묘족, 언데드, 슬라임, 새, 종족끝 = 04_01_99,
@@ -27,11 +27,20 @@ public enum Tag
         비행, 잠수, 특징끝 = 04_02_00,
 }
 
+[Serializable]
 public class Tags
 {
+    static public string GetString(IEnumerable<Tag> tags) {
+        StringBuilder sb = new StringBuilder();
+        foreach (Tag tag in tags) {
+            sb.Append("#").Append(tag.ToString()).Append(" ");
+        }
+        return sb.ToString();
+    }
+
     private SortedDictionary<Tag, int> tags = new SortedDictionary<Tag, int>();
 
-    public Tags() { }
+    public Tags() {}
     public Tags(params Tag[] tags) {
         AddTag(tags);
     }
@@ -43,6 +52,10 @@ public class Tags
             tags.Add(tag, 1);
     }
     public void AddTag(params Tag[] tags) {
+        foreach (Tag tag in tags)
+            AddTag(tag);
+    }
+    public void AddTag(IEnumerable<Tag> tags) {
         foreach (Tag tag in tags)
             AddTag(tag);
     }

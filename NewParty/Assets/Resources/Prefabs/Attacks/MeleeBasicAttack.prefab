@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 8369892125802827566}
   - component: {fileID: 4758052794893937834}
   m_Layer: 0
-  m_Name: BasicAttack
+  m_Name: MeleeBasicAttack
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -46,6 +46,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bff06aa9988902a459e34b8435aaca78, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  InitTags: 9575000097750000
   fx: {fileID: 4340515167073732975}
 --- !u!114 &4758052794893937834
 MonoBehaviour:

@@ -1,6 +1,7 @@
 using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using static UnityEngine.GraphicsBuffer;
 
@@ -12,7 +13,7 @@ public abstract class Skill : MonoBehaviourPun
     public Sprite IconSp;
 
     public string Name { get; protected set; }
-    public int Cost;// { get; protected set; }
+    public int Cost;
     public bool IsPassive { get; protected set; }
     
     public Unit Owner {

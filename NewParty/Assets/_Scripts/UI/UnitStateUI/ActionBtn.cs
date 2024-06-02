@@ -61,7 +61,7 @@ public abstract class ActionBtn : MonoBehaviour
             + "\n targetUnit == battleManager.UnitOfTurn : " + (targetUnit == battleManager.UnitOfTurn)
              + "\n battleManager.ActionCoroutine == null : " + (battleManager.ActionCoroutine == null));
 
-        return targetUnit != null && targetUnit.IsMine() && targetUnit == battleManager.UnitOfTurn && battleManager.ActionCoroutine == null;
+        return Active && targetUnit != null && targetUnit.IsMine() && targetUnit == battleManager.UnitOfTurn && battleManager.ActionCoroutine == null;
     }
     public abstract void OnClick();
 

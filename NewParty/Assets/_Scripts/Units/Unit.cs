@@ -93,6 +93,7 @@ public class Unit : MonoBehaviourPun, IPointerClickHandler, IPointerEnterHandler
     [SerializeField] protected RectTransform hpGaugeBgFill;
     [SerializeField] protected RectTransform barrierGaugeFill;
 
+    public BasicAttackSkill BasicAtkSkill;
     [SerializeField] protected Transform skillsParent;
 
     // 개인 정보 //////////////////////////////////////////////////////////////
@@ -151,6 +152,8 @@ public class Unit : MonoBehaviourPun, IPointerClickHandler, IPointerEnterHandler
         UpdateAllStat();
         
         actionGauge = 0;
+
+        BasicAtkSkill.Owner = this;
 
         foreach (Skill skill in skillsParent.GetComponentsInChildren<Skill>(true)) {
             skill.Owner = this;
@@ -372,26 +375,6 @@ public class Unit : MonoBehaviourPun, IPointerClickHandler, IPointerEnterHandler
     public IEnumerator CoDiscardAction() {
         RemoveSelectedToken();
         yield return new WaitForSeconds(0.3f);
-    }
-    public IEnumerator CoBasicAtk() {
-        // 토큰을 개수를 세고 삭제한다
-        int tokenStack = Tokens.FindAll(token => token.IsSelected).Count;
-        RemoveSelectedToken();
-
-        // 공격을 생성한다
-        Unit target = BattleSelectable.Units[0];
-        BasicAttack attack = PhotonNetwork.Instantiate(GameManager.GetAttackPrefabPath("BasicAttack"),
-            target.transform.position, Quaternion.identity)
-            .GetComponent<BasicAttack>();
-        attack.Init(this, target, tokenStack);
-
-        yield return StartCoroutine(attack.Animate());
-    }
-    public void UseBasicAtk() {
-        BattleManager.Instance.ActionCoroutine = CoBasicAtk();
-    }
-    public bool BasicAtkSelectionPred(Unit unit) {
-        return this.TeamType != unit.TeamType;
     }
     public IEnumerator CoBasicBarrier() {
         // 토큰을 개수를 세고 삭제한다

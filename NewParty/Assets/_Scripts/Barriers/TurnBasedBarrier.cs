@@ -21,13 +21,15 @@ public class TurnBasedBarrier : Barrier
         set { photonView.RPC("RemainTurnRPC", RpcTarget.All, value); }
     }
 
-    protected override void OnSetTarget(Unit prev, Unit current) {
-        base.OnSetTarget(prev, current);
-        if(prev != null) {
-            prev.CoOnBeginMyTurn -= OnBeginUnitTurn;
-        }
-        if (current != null) {
-            current.CoOnBeginMyTurn += OnBeginUnitTurn;
+    public override Unit Target {
+        set {
+            if (Target != null) {
+                Target.CoOnBeginMyTurn -= OnBeginUnitTurn;
+            }
+            base.Target = value;
+            if (Target != null) {
+                Target.CoOnBeginMyTurn += OnBeginUnitTurn;
+            }
         }
     }
 

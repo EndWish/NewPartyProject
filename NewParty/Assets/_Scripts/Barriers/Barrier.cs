@@ -20,31 +20,18 @@ public abstract class Barrier : MonoBehaviourPun
         get { return caster; } 
         set {
             if (caster == value) return;
-            Unit prev = caster;
             photonView.RPC("CasterRPC", RpcTarget.All, value?.photonView.ViewID ?? -1);
-            OnSetCaster(prev, caster);
         }
     }
-    protected virtual void OnSetCaster(Unit prev, Unit current) {
 
-    }
-
-    [PunRPC] protected void TargetRPC(int viewId) {
+    [PunRPC] protected virtual void TargetRPC(int viewId) {
         target = (viewId == -1 ? null : PhotonView.Find(viewId).GetComponent<Unit>());
         transform.parent = target?.transform;
         transform.localPosition = Vector3.zero;
     }
-    public Unit Target {
+    public virtual Unit Target {
         get { return target; }
-        set {
-            if (target == value) return;
-            Unit prev = target;
-            photonView.RPC("TargetRPC", RpcTarget.All, value?.photonView.ViewID ?? -1);
-            OnSetTarget(prev, target);
-        }
-    }
-    protected virtual void OnSetTarget(Unit prev, Unit current) {
-
+        set { photonView.RPC("TargetRPC", RpcTarget.All, value?.photonView.ViewID ?? -1); }
     }
 
     [PunRPC] protected void AmountRPC(float value) {
@@ -65,10 +52,12 @@ public abstract class Barrier : MonoBehaviourPun
         yield break;
     }
 
+    [PunRPC] protected void DestroyRPC() {
+        Destroy(gameObject);
+    }
     public void Destroy() {
-        if (Target != null)
-            Target.RemoveBarrier(this);
-        PhotonNetwork.Destroy(gameObject);
+        Target?.RemoveBarrier(this);
+        photonView.RPC("DestroyRPC", RpcTarget.AllBuffered);
     }
 
     public abstract float GetPriority();

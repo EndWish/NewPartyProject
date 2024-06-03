@@ -108,7 +108,7 @@ public class Unit : MonoBehaviourPun, IPointerClickHandler, IPointerEnterHandler
 
     // 능력치 관련 변수
     [SerializeField, EnumNamedArrayAttribute(typeof(StatType))] protected float[] initStats = new float[(int)StatType.Num];
-    protected float[,] stats = new float[(int)StatForm.Num, (int)StatType.Num];
+    public float[,] Stats { get; set; } = new float[(int)StatForm.Num, (int)StatType.Num];
     public UnityAction<Unit>[] OnUpdateFinalStat = new UnityAction<Unit>[(int)StatType.Num];
 
     protected float hp;
@@ -134,6 +134,7 @@ public class Unit : MonoBehaviourPun, IPointerClickHandler, IPointerEnterHandler
     public List<Skill> Skills { get; protected set; } = new List<Skill>();
 
     // 상태이상 관련 변수
+    public List<StatusEffect> StatusEffects { get; protected set; } = new List<StatusEffect>();
 
     // 장비 관련 변수
 
@@ -274,17 +275,17 @@ public class Unit : MonoBehaviourPun, IPointerClickHandler, IPointerEnterHandler
 
     // 능력치 관련 함수
     public float GetFinalStat(StatType type) {
-        return stats[(int)StatForm.Final, (int)type];
+        return Stats[(int)StatForm.Final, (int)type];
     }
 
     public void UpdateFinalStat(StatType type) {
         int index = (int)type;
-        stats[(int)StatForm.Final, index] =
-            (stats[(int)StatForm.Base, index]
-            + stats[(int)StatForm.EquipmentAdd, index]
-            + stats[(int)StatForm.AbnormalAdd, index])
-            * stats[(int)StatForm.EquipmentMul, index]
-            * stats[(int)StatForm.AbnormalMul, index];
+        Stats[(int)StatForm.Final, index] =
+            (Stats[(int)StatForm.Base, index]
+            + Stats[(int)StatForm.EquipmentAdd, index]
+            + Stats[(int)StatForm.AbnormalAdd, index])
+            * Stats[(int)StatForm.EquipmentMul, index]
+            * Stats[(int)StatForm.AbnormalMul, index];
 
         OnUpdateFinalStat[index]?.Invoke(this);
     }
@@ -297,7 +298,7 @@ public class Unit : MonoBehaviourPun, IPointerClickHandler, IPointerEnterHandler
     public void UpdateBaseStat(bool updateFinalStat) {
         // 기본 능력치 계산
         for (StatType type = 0; type < StatType.Num; ++type) {
-            stats[(int)StatForm.Base, (int)type] = initStats[(int)type] * (1f + 0.01f * GrowthLevel);
+            Stats[(int)StatForm.Base, (int)type] = initStats[(int)type] * (1f + 0.01f * GrowthLevel);
         }
 
         // 최종 능력치에 적용
@@ -307,8 +308,8 @@ public class Unit : MonoBehaviourPun, IPointerClickHandler, IPointerEnterHandler
     public void UpdateEquipmentStat(bool updateFinalStat) {
         // 능력치 초기화
         for (StatType type = 0; type < StatType.Num; ++type) {
-            stats[(int)StatForm.EquipmentAdd, (int)type] = 0;
-            stats[(int)StatForm.EquipmentMul, (int)type] = 1f;
+            Stats[(int)StatForm.EquipmentAdd, (int)type] = 0;
+            Stats[(int)StatForm.EquipmentMul, (int)type] = 1f;
         }
 
         // [추가] 장비의 능력치들 적용
@@ -320,8 +321,8 @@ public class Unit : MonoBehaviourPun, IPointerClickHandler, IPointerEnterHandler
     public void UpdateAbnormalStat(bool updateFinalStat) {
         // 능력치 초기화
         for (StatType type = 0; type < StatType.Num; ++type) {
-            stats[(int)StatForm.AbnormalAdd, (int)type] = 0;
-            stats[(int)StatForm.AbnormalMul, (int)type] = 1f;
+            Stats[(int)StatForm.AbnormalAdd, (int)type] = 0;
+            Stats[(int)StatForm.AbnormalMul, (int)type] = 1f;
         }
 
         // [추가] 상태이상의 능력치들 적용
@@ -336,6 +337,29 @@ public class Unit : MonoBehaviourPun, IPointerClickHandler, IPointerEnterHandler
         UpdateEquipmentStat(false);
         UpdateAbnormalStat(false);
         UpdateFinalStat();
+    }
+
+    // 상태이상 관련 함수
+    [PunRPC] protected void AddStatusEffectRPC(int viewId) {
+        if (viewId == -1) return;
+
+        StatusEffect statusEffect = PhotonView.Find(viewId).GetComponent<StatusEffect>();
+        StatusEffects.Add(statusEffect);
+    }
+    public void AddStatusEffect(StatusEffect statusEffect) {
+        statusEffect.Target = this;
+        photonView.RPC("AddStatusEffectRPC", RpcTarget.All, statusEffect.photonView.ViewID);
+    }
+    [PunRPC] protected void RemoveStatusEffectRPC(int viewId) {
+        if (viewId == -1) return;
+
+        StatusEffect statusEffect = PhotonView.Find(viewId).GetComponent<StatusEffect>();
+        StatusEffects.Remove(statusEffect);
+        
+    }
+    public void RemoveStatusEffect(StatusEffect statusEffect) {
+        photonView.RPC("RemoveStatusEffectRPC", RpcTarget.All, statusEffect.photonView.ViewID);
+        statusEffect.Target = null;
     }
 
     // 토큰 관련 함수
@@ -413,13 +437,20 @@ public class Unit : MonoBehaviourPun, IPointerClickHandler, IPointerEnterHandler
         int tokenStack = Tokens.FindAll(token => token.IsSelected).Count;
         RemoveSelectedToken();
 
+        // 기본 배리어 생성 및 적용
         BasicBarrier barrier = PhotonNetwork.Instantiate(GameManager.GetBarrierPrefabPath("BasicBarrier"), 
             transform.position, Quaternion.identity)
             .GetComponent<BasicBarrier>();
         barrier.Amount = GetFinalStat(StatType.Shield) * (1f + GetFinalStat(StatType.StackShield) * (tokenStack - 1));
         barrier.Caster = this;
-
         AddBarrier(barrier);
+
+        // 기본 배리어 과부하 상태이상 생성 및 적용
+        BasicBarrierOverload statusEffect = PhotonNetwork.Instantiate(GameManager.GetStatusEffectPrefabPath("BasicBarrierOverload"),
+            transform.position, Quaternion.identity)
+            .GetComponent<BasicBarrierOverload>();
+        statusEffect.Caster = this;
+        AddStatusEffect(statusEffect);
 
         yield break;
     }
@@ -564,6 +595,7 @@ public class Unit : MonoBehaviourPun, IPointerClickHandler, IPointerEnterHandler
     }
     public void RemoveBarrier(Barrier barrier) {
         photonView.RPC("RemoveBarrierRPC", RpcTarget.All, barrier.photonView.ViewID);
+        barrier.Target = null;
     }
 
     // 파티 관련 함수

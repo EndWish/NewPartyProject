@@ -43,6 +43,14 @@ public class GameManager : MonoBehaviourPunCallbacksSingleton<GameManager>
         return GetBarrierPrefabPath() + prefabName;
     }
 
+    static public string GetStatusEffectPrefabPath() {
+        return "Prefabs/StatusEffects/";
+    }
+    static public string GetStatusEffectPrefabPath(string prefabName) {
+        return GetStatusEffectPrefabPath() + prefabName;
+    }
+
+
     static public IEnumerator CoInvoke(Func<IEnumerator> coFunc) {
         if (coFunc != null) {
             foreach (Func<IEnumerator> func in coFunc.GetInvocationList())

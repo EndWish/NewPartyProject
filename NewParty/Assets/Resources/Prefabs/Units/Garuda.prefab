@@ -342,6 +342,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8390421685687491778}
   - component: {fileID: 2033346684923752009}
+  - component: {fileID: 1450987356555728983}
   - component: {fileID: 6743452321893632350}
   - component: {fileID: 4180694268467541313}
   - component: {fileID: 3665171078027082905}
@@ -401,7 +402,7 @@ MonoBehaviour:
   initStats:
   - 25
   - 10
-  - 50
+  - 10
   - 0.2
   - 1
   - 10
@@ -414,9 +415,22 @@ MonoBehaviour:
   - 10
   - 1
   - 40
-  - 30
+  - 300
   - 30
   Tokens: []
+--- !u!114 &1450987356555728983
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2956000546201537875}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 145857f39c0a35d48841bbcae9ac0103, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  MySelectMode: 1
 --- !u!114 &6743452321893632350
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -505,10 +519,10 @@ SortingGroup:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2956000546201537875}
-  m_Enabled: 0
+  m_Enabled: 1
   m_SortingLayerID: -1186223569
-  m_SortingLayer: -3
-  m_SortingOrder: 0
+  m_SortingLayer: -5
+  m_SortingOrder: 10
   m_SortAtRoot: 0
 --- !u!1 &3530754540832985520
 GameObject:
@@ -807,7 +821,7 @@ Canvas:
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: -1186223569
-  m_SortingOrder: 10
+  m_SortingOrder: 0
   m_TargetDisplay: 0
 --- !u!114 &8815428101154581878
 MonoBehaviour:

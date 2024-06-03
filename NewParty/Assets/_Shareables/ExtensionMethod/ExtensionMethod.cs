@@ -215,5 +215,11 @@ public static class ExtensionMethod
     }
     #endregion
 
+    public static T PickRandom<T>(this IList<T> list) {
+        if (list.Count == 0)
+            throw new Exception("It was used even though there was no element.");
+        return list[UnityEngine.Random.Range(0, list.Count)];
+    }
+
     #endregion
 }

@@ -51,7 +51,8 @@ public class AtkActionBtn : FixedActionBtn
     protected void RunSelectMode() {
         ActionUnit = targetUnit;
 
-        BattleSelectable.RunSelectMode(BattleSelectionType.Unit, 1,
+        BattleSelectable.RunSelectMode(ActionUnit.BasicAtkSkill.GetSelectionType(),
+            ActionUnit.BasicAtkSkill.GetSelectionNum(),
             ActionUnit.BasicAtkSkill.SelectionPred,
             OnCompleteSelection,
             OnCancel);

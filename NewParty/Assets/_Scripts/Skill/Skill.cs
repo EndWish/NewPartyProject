@@ -29,13 +29,10 @@ public abstract class Skill : MonoBehaviourPun
 
     }
 
-    public virtual bool CanUse() {
-        if (IsPassive)
-            return false;
-
-        return MeetTokenCost();
+    public bool CanUse() {
+        return MeetUniqueConditions() && MeetTokenCost();
     }
-    protected bool MeetTokenCost() {
+    protected virtual bool MeetTokenCost() {
         bool result = true;
         int count = 0;
         foreach (var token in Owner.Tokens) {
@@ -55,8 +52,14 @@ public abstract class Skill : MonoBehaviourPun
 
         return result;
     }
+    public virtual bool MeetUniqueConditions() {
+        if (IsPassive)
+            return false;
+        return true;
+    }
 
-    public abstract bool SelectionPred(Unit unit);
+    public virtual bool SelectionPred(Unit unit) { return true; }
+    public virtual bool SelectionPred(Party party) { return true; }
     public abstract BattleSelectionType GetSelectionType();
     public abstract int GetSelectionNum();
 

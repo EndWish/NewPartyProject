@@ -47,8 +47,14 @@ TagManager:
   - name: Unit
     uniqueID: 3108743727
     locked: 0
+  - name: UnderEffect
+    uniqueID: 243207991
+    locked: 0
   - name: Attack
     uniqueID: 1655968087
+    locked: 0
+  - name: OverEffect
+    uniqueID: 250503525
     locked: 0
   - name: DamageText
     uniqueID: 1169988583

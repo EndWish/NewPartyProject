@@ -9,6 +9,7 @@ using System.IO;
 using TMPro;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using JetBrains.Annotations;
 
 public enum UnitType : int
 {
@@ -117,7 +118,7 @@ public class Unit : MonoBehaviourPun, IPointerClickHandler, IPointerEnterHandler
     protected float actionGauge = 0;
 
     // 토큰 관련 변수
-    protected int maxTokens = 5;
+    public int MaxTokens { get; set; } = 5;
     public List<Token> Tokens = new List<Token>();
     public UnityAction<Unit, Token> OnCreateToken;
     public UnityAction<Unit, Token> OnRemoveToken;
@@ -345,7 +346,7 @@ public class Unit : MonoBehaviourPun, IPointerClickHandler, IPointerEnterHandler
         newToken.Type = type;
     }
     public void CreateRandomToken() {
-        if (Tokens.Count >= maxTokens)  // 최대개수를 넘어서 얻을 수 없다.
+        if (Tokens.Count >= MaxTokens)  // 최대개수를 넘어서 얻을 수 없다.
             return;
 
         float sum = GetFinalStat(StatType.AtkTokenWeight) + GetFinalStat(StatType.SkillTokenWeight) + GetFinalStat(StatType.ShieldTokenWeight);
@@ -369,7 +370,7 @@ public class Unit : MonoBehaviourPun, IPointerClickHandler, IPointerEnterHandler
         }
     }
     public void CreateToken(TokenType type) {
-        if (Tokens.Count >= maxTokens)  // 최대개수를 넘어서 얻을 수 없다.
+        if (Tokens.Count >= MaxTokens)  // 최대개수를 넘어서 얻을 수 없다.
             return;
 
         photonView.RPC("CreateTokenRPC", RpcTarget.All, type);
@@ -435,10 +436,13 @@ public class Unit : MonoBehaviourPun, IPointerClickHandler, IPointerEnterHandler
 
     // 유닛의 소유상태를 반환하는 함수
     public bool IsMine() {
-        return (MyParty.TeamType == TeamType.Player && photonView.IsMine) || (MyParty.TeamType == TeamType.Enemy && PhotonNetwork.IsMasterClient);
+        return MyParty.TeamType == TeamType.Player && photonView.IsMine;
     }
     public bool IsAlly() {
         return MyParty.TeamType == TeamType.Player && !photonView.IsMine;
+    }
+    public bool IsEnemy() {
+        return MyParty.TeamType == TeamType.Enemy;
     }
 
     // Data 관련 함수

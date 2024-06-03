@@ -34,6 +34,8 @@ public class TwoStepSlashSkill : Skill
         return 1;
     }
     public override bool SelectionPred(Unit unit) {
+        if (!base.SelectionPred(unit))
+            return false;
         return Owner.TeamType != unit.TeamType;
     }
 

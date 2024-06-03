@@ -251,16 +251,22 @@ public class BattleManager : MonoBehaviourPunCallbacksSingleton<BattleManager>
                 DownSyncCount();
 
                 // 내 유닛의 턴일 경우 액션 선택하기
-                if (UnitOfTurn.IsMine()) {
-                    TestBattlePage = "내 유닛의 턴...";
-                    ActionCoroutine = null;
-                    TestBattlePage = "액션 코루틴이 설정되기를 기다리는 중...";
-                    while (ActionCoroutine == null) {
-                        yield return null;
+                if (UnitOfTurn.IsMine() || (UnitOfTurn.IsEnemy() && PhotonNetwork.IsMasterClient)) {
+                    if (UnitOfTurn.IsMine()) {
+                        TestBattlePage = "내 유닛의 턴...";
+                        ActionCoroutine = null;
+                        TestBattlePage = "액션 코루틴이 설정되기를 기다리는 중...";
+                        while (ActionCoroutine == null) {
+                            yield return null;
+                        }
+                    } 
+                    else if(UnitOfTurn.IsEnemy()) {
+                        yield return StartCoroutine(UnitOfTurn.GetComponent<TokenSelector>().AutoSelect());
                     }
 
                     TestBattlePage = "액션 코루틴 실행중...";
                     yield return StartCoroutine(ActionCoroutine);
+                    yield return new WaitForSeconds(0.5f);
                     TestBattlePage = "액션 코루틴 실행끝";
 
                     GameManager.CoInvoke(UnitOfTurn.CoOnEndMyTurn, UnitOfTurn);
@@ -405,7 +411,7 @@ public class BattleManager : MonoBehaviourPunCallbacksSingleton<BattleManager>
         GameManager.Instance.MyClientData.ToggleReady();
     }
 
-    private void ActionAllUnit(UnityAction<Unit> action) {
+    public void ActionAllUnit(UnityAction<Unit> action) {
         for (TeamType type = TeamType.None; type < TeamType.Num; ++type) {
             if (Parties[(int)type] == null)
                 continue;
@@ -417,7 +423,7 @@ public class BattleManager : MonoBehaviourPunCallbacksSingleton<BattleManager>
             }
         }
     }
-    private void ActionAllParty(UnityAction<Party> action) {
+    public void ActionAllParty(UnityAction<Party> action) {
         for (TeamType type = TeamType.None; type < TeamType.Num; ++type) {
             if (Parties[(int)type] == null)
                 continue;

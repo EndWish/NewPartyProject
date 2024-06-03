@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 public enum TokenType
 {
-    None, Atk, Skill, Shield,
+    None, Atk, Skill, Shield, Num,
 }
 
 public class Token : MonoBehaviour, IPointerClickHandler

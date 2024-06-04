@@ -92,6 +92,9 @@ public class Unit : MonoBehaviourPun, IPointerClickHandler, IPointerEnterHandler
     [SerializeField] protected RectTransform hpGaugeBgFill;
     [SerializeField] protected RectTransform barrierGaugeFill;
 
+    [SerializeField] protected Transform statusEffectIconParent;
+    public Transform StatusEffectIconParent { get { return statusEffectIconParent; } }
+
     public BasicAttackSkill BasicAtkSkill;
     [SerializeField] protected Transform skillsParent;
 

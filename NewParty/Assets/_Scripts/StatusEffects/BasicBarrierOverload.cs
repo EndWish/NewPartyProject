@@ -1,6 +1,7 @@
 using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
 
 public class BasicBarrierOverload : StatusEffect
@@ -44,14 +45,27 @@ public class BasicBarrierOverload : StatusEffect
     }
 
     public override void Apply() {
+        base.Apply();
         if (Target == null) return;
         shieldMul = Mathf.Pow(coefficient, stack);
         Target.Stats[(int)StatForm.AbnormalMul, (int)StatType.Shield] *= shieldMul;
-        Debug.Log("AbnormalMul : " + Target.Stats[(int)StatForm.AbnormalMul, (int)StatType.Shield]);
+        
+        seIcon.RightLowerText.text = stack.ToString();
     }
     public override void ReversApply() {
         if (Target == null) return;
         Target.Stats[(int)StatForm.AbnormalMul, (int)StatType.Shield] /= shieldMul;
     }
 
+    public override string GetDescription() {
+        return string.Format(
+            new StringBuilder()
+            .Append("기본 배리어를 사용할 때마다 과부하 스택이 상승한다.\n")
+            .Append("과부하 스택 하나당 쉴드가 x{0:F2}배 가 된다.\n\n")
+
+            .Append("현재 스택 : {1:G} / 적용 배율 : {2:F1}%")
+            .ToString()
+
+            , coefficient, stack, shieldMul * 100f);
+    }
 }

@@ -10,12 +10,18 @@ public enum StatusEffectForm
 
 public abstract class StatusEffect : MonoBehaviourPun
 {
+    [SerializeField] protected StatusEffectIcon seIconPrefab;
+    protected StatusEffectIcon seIcon = null;
+
+    [SerializeField] public Sprite IconSp;
+    public string Name;
     public StatusEffectForm Form;
 
     private Unit caster, target;
 
     protected virtual void OnDestroy() {
         ReversApply();
+        Destroy(seIcon.gameObject);
     }
 
     [PunRPC] protected virtual void CasterRPC(int viewId) {
@@ -40,8 +46,35 @@ public abstract class StatusEffect : MonoBehaviourPun
         set { photonView.RPC("TargetRPC", RpcTarget.All, value?.photonView.ViewID ?? -1); }
     }
 
-    public abstract void Apply();
+    public virtual void Apply() {
+        if (Target == null) return;
+        if(seIcon == null) { 
+            seIcon = Instantiate(seIconPrefab);
+            InitIcon();
+        }
+        seIcon.transform.SetParent(Target.StatusEffectIconParent);
+    }
     public abstract void ReversApply();
+    protected virtual void InitIcon() {
+        seIcon.IconImg.sprite = this.IconSp;
+        seIcon.GetTooltipTitle = () => Name;
+        seIcon.GetTooltipRightUpperText = () => {
+            switch (Form) {
+                case StatusEffectForm.Buff:
+                    return "버프";
+                case StatusEffectForm.Debuff:
+                    return "디버프";
+                case StatusEffectForm.Passive:
+                    return "패시브";
+                default:
+                    return "형식 없음";
+            }
+        };
+        seIcon.GetTooltipDescription = GetDescription;
+
+    }
+
+    public abstract string GetDescription();
 
     protected T FindSameStatusEffect<T>(Unit unit) where T : StatusEffect {
         return (T)unit?.StatusEffects.Find((statusEffect) => statusEffect is T && statusEffect != this);

@@ -10,6 +10,7 @@ using TMPro;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using JetBrains.Annotations;
+using System.Linq;
 
 public enum UnitType : int
 {
@@ -358,11 +359,16 @@ public class Unit : MonoBehaviourPun, IPointerClickHandler, IPointerEnterHandler
 
         StatusEffect statusEffect = PhotonView.Find(viewId).GetComponent<StatusEffect>();
         StatusEffects.Remove(statusEffect);
-        
     }
     public void RemoveStatusEffect(StatusEffect statusEffect) {
         photonView.RPC("RemoveStatusEffectRPC", RpcTarget.All, statusEffect.photonView.ViewID);
         statusEffect.Target = null;
+    }
+    
+    public void ClearAllStatusEffect() {
+        while(0 < StatusEffects.Count) {
+            StatusEffects.Last().Destroy();
+        }
     }
 
     // 토큰 관련 함수
@@ -425,6 +431,15 @@ public class Unit : MonoBehaviourPun, IPointerClickHandler, IPointerEnterHandler
         List<Token> selectedTokens = Tokens.FindAll(token => token.IsSelected);
         foreach (Token token in selectedTokens)
             RemoveToken(token);
+    }
+
+    [PunRPC] protected void ClearAllTokenRPC() {
+        foreach(var token in Tokens)
+            Destroy(token.gameObject);
+        Tokens.Clear();
+    }
+    public void ClearAllToken() {
+        photonView.RPC("ClearAllTokenRPC", RpcTarget.All);
     }
 
     // 행동 관련 함수
@@ -599,6 +614,12 @@ public class Unit : MonoBehaviourPun, IPointerClickHandler, IPointerEnterHandler
     public void RemoveBarrier(Barrier barrier) {
         photonView.RPC("RemoveBarrierRPC", RpcTarget.All, barrier.photonView.ViewID);
         barrier.Target = null;
+    }
+
+    public void ClearAllBarrier() {
+        while (0 < Barriers.Count) {
+            Barriers.Last().Destroy();
+        }
     }
 
     // 파티 관련 함수

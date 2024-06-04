@@ -212,15 +212,10 @@ public class BattleManager : MonoBehaviourPunCallbacksSingleton<BattleManager>
             #endregion
 
             // (방장) 행동 게이지 랜덤으로 세팅
-            // (방장) 토큰 생성하기
+            
             if (PhotonNetwork.IsMasterClient) {
                 TestBattlePage = "행동 게이지 세팅 및 토큰 생성중...";
                 ActionAllUnit((unit) => { unit.ActionGauge = UnityEngine.Random.Range(0, Unit.MaxActionGauge); });
-                
-                for (int i = 0; i < 3; ++i) {
-                    ActionAllUnit((unit) => { unit.CreateRandomToken(); });
-                    yield return new WaitForSeconds(0.3f);
-                }
             }
 
             // 턴 반복 ////////////////////////////////////////////////////////
@@ -316,6 +311,8 @@ public class BattleManager : MonoBehaviourPunCallbacksSingleton<BattleManager>
                 }
                 #endregion
 
+
+
                 // (전부) 웨이브 결과 확인
                 if (Parties[(int)TeamType.Player].Count == 0) {
                     // 패배
@@ -326,7 +323,18 @@ public class BattleManager : MonoBehaviourPunCallbacksSingleton<BattleManager>
                     yield break;
                 }
                 else if(Parties[(int)TeamType.Enemy].Count == 0) {
-                    // 승리
+                    // (방장) 토큰과 상태이상 제거하기
+                    if (PhotonNetwork.IsMasterClient) {
+                        ActionAllUnit((unit) => {
+                            unit.ClearAllToken();
+                            unit.ClearAllBarrier();
+                            unit.ClearAllStatusEffect();
+                        });
+                        RaiseSyncCount();
+                    }
+                    yield return new WaitUntil(() => { return 0 < SyncCount; });
+                    DownSyncCount();
+
                     break;
                 } 
                 else {

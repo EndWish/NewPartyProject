@@ -73,7 +73,7 @@ public class BattleManager : MonoBehaviourPunCallbacksSingleton<BattleManager>
 
     protected void Update() {
         // 키보드로 토큰 선택하기
-        if(unitOfTurn != null && unitOfTurn.IsMine()) {
+        if(unitOfTurn != null && unitOfTurn.IsMine() && !BattleSelectable.IsRunning) {
             for(KeyCode keyCode = KeyCode.Alpha1; keyCode <= KeyCode.Alpha9; ++keyCode) {
                 if (Input.GetKeyUp(keyCode)) {
                     int index = keyCode - KeyCode.Alpha1;

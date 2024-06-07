@@ -43,7 +43,7 @@ public class Unit : MonoBehaviourPun, IPointerClickHandler, IPointerEnterHandler
         public int GrowthLevel { get; set; } = 0;
 
         public Data() { }
-        public Data(UnitType type) {
+        public Data(UnitType type) : this() {
             Type = type;
         }
         public Data(UnitType type, int growthLevel) : this(type) {

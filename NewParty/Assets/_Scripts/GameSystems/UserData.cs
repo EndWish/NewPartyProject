@@ -19,6 +19,8 @@ public class UserData : MonoBehaviourSingleton<UserData>
 
     public Unit[] PartyUnitList { get; private set; } = new Unit[MaxPartyUnit];
 
+    public List<SoulFragment> SoulFragmentList { get; private set; }    // Data로 변환해서 저장
+
     // 유니티 함수 ////////////////////////////////////////////////////////////
 
     protected override void Awake() {
@@ -43,6 +45,7 @@ public class UserData : MonoBehaviourSingleton<UserData>
         ClearNodes = GetDefaultCloearNodes();
         UnitDataList = GetDefaultUnitDataList();
         UnitList = CreateUnitListFrom(UnitDataList);
+        SoulFragmentList = new List<SoulFragment>();
 
         Save();
     }
@@ -57,14 +60,27 @@ public class UserData : MonoBehaviourSingleton<UserData>
         UnitDataList = ES3.Load<List<Unit.Data>>("UnitDataList", nickname, GetDefaultUnitDataList());
         UnitList = CreateUnitListFrom(UnitDataList);
 
+        SoulFragmentList = new List<SoulFragment> { 
+#if DEVELOPMENT_BUILD || UNITY_EDITOR
+            new SoulFragment(new SoulFragment.Data(UnitType.Garuda, 15)) 
+#endif
+        };
+        List<SoulFragment.Data> soulFragmentDataList = ES3.Load("SoulFragmentDataList", nickname, new List<SoulFragment.Data>());
+        UsefulMethod.ActionAll(soulFragmentDataList, (x) => { SoulFragmentList.Add(new SoulFragment(x)); });
+
         LoadPartyUnit(nickname);
 
         return true;
     }
+
     public void Save() {
         ES3.Save<string>("Nickname", Nickname, Nickname);
         ES3.Save<HashSet<NodeName>>("ClearNodes", ClearNodes, Nickname);
         ES3.Save<List<Unit.Data>>("UnitDataList", UnitDataList, Nickname);
+
+        List<SoulFragment.Data> soulFragmentDataList = new List<SoulFragment.Data>();
+        UsefulMethod.ActionAll(SoulFragmentList, (x) => { soulFragmentDataList.Add(x.GetData()); });
+        ES3.Save<List<SoulFragment.Data>>("SoulFragmentDataList", soulFragmentDataList, Nickname);
 
         SavePartyUnit();
     }

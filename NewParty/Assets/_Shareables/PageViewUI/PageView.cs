@@ -36,6 +36,7 @@ public class PageView<TData> : MonoBehaviour
     }
 
     public virtual void UpdatePage(int page) {
+        Debug.Log("Datas = " + Datas + "PageViewSlots?.Count = " + PageViewSlots?.Count);
         if (Datas == null || PageViewSlots?.Count == 0)
             return;
 
@@ -47,7 +48,7 @@ public class PageView<TData> : MonoBehaviour
         for(int i = 0; i < PageViewSlots.Count; ++i) {
             int index = startIndex + i;
 
-            if(index < endIndex) {  // 매칭되는 데이터가 있을 경우
+            if (0 <= index && index < endIndex) {  // 매칭되는 데이터가 있을 경우
                 PageViewSlots[i].gameObject.SetActive(true);
                 PageViewSlots[i].SlotUpdate(Datas[index], index);
             } else {    // 더이상 데이터가 없는 경우

@@ -15,6 +15,10 @@ public class SoulInventory : PageView<SoulFragment>
         base.Awake();
     }
 
+    private void Update() {
+        UpdatePage(page);
+    }
+
     public override void UpdatePage(int page) {
         base.UpdatePage(page);
         pageText.text = this.page + "/" + MaxPage;

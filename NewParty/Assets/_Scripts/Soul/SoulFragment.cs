@@ -35,6 +35,9 @@ public class SoulFragment
     public Data GetData() { 
         return data;
     }
+    public UnitType GetUnitType() {
+        return data.UnitType;
+    }
     public void SetUnitType(UnitType type) {
         data.UnitType = type;
         SettingTarget();

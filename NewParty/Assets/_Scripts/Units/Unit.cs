@@ -77,6 +77,8 @@ public class Unit : MonoBehaviourPun, IPointerClickHandler, IPointerEnterHandler
 
     // 공유 정보 //////////////////////////////////////////////////////////////
     static public float MaxActionGauge = 100f;
+    static public int GrowthLevelWhenSummoned = -10;
+    static public int NumSoulFragmentRequiredForSummon = 100;
 
     // 연결 정보 //////////////////////////////////////////////////////////////
     [SerializeField] protected DamageText damageTextPrefab;
@@ -102,6 +104,9 @@ public class Unit : MonoBehaviourPun, IPointerClickHandler, IPointerEnterHandler
     // 개인 정보 //////////////////////////////////////////////////////////////
     // 이름
     public string Name;
+
+    // 영혼파편 가치
+    public int SoulFragmentValueAsDust;
 
     // 저장에 필요한 변수
     public Data MyData;

@@ -11,6 +11,8 @@ public class UserData : MonoBehaviourSingleton<UserData>
 
     // 개인 정보 //////////////////////////////////////////////////////////////
     public string Nickname { get; private set; }
+
+    
     
     public HashSet<NodeName> ClearNodes { get; private set; }   // 저장 정보
 
@@ -19,6 +21,7 @@ public class UserData : MonoBehaviourSingleton<UserData>
 
     public Unit[] PartyUnitList { get; private set; } = new Unit[MaxPartyUnit];
 
+    public int SoulDust { get; set; } // 저장 정보
     public List<SoulFragment> SoulFragmentList { get; private set; }    // Data로 변환해서 저장
 
     // 유니티 함수 ////////////////////////////////////////////////////////////
@@ -46,6 +49,7 @@ public class UserData : MonoBehaviourSingleton<UserData>
         UnitDataList = GetDefaultUnitDataList();
         UnitList = CreateUnitListFrom(UnitDataList);
         SoulFragmentList = new List<SoulFragment>();
+        SoulDust = 0;
 
         Save();
     }
@@ -60,6 +64,8 @@ public class UserData : MonoBehaviourSingleton<UserData>
         UnitDataList = ES3.Load<List<Unit.Data>>("UnitDataList", nickname, GetDefaultUnitDataList());
         UnitList = CreateUnitListFrom(UnitDataList);
 
+        LoadPartyUnit(nickname);
+
         SoulFragmentList = new List<SoulFragment> { 
 #if DEVELOPMENT_BUILD || UNITY_EDITOR
             new SoulFragment(new SoulFragment.Data(UnitType.Garuda, 15)) 
@@ -68,7 +74,7 @@ public class UserData : MonoBehaviourSingleton<UserData>
         List<SoulFragment.Data> soulFragmentDataList = ES3.Load("SoulFragmentDataList", nickname, new List<SoulFragment.Data>());
         UsefulMethod.ActionAll(soulFragmentDataList, (x) => { SoulFragmentList.Add(new SoulFragment(x)); });
 
-        LoadPartyUnit(nickname);
+        SoulDust = ES3.Load<int>("SoulDust", nickname, 0);
 
         return true;
     }
@@ -81,6 +87,7 @@ public class UserData : MonoBehaviourSingleton<UserData>
         List<SoulFragment.Data> soulFragmentDataList = new List<SoulFragment.Data>();
         UsefulMethod.ActionAll(SoulFragmentList, (x) => { soulFragmentDataList.Add(x.GetData()); });
         ES3.Save<List<SoulFragment.Data>>("SoulFragmentDataList", soulFragmentDataList, Nickname);
+        ES3.Save<int>("SoulDust", SoulDust, Nickname);
 
         SavePartyUnit();
     }

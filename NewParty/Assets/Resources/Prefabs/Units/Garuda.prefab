@@ -398,6 +398,7 @@ MonoBehaviour:
   BasicAtkSkill: {fileID: 1467067061474094711}
   skillsParent: {fileID: 8572338997569936211}
   Name: "\uAC00\uB8E8\uB2E4"
+  SoulFragmentValueAsDust: 100
   MyData:
     Type: 0
   initStats:

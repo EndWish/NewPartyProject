@@ -57,6 +57,11 @@ public class UnitInventorySlot : UnitSlot, IBeginDragHandler, IEndDragHandler, I
             partyUnitList[index] = Data;
         }
 
+        UnitTorchSlot unitTorchSlot = eventData.pointerEnter?.GetComponent<UnitTorchSlot>();
+        if (unitTorchSlot != null) {
+            unitTorchSlot.SoulTorchUI.Unit = Data;
+        }
+
         dragImg.gameObject.SetActive(false);
     }
 

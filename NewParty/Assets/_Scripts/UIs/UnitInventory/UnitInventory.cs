@@ -17,6 +17,10 @@ public class UnitInventory : PageView<Unit>
         base.Awake();
     }
 
+    private void Update() {
+        UpdatePage(page);
+    }
+
     public override void UpdatePage(int page) {
         base.UpdatePage(page);
         pageText.text = this.page + "/" + MaxPage;

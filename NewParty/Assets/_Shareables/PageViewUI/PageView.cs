@@ -36,7 +36,6 @@ public class PageView<TData> : MonoBehaviour
     }
 
     public virtual void UpdatePage(int page) {
-        Debug.Log("Datas = " + Datas + "PageViewSlots?.Count = " + PageViewSlots?.Count);
         if (Datas == null || PageViewSlots?.Count == 0)
             return;
 

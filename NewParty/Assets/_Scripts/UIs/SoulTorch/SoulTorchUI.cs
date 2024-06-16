@@ -154,10 +154,10 @@ public class SoulTorchUI : MonoBehaviour
         yesNoInputPopup.SetNoText("취소");
         yesNoInputPopup.AddActionToNo(yesNoInputPopup.GetCloseAction());
 
-        Canvas.ForceUpdateCanvases();
-        //LayoutRebuilder.ForceRebuildLayoutImmediate(yesNoInputPopup.transform as RectTransform);
-        yesNoInputPopup.GetComponent<VerticalLayoutGroup>().enabled = false;
-        yesNoInputPopup.GetComponent<VerticalLayoutGroup>().enabled = true;
+        for (int i = 0; i < 2; ++i) {
+            LayoutRebuilder.ForceRebuildLayoutImmediate(yesNoInputPopup.GetComponent<RectTransform>());
+        }
+
     }
 
     // Layer02 (유닛 슬롯만 올려놓은 경우)
@@ -207,10 +207,10 @@ public class SoulTorchUI : MonoBehaviour
         yesNoPopup.SetNoText("취소");
         yesNoPopup.AddActionToNo(yesNoPopup.GetCloseAction());
 
-        Canvas.ForceUpdateCanvases();
-        //LayoutRebuilder.ForceRebuildLayoutImmediate(yesNoPopup.transform as RectTransform);
-        yesNoPopup.GetComponent<VerticalLayoutGroup>().enabled = false;
-        yesNoPopup.GetComponent<VerticalLayoutGroup>().enabled = true;
+        for (int i = 0; i < 2; ++i) {
+            LayoutRebuilder.ForceRebuildLayoutImmediate(yesNoPopup.GetComponent<RectTransform>());
+        }
+
     }
     
     // Layer03 ()

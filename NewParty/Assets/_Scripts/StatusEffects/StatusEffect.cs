@@ -2,6 +2,7 @@ using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static System.Collections.Specialized.BitVector32;
 
 public enum StatusEffectForm
 {
@@ -18,6 +19,11 @@ public abstract class StatusEffect : MonoBehaviourPun
     public StatusEffectForm Form;
 
     private Unit caster, target;
+
+    protected virtual void Awake() {
+        seIcon = Instantiate(seIconPrefab);
+        InitIcon();
+    }
 
     protected virtual void OnDestroy() {
         ReversApply();
@@ -37,23 +43,23 @@ public abstract class StatusEffect : MonoBehaviourPun
     }
 
     [PunRPC] protected virtual void TargetRPC(int viewId) {
+        ReversApply();
+
         target = (viewId == -1 ? null : PhotonView.Find(viewId).GetComponent<Unit>());
         transform.parent = target?.transform;
         transform.localPosition = Vector3.zero;
+
+        seIcon.transform.SetParent(Target?.StatusEffectIconParent);
+        seIcon.transform.localScale = Vector3.one;
+
+        Apply();
     }
     public virtual Unit Target {
         get { return target; }
         set { photonView.RPC("TargetRPC", RpcTarget.All, value?.photonView.ViewID ?? -1); }
     }
 
-    public virtual void Apply() {
-        if (Target == null) return;
-        if(seIcon == null) { 
-            seIcon = Instantiate(seIconPrefab);
-            InitIcon();
-        }
-        seIcon.transform.SetParent(Target.StatusEffectIconParent);
-    }
+    public abstract void Apply();
     public abstract void ReversApply();
     protected virtual void InitIcon() {
         seIcon.IconImg.sprite = this.IconSp;

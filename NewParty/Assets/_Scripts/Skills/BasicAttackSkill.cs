@@ -67,4 +67,7 @@ public class BasicAttackSkill : Skill
         return result;
     }
 
+    public override string GetDescription() {
+        return "기본 공격을 하여 공격력의 100% 만큼 피해를 준다.";
+    }
 }

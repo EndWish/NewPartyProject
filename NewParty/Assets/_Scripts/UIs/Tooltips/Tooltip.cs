@@ -12,10 +12,12 @@ public class Tooltip : MonoBehaviourSingleton<Tooltip>
     [SerializeField] private TextMeshProUGUI descriptionText;
 
     private RectTransform rectTransform;
+    private LayoutGroup layoutGroup;
 
     protected override void Awake() {
         base.Awake();
         rectTransform = GetComponent<RectTransform>();
+        layoutGroup = GetComponent<LayoutGroup>();
     }
 
     private void Start() {

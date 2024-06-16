@@ -57,7 +57,7 @@ public abstract class Skill : MonoBehaviourPun
             return false;
         return true;
     }
-
+    
     public virtual bool SelectionPred(Unit unit) { return true; }
     public virtual bool SelectionPred(Party party) { return true; }
     public abstract BattleSelectionType GetSelectionType();
@@ -68,6 +68,6 @@ public abstract class Skill : MonoBehaviourPun
     }
     public abstract IEnumerator CoUse();
 
-
+    public abstract string GetDescription();
 
 }

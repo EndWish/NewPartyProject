@@ -1,6 +1,7 @@
 using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
 
 public class TwoStepSlashSkill : Skill
@@ -37,6 +38,11 @@ public class TwoStepSlashSkill : Skill
         if (!base.SelectionPred(unit))
             return false;
         return Owner.TeamType != unit.TeamType;
+    }
+
+    public override string GetDescription() {
+        return string.Format("적을 두번 베어 공격한다. {0} 데미지를 두번 준다.",
+            Owner.GetFinalStat(StatType.Str) * coefficient);
     }
 
 }

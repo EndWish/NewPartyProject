@@ -25,6 +25,11 @@ public class StatusEffectIcon : MonoBehaviour
 
         tooltip.transform.position = Input.mousePosition;
         tooltip.gameObject.SetActive(true);
+
+        for (int i = 0; i < 2; ++i) {
+            LayoutRebuilder.ForceRebuildLayoutImmediate(tooltip.GetComponent<RectTransform>());
+        }
+        
     }
     public void OnPointerExit() {
         Tooltip.Instance.gameObject.SetActive(false);

@@ -15,21 +15,12 @@ public class BasicBarrierOverload : StatusEffect
         ReversApply();
         this.stack = stack;
         Apply();
-        Target?.UpdateFinalStat(StatType.Shield);
-        Debug.Log("FinalStat : " + Target?.GetFinalStat(StatType.Shield));
     }
     public int Stack {
         get { return stack; }
         set { photonView.RPC("StackRPC", RpcTarget.All, value); }
     }
 
-    [PunRPC] protected override void TargetRPC(int viewId) {
-        ReversApply();
-        base.TargetRPC(viewId);
-        Apply();
-        Target?.UpdateFinalStat(StatType.Shield);
-        Debug.Log("FinalStat : " + Target?.GetFinalStat(StatType.Shield));
-    }
     public override Unit Target {
         set {
             base.Target = value;
@@ -45,16 +36,17 @@ public class BasicBarrierOverload : StatusEffect
     }
 
     public override void Apply() {
-        base.Apply();
         if (Target == null) return;
         shieldMul = Mathf.Pow(coefficient, stack);
         Target.Stats[(int)StatForm.AbnormalMul, (int)StatType.Shield] *= shieldMul;
-        
+        Target.UpdateFinalStat(StatType.Shield);
+
         seIcon.RightLowerText.text = stack.ToString();
     }
     public override void ReversApply() {
         if (Target == null) return;
         Target.Stats[(int)StatForm.AbnormalMul, (int)StatType.Shield] /= shieldMul;
+        Target.UpdateFinalStat(StatType.Shield);
     }
 
     public override string GetDescription() {

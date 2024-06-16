@@ -89,7 +89,7 @@ public class BattleManager : MonoBehaviourPunCallbacksSingleton<BattleManager>
     }
 
     // 함수 ///////////////////////////////////////////////////////////////////
-
+    
     IEnumerator CoRun() {
 
         #region ForTest
@@ -220,24 +220,32 @@ public class BattleManager : MonoBehaviourPunCallbacksSingleton<BattleManager>
 
             // 턴 반복 ////////////////////////////////////////////////////////
             while (true) {
+                // (방장) 틱 수행
+                if (PhotonNetwork.IsMasterClient) {
+                    List<Unit> units = new List<Unit>();
+                    ActionAllUnit(unit => units.Add(unit));
+                    units.Sort((a, b) => { return 0 < (b.ActionGauge - a.ActionGauge) ? 1 : -1; });
+                    foreach(var unit in units) {
+                        yield return StartCoroutine(GameManager.CoInvoke(unit.CoOnBeginTick, unit));
+                    }
+                }
 
                 // (방장) 턴 계산 및 토큰 지급
                 if (PhotonNetwork.IsMasterClient) {
                     TestBattlePage = "턴 계산 및 토큰 지급중...";
                     // 누구의 턴인지 찾고 행동 게이지를 수정해 준다.
                     UnitOfTurn = CalculateUnitOfTurn();
-                    float gaugeFillingTime = (Unit.MaxActionGauge - UnitOfTurn.ActionGauge) / MathF.Max(UnitOfTurn.GetFinalStat(StatType.Speed), 0.0001f);
+                    float gaugeFillingTime = (Unit.MaxActionGauge - UnitOfTurn.ActionGauge) / MathF.Max(UnitOfTurn.GetFinalStat(StatType.Speed), 1f);
                     ActionAllUnit((unit) => {
                         unit.ActionGauge += gaugeFillingTime * unit.GetFinalStat(StatType.Speed);
                     });
                     UnitOfTurn.ActionGauge = 0;
 
                     // 토큰을 지급한다
-                    GameManager.CoInvoke(UnitOfTurn.CoOnBeginMyTurn, UnitOfTurn);
+                    yield return StartCoroutine(GameManager.CoInvoke(UnitOfTurn.CoOnBeginMyTurn, UnitOfTurn));
                     UnitOfTurn.CreateRandomToken(3);
 
                     RaiseSyncCount();
-                    //UsefulMethod.ActionAll(clients, (client) => client.HasLastRpc = true);
                 }
 
                 // (전부) 턴 계산 및 토큰 지급이 끝날때 까지 대기
@@ -264,7 +272,7 @@ public class BattleManager : MonoBehaviourPunCallbacksSingleton<BattleManager>
                     yield return new WaitForSeconds(0.5f);
                     TestBattlePage = "액션 코루틴 실행끝";
 
-                    GameManager.CoInvoke(UnitOfTurn.CoOnEndMyTurn, UnitOfTurn);
+                    yield return StartCoroutine(GameManager.CoInvoke(UnitOfTurn.CoOnEndMyTurn, UnitOfTurn));
                     UnitOfTurn = null;
                     ActionCoroutine = null;
 
@@ -475,5 +483,20 @@ public class BattleManager : MonoBehaviourPunCallbacksSingleton<BattleManager>
         return result;
     }
 
+    public int GetUnitNum() {
+        int result = 0;
+        ActionAllParty((party) => {
+            result += party.Units.Count;
+        });
+        return result;
+    }
+    public int GetUnitNum(TeamType teamType) {
+        int result = 0;
+        foreach (Party party in Parties[(int)teamType]) {
+            if (party == null) continue;
+            result += party.Units.Count;
+        }
+        return result;
+    }
 
 }

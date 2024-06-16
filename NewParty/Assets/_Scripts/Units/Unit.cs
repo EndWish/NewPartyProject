@@ -149,6 +149,7 @@ public class Unit : MonoBehaviourPun, IPointerClickHandler, IPointerEnterHandler
 
     // 배틀페이지와 관련한 이벤트 변수
     public Func<Unit, IEnumerator> CoOnBeginMyTurn, CoOnEndMyTurn;
+    public Func<Unit, IEnumerator> CoOnBeginTick;
 
     // 전투 관련 코루틴 변수
     public Action<HitCalculator> OnBeforeCalculateHit;

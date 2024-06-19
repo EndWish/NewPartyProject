@@ -4,6 +4,7 @@ using UnityEngine;
 
 public abstract class FixedActionBtn : ActionBtn
 {
+
     public void UpdateBtn(Unit unit) {
         targetUnit = unit;
         UpdateBtn();

@@ -34,7 +34,7 @@ public class TwoStepSlashAttack : Attack
         yield return StartCoroutine(CalculateAndHit(Targets[0]));
         yield return new WaitUntil(() => slashFx[1] == null);
 
-        PhotonNetwork.Destroy(this.gameObject);
+        this.Destroy();
     }
 
     [PunRPC] protected void ActiveSlashFxRPC(int index) {

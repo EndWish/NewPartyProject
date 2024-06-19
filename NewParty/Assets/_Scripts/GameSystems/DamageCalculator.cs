@@ -12,8 +12,7 @@ public class DamageCalculator : MonoBehaviour
     public float FinalDmg { get; set; }  // 최종 데미지
     public float DefRate { get; set; }   // 방어비율
     public float CriRate { get; set; }   // 치명배율
-    //public bool IsHit{ get; set; }   // 명중 여부
-    public int CriStack { get; set; } // 치명타 중첩횟수
+    public int CriStack { get; set; }    // 치명타 중첩횟수
 
     public float Dmg { get; set; }       // 데미지
     public float DefPen { get; set; }    // 방어관통력
@@ -61,16 +60,14 @@ public class DamageCalculator : MonoBehaviour
 
         yield return StartCoroutine(defender.TakeDmg(FinalDmg, this));
 
+        StartCoroutine(GameManager.CoInvoke(attacker.CoOnHitDmg, defender, this));
+
         Destroy(this.gameObject);
     }
 
     public void CalculateFinalDmg() {
         FinalDmg = Dmg * (1f - DefRate);
-
-        // 기본 공격일 경우 크리티컬 적용
-        if (Attack.Tags.ContainsAtLeastOne(new Tags(Tag.기본공격, Tag.치명타적용))) {
-            FinalDmg *= CriRate;
-        }
+        FinalDmg *= CriRate;
 
         // 스킬 공격일 경우 스킬 공격력 적용
         if (Attack.Tags.Contains(Tag.스킬공격)) {
@@ -82,10 +79,17 @@ public class DamageCalculator : MonoBehaviour
         DefRate = Mathf.Min(1f, (DefPen + Def == 0) ? 0 : Def / (DefPen + Def));
     }
     public void CalculateCriRate() {
-        int integerPart = (int)CriCha;
-        float decimalPart = CriCha - integerPart;
-        int exponent = integerPart + (UnityEngine.Random.Range(0f, 1f) < decimalPart ? 1 : 0);
-        CriRate = Mathf.Max(1, Mathf.Pow(CriMul, exponent));
+        // 기본 공격 또는 치명타 적용이 될 경우 크리티컬 적용
+        if (Attack.Tags.ContainsAtLeastOne(new Tags(Tag.기본공격, Tag.치명타적용))) {
+            int integerPart = (int)CriCha;
+            float decimalPart = CriCha - integerPart;
+            CriStack = integerPart + (UnityEngine.Random.Range(0f, 1f) < decimalPart ? 1 : 0);
+            CriRate = Mathf.Max(1, Mathf.Pow(CriMul, CriStack));
+        }
+        else {
+            CriStack = 0;
+            CriRate = 1f;
+        }
     }
 
 }

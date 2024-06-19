@@ -4,7 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BasicAttackSkill : Skill
+public class BasicAttackSkill : ActiveSkill
 {
     public enum BasicAttackType {
         Melee, Ranged,
@@ -13,9 +13,9 @@ public class BasicAttackSkill : Skill
     public BasicAttackType Type;
     [SerializeField] private BasicAttack basicAttackPrefab;
 
-    private void Awake() {
+    protected override void Awake() {
+        base.Awake();
         Name = "기본 공격";
-        IsPassive = false;
     }
 
     public override IEnumerator CoUse() {

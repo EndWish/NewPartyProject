@@ -6,7 +6,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using static UnityEngine.GraphicsBuffer;
 
-public class AccelerationBuff : StatusEffect, ITickStatusEffect
+public class AccelerationBuff : StatStatusEffect, ITickStatusEffect
 {
     protected int tick = 1;
     protected float speedMul = 1f;
@@ -62,7 +62,7 @@ public class AccelerationBuff : StatusEffect, ITickStatusEffect
         return string.Format( "{0:G}틱 동안 속도가 x{1:F1} 로 상승한다.", Tick, speedMul);
     }
 
-    protected IEnumerator CoOnBeginTick(Unit unit) {
+    protected IEnumerator CoOnBeginTick() {
         Tick -= 1;
         yield break;
     }

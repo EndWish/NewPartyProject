@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 
-public class BasicBarrierOverload : StatusEffect
+public class BasicBarrierOverload : StatStatusEffect
 {
     static protected float coefficient = 0.9f;
 

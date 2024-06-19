@@ -226,7 +226,7 @@ public class BattleManager : MonoBehaviourPunCallbacksSingleton<BattleManager>
                     ActionAllUnit(unit => units.Add(unit));
                     units.Sort((a, b) => { return 0 < (b.ActionGauge - a.ActionGauge) ? 1 : -1; });
                     foreach(var unit in units) {
-                        yield return StartCoroutine(GameManager.CoInvoke(unit.CoOnBeginTick, unit));
+                        yield return StartCoroutine(GameManager.CoInvoke(unit.CoOnBeginTick));
                     }
                 }
 
@@ -242,7 +242,7 @@ public class BattleManager : MonoBehaviourPunCallbacksSingleton<BattleManager>
                     UnitOfTurn.ActionGauge = 0;
 
                     // 토큰을 지급한다
-                    yield return StartCoroutine(GameManager.CoInvoke(UnitOfTurn.CoOnBeginMyTurn, UnitOfTurn));
+                    yield return StartCoroutine(GameManager.CoInvoke(UnitOfTurn.CoOnBeginMyTurn));
                     UnitOfTurn.CreateRandomToken(3);
 
                     RaiseSyncCount();
@@ -272,7 +272,7 @@ public class BattleManager : MonoBehaviourPunCallbacksSingleton<BattleManager>
                     yield return new WaitForSeconds(0.5f);
                     TestBattlePage = "액션 코루틴 실행끝";
 
-                    yield return StartCoroutine(GameManager.CoInvoke(UnitOfTurn.CoOnEndMyTurn, UnitOfTurn));
+                    yield return StartCoroutine(GameManager.CoInvoke(UnitOfTurn.CoOnEndMyTurn));
                     UnitOfTurn = null;
                     ActionCoroutine = null;
 

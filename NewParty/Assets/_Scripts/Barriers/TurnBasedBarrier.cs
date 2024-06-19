@@ -33,7 +33,7 @@ public class TurnBasedBarrier : Barrier
         }
     }
 
-    protected IEnumerator OnBeginUnitTurn(Unit unit) {
+    protected IEnumerator OnBeginUnitTurn() {
         if(--RemainTurn == 0) {
             Destroy();
         }

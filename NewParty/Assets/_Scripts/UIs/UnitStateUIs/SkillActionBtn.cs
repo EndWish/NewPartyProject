@@ -21,7 +21,7 @@ public class SkillActionBtn : ActionBtn
         targetUnit = unit;
         targetSkill = skill;
         IconImg.sprite = targetSkill.IconSp;
-        CostText.text = targetSkill.IsPassive ? "" : targetSkill.Cost.ToString();
+        CostText.text = targetSkill is ActiveSkill ? ((ActiveSkill)targetSkill).Cost.ToString() : "";
 
         BattleManager battleManager = BattleManager.Instance;
 
@@ -30,8 +30,10 @@ public class SkillActionBtn : ActionBtn
             return;
         }
 
-        //atk 토큰만 활성화 되어 있을 경우 이 버튼이 활성화 된다.
-        Active = targetSkill.CanUse();
+        Active = targetSkill is ActiveSkill && ((ActiveSkill)targetSkill).CanUse();
+
+        if (targetSkill != null && targetSkill is PassiveSkill)
+            bgImg.color = new Color(0.9f, 0, 0.9f);
     }
 
     public override void OnClick() {
@@ -53,16 +55,19 @@ public class SkillActionBtn : ActionBtn
 
     protected void RunSelectMode() {
         ActionUnit = targetUnit;
+        ActiveSkill activeSkill = (ActiveSkill)targetSkill;
 
-        BattleSelectable.RunSelectMode(targetSkill.GetSelectionType(),
-            targetSkill.GetSelectionNum(),
-            targetSkill.SelectionPred,
+        BattleSelectable.RunSelectMode(activeSkill.GetSelectionType(),
+            activeSkill.GetSelectionNum(),
+            activeSkill.SelectionPred,
             OnCompleteSelection,
             OnCancel);
     }
 
     protected override void OnCompleteSelection() {
-        targetSkill.Use();
+        ActiveSkill activeSkill = (ActiveSkill)targetSkill;
+
+        activeSkill.Use();
         base.OnCompleteSelection();
     }
 

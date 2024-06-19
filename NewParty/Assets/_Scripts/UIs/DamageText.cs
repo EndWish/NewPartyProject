@@ -1,7 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using TMPro;
 using UnityEngine;
+using static UnityEngine.Rendering.DebugUI;
 
 public class DamageText : MonoBehaviour
 {
@@ -40,9 +42,16 @@ public class DamageText : MonoBehaviour
         }
     }
 
-    public void SetFormat(int dmg, Vector3 color) {
-        text.text = dmg.ToString();
+    public void SetFormat(float dmg, Vector3 color, int criStack) {
+        StringBuilder sb = new StringBuilder();
+
+        sb.Append(100 <= dmg ? (int)dmg : (Mathf.Round(dmg * 10) / 10f));
+        if (0 < criStack)
+            sb.AppendFormat("<color=#F11414><size=2>(Ä¡¸íÅ¸x{0})</size></color>", criStack);
+
+        text.text = sb.ToString();
         text.color = new Color(color.x, color.y, color.z, text.color.a);
+
     }
     public void SetFormat(Type type) {
         this.type = type;

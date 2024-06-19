@@ -14,24 +14,7 @@ using System.Linq;
 
 public enum UnitType : int
 {
-    None, Garuda,
-}
-
-public enum StatType
-{
-
-    //체력, 속도, 공격력, 스택 공격력, 스킬 공격력, 방어 관통력, 치명타 확률, 치명타 배율, 방어력, 실드, 스택 실드, 명중, 회피, 치유력, 토큰 지분(3종류)
-    Hpm, Speed, Str, StackStr, SkillStr, DefPen, CriCha, CriMul, Def, Shield, StackShield, Acc, Avoid, Healing,
-    AtkTokenWeight, SkillTokenWeight, ShieldTokenWeight,
-
-    Num
-}
-
-public enum StatForm
-{
-    Base, Final, EquipmentAdd, EquipmentMul, AbnormalAdd, AbnormalMul,
-    
-    Num
+    None, Garuda,GrayWolf, RedWolf, SilverManeWolf, BloodyWolf, HowlingWolf,
 }
 
 public class Unit : MonoBehaviourPun, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler
@@ -82,6 +65,7 @@ public class Unit : MonoBehaviourPun, IPointerClickHandler, IPointerEnterHandler
 
     // 연결 정보 //////////////////////////////////////////////////////////////
     [SerializeField] protected DamageText damageTextPrefab;
+    [SerializeField] protected GameObject HealingFxPrefab;
 
     [SerializeField] protected Token tokenPrefab;
     [SerializeField] protected Transform tokensParent;
@@ -126,6 +110,10 @@ public class Unit : MonoBehaviourPun, IPointerClickHandler, IPointerEnterHandler
 
     protected float actionGauge = 0;
 
+    // 태그 관련 변수
+    public List<Tag> InitTags;
+    public Tags Tags { get; set; } = new Tags();
+
     // 토큰 관련 변수
     public int MaxTokens { get; set; } = 5;
     public List<Token> Tokens = new List<Token>();
@@ -148,8 +136,8 @@ public class Unit : MonoBehaviourPun, IPointerClickHandler, IPointerEnterHandler
     // 장비 관련 변수
 
     // 배틀페이지와 관련한 이벤트 변수
-    public Func<Unit, IEnumerator> CoOnBeginMyTurn, CoOnEndMyTurn;
-    public Func<Unit, IEnumerator> CoOnBeginTick;
+    public Func<IEnumerator> CoOnBeginMyTurn, CoOnEndMyTurn;
+    public Func<IEnumerator> CoOnBeginTick;
 
     // 전투 관련 코루틴 변수
     public Action<HitCalculator> OnBeforeCalculateHit;
@@ -157,10 +145,14 @@ public class Unit : MonoBehaviourPun, IPointerClickHandler, IPointerEnterHandler
     public Func<IEnumerator> CoOnAvoid, CoOnDie;
     public Func<Unit, IEnumerator> CoOnKill; // 매개변수(죽인 대상)
     public Func<Unit, IEnumerator> CoOnHit; // 매개변수(명중한 대상)
+    public Func<Unit, DamageCalculator, IEnumerator> CoOnHitDmg; // 매개변수(때린 대상, DamageCalculator)
     public Func<Unit, float, float, IEnumerator> CoOnHitHp; // 매개변수(때린 대상, hp에 준 피해, 초과 피해)
 
     // 유니티 함수 ////////////////////////////////////////////////////////////
     protected void Awake() {
+        if (InitTags != null)
+            Tags.AddTag(InitTags);
+
         growthLevelText.text = GetGrowthLevelStr();
         UpdateAllStat();
         
@@ -370,7 +362,13 @@ public class Unit : MonoBehaviourPun, IPointerClickHandler, IPointerEnterHandler
         photonView.RPC("RemoveStatusEffectRPC", RpcTarget.All, statusEffect.photonView.ViewID);
         statusEffect.Target = null;
     }
-    
+    public void RemoveRandomStatusEffect(Predicate<StatusEffect> pred) {
+        List<StatusEffect> targets = StatusEffects.FindAll(pred);
+        if(targets.Count == 0) return;
+
+        RemoveStatusEffect(targets.PickRandom());
+    }
+
     public void ClearAllStatusEffect() {
         while(0 < StatusEffects.Count) {
             StatusEffects.Last().Destroy();
@@ -515,6 +513,12 @@ public class Unit : MonoBehaviourPun, IPointerClickHandler, IPointerEnterHandler
     }
 
     // 데미지/회복 관련 함수
+    [PunRPC] protected void CreateHealingFxRPC() {
+        Instantiate(HealingFxPrefab, transform.position, Quaternion.identity, transform);
+    }
+    protected void CreateHealingFx() {
+        photonView.RPC("CreateHealingFxRPC", RpcTarget.All);
+    }
     public void RecoverHp(float baseAmount) {
         Ref<float> amount = new Ref<float>(baseAmount);
 
@@ -531,6 +535,8 @@ public class Unit : MonoBehaviourPun, IPointerClickHandler, IPointerEnterHandler
 
         // Hp에 적용
         Hp += amount.Value;
+        CreateHealingFx();
+        CreateDmgText(amount.Value, new Vector3(0, 1, 0));
 
         // 회복되었을 때 
         OnRecoveredHp?.Invoke(this, amount.Value, overAmount);
@@ -545,7 +551,7 @@ public class Unit : MonoBehaviourPun, IPointerClickHandler, IPointerEnterHandler
 
             float applyDmg = Mathf.Min(barrier.Amount, dmg);
 
-            CreateDmgText((int)applyDmg, new Vector3(0.49f, 0.78f, 0.94f));
+            CreateDmgText(applyDmg, new Vector3(0.49f, 0.78f, 0.94f), damageCalculator.CriStack);
             yield return StartCoroutine(barrier.TakeDmg(applyDmg));
             dmg -= applyDmg;
         }
@@ -556,7 +562,7 @@ public class Unit : MonoBehaviourPun, IPointerClickHandler, IPointerEnterHandler
             float overDmg = Mathf.Max(0, dmg - applyDmg);
 
             Hp -= applyDmg;
-            CreateDmgText((int)dmg, new Vector3(1, 0.92f, 0.016f));
+            CreateDmgText(dmg, new Vector3(1, 0.92f, 0.016f), damageCalculator.CriStack);
 
             // 공격자의 CoOnHitDamage 이벤트를 실행한다
             yield return StartCoroutine(GameManager.CoInvoke(damageCalculator.Attacker.CoOnHitHp, this, applyDmg, overDmg));
@@ -573,12 +579,12 @@ public class Unit : MonoBehaviourPun, IPointerClickHandler, IPointerEnterHandler
     }
 
     // 데미지 텍스쳐 생성
-    [PunRPC] private void CreateDmgTextRPC(int dmg, Vector3 color) {
+    [PunRPC] private void CreateDmgTextRPC(float dmg, Vector3 color, int criStack) {
         DamageText damageText = Instantiate(damageTextPrefab, transform.position, Quaternion.identity);
-        damageText.SetFormat(dmg, color);
+        damageText.SetFormat(dmg, color, criStack);
     }
-    public void CreateDmgText(int dmg, Vector3 color) {
-        photonView.RPC("CreateDmgTextRPC", RpcTarget.All, dmg, color);
+    public void CreateDmgText(float dmg, Vector3 color, int criStack = 0) {
+        photonView.RPC("CreateDmgTextRPC", RpcTarget.All, dmg, color, criStack);
     }
 
     [PunRPC] private void CreateDmgTextRPC(DamageText.Type type) {

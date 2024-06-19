@@ -11,8 +11,6 @@ public class BasicAttack : Attack
 
     public int TokenStack { get; set; } = 0;
 
-    protected int remainHitNum = 1;
-
     public void Init(Unit caster, Unit target, int tokenStack, float dmg) {
         Caster = caster;
         if (Targets.Count == 0)
@@ -27,7 +25,7 @@ public class BasicAttack : Attack
         yield return StartCoroutine(CalculateAndHit(Targets[0]));
         yield return new WaitUntil(() => fx == null);
 
-        PhotonNetwork.Destroy(this.gameObject);
+        this.Destroy();
     }
 
 }

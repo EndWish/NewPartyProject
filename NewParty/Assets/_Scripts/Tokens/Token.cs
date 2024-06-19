@@ -84,7 +84,7 @@ public class Token : MonoBehaviour, IPointerClickHandler
         }
     }
 
-    public IEnumerator OnEndOwnerTurn(Unit owner) {
+    public IEnumerator OnEndOwnerTurn() {
         newAdditionIcon.SetActive(false);
         IsSelected = false;
         yield break;

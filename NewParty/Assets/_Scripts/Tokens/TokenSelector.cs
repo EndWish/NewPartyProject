@@ -21,7 +21,7 @@ public class TokenSelector : MonoBehaviour
     };
 
     static public ActionResult BasicAtkMode(Unit unit) {
-        Skill useSkill;
+        ActiveSkill useSkill;
         int nAtk, nSkill, nShield;
         ResetTokenSelection(unit, out nAtk, out nSkill, out nShield);
 
@@ -124,12 +124,16 @@ public class TokenSelector : MonoBehaviour
 
         return false;
     }
-    static protected Skill FindHighCostUseableSkill(Unit unit, int nSkill) {
-        Skill useSkill = null;
+    static protected ActiveSkill FindHighCostUseableSkill(Unit unit, int nSkill) {
+        ActiveSkill useSkill = null;
         foreach (Skill skill in unit.Skills) {
-            if (skill.Cost <= nSkill && skill.MeetUniqueConditions())
-                if (useSkill == null || useSkill.Cost < skill.Cost)
-                    useSkill = skill;
+            if (skill is not ActiveSkill)
+                continue;
+
+            ActiveSkill activeSkill = (ActiveSkill)skill;
+            if (activeSkill.Cost <= nSkill && activeSkill.MeetUniqueConditions())
+                if (useSkill == null || useSkill.Cost < activeSkill.Cost)
+                    useSkill = activeSkill;
         }
         return useSkill;
     }
@@ -141,7 +145,7 @@ public class TokenSelector : MonoBehaviour
         Unit unit = GetComponent<Unit>();
         ActionResult actionResult = modeMapping[MySelectMode].Invoke(unit);
 
-        Skill selectedSkill = null;
+        ActiveSkill selectedSkill = null;
 
         if (actionResult == ActionResult.Atk
             && unit.BasicAtkSkill.CanUse()
@@ -164,22 +168,22 @@ public class TokenSelector : MonoBehaviour
 
         yield return new WaitForSeconds(0.5f);
     }
-    protected bool SelectRandomTarget(Skill skill) {
-        if(skill == null) 
+    protected bool SelectRandomTarget(ActiveSkill activeSkill) {
+        if(activeSkill == null) 
             return false;
 
         BattleSelectable.StopSelectMode();
         BattleSelectable.Units.Clear();
         BattleSelectable.Parties.Clear();
 
-        int maxSelection = skill.GetSelectionNum();
+        int maxSelection = activeSkill.GetSelectionNum();
         int nSelection = 0;
-        switch (skill.GetSelectionType()) {
+        switch (activeSkill.GetSelectionType()) {
             case BattleSelectionType.Unit:
                 while (nSelection < maxSelection) {
                     List<Unit> units = new List<Unit>();
                     BattleManager.Instance.ActionAllUnit((unit) => {
-                        if(skill.SelectionPred(unit))
+                        if(activeSkill.SelectionPred(unit))
                             units.Add(unit);
                     });
 
@@ -195,7 +199,7 @@ public class TokenSelector : MonoBehaviour
                 while (nSelection < maxSelection) {
                     List<Party> parties = new List<Party>();
                     BattleManager.Instance.ActionAllParty((party) => {
-                        if (skill.SelectionPred(party))
+                        if (activeSkill.SelectionPred(party))
                             parties.Add(party);
                     });
 
@@ -212,17 +216,21 @@ public class TokenSelector : MonoBehaviour
             return false;
         return true;
     }
-    protected Skill SelectRandomSkill(Unit unit, out Skill selectedSkill) {
-        List<Skill> skills = new List<Skill>();
+    protected ActiveSkill SelectRandomSkill(Unit unit, out ActiveSkill selectedSkill) {
+        List<ActiveSkill> activeSkills = new List<ActiveSkill>();
         foreach(Skill skill in unit.Skills) {
-            if(skill.CanUse())
-                skills.Add(skill);
+            if (skill is not ActiveSkill)
+                continue;
+
+            ActiveSkill activeSkill = (ActiveSkill)skill;
+            if (activeSkill.CanUse())
+                activeSkills.Add(activeSkill);
         }
 
-        if(skills.Count == 0) {
+        if(activeSkills.Count == 0) {
             selectedSkill = null;
         } else {
-            selectedSkill = skills.PickRandom();
+            selectedSkill = activeSkills.PickRandom();
         }
         
         return selectedSkill;

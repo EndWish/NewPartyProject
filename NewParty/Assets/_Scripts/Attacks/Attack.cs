@@ -27,15 +27,22 @@ public abstract class Attack : MonoBehaviourPun
     protected IEnumerator Hit(Unit target) {
         DamageCalculator dc = new GameObject("DamageCalculator").AddComponent<DamageCalculator>();
         yield return StartCoroutine(dc.Advance(Dmg, Caster, target, this));
+        yield return StartCoroutine(GameManager.CoInvoke(Caster.CoOnHit, target));
     }
     protected IEnumerator CalculateAndHit(Unit target) {
         bool isHit = CalculateHit(target);
         if (isHit) {
             yield return StartCoroutine(Hit(target));
-            yield return StartCoroutine(GameManager.CoInvoke(Caster.CoOnHit, target));
         } else {
             yield return StartCoroutine(GameManager.CoInvoke(target.CoOnAvoid));
         }
     }
 
+    [PunRPC]
+    protected void DestroyRPC() {
+        Destroy(gameObject);
+    }
+    public void Destroy() {
+        photonView.RPC("DestroyRPC", RpcTarget.AllBuffered);
+    }
 }

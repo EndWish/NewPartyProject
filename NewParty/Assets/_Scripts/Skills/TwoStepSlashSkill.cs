@@ -4,13 +4,13 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 
-public class TwoStepSlashSkill : Skill
+public class TwoStepSlashSkill : ActiveSkill
 {
-    [SerializeField] protected float coefficient;
+    [SerializeField] protected float dmgCoefficient;
 
-    private void Awake() {
+    protected override void Awake() {
+        base.Awake();
         Name = "2단 베기";
-        IsPassive = false;
     }
 
     public override IEnumerator CoUse() {
@@ -22,7 +22,7 @@ public class TwoStepSlashSkill : Skill
             target.transform.position, Quaternion.identity)
         .GetComponent<TwoStepSlashAttack>();
 
-        float dmg = Owner.GetFinalStat(StatType.Str) * coefficient;
+        float dmg = Owner.GetFinalStat(StatType.Str) * dmgCoefficient;
         attack.Init(Owner, target, dmg);
 
         yield return StartCoroutine(attack.Animate());
@@ -42,7 +42,7 @@ public class TwoStepSlashSkill : Skill
 
     public override string GetDescription() {
         return string.Format("적을 두번 베어 공격한다. {0} 데미지를 두번 준다.",
-            Owner.GetFinalStat(StatType.Str) * coefficient);
+            Owner.GetFinalStat(StatType.Str) * dmgCoefficient);
     }
 
 }

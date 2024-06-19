@@ -18,15 +18,20 @@ public abstract class StatusEffect : MonoBehaviourPun
     public string Name;
     public StatusEffectForm Form;
 
+    public List<Tag> InitTags;
+    public Tags Tags { get; set; } = new Tags();
+
     private Unit caster, target;
 
     protected virtual void Awake() {
+        if (InitTags != null)
+            Tags.AddTag(InitTags);
+
         seIcon = Instantiate(seIconPrefab);
         InitIcon();
     }
 
     protected virtual void OnDestroy() {
-        ReversApply();
         Destroy(seIcon.gameObject);
     }
 
@@ -43,24 +48,19 @@ public abstract class StatusEffect : MonoBehaviourPun
     }
 
     [PunRPC] protected virtual void TargetRPC(int viewId) {
-        ReversApply();
-
         target = (viewId == -1 ? null : PhotonView.Find(viewId).GetComponent<Unit>());
         transform.parent = target?.transform;
         transform.localPosition = Vector3.zero;
 
         seIcon.transform.SetParent(Target?.StatusEffectIconParent);
         seIcon.transform.localScale = Vector3.one;
-
-        Apply();
     }
     public virtual Unit Target {
         get { return target; }
         set { photonView.RPC("TargetRPC", RpcTarget.All, value?.photonView.ViewID ?? -1); }
     }
 
-    public abstract void Apply();
-    public abstract void ReversApply();
+
     protected virtual void InitIcon() {
         seIcon.IconImg.sprite = this.IconSp;
         seIcon.GetTooltipTitle = () => Name;
@@ -81,6 +81,12 @@ public abstract class StatusEffect : MonoBehaviourPun
     }
 
     public abstract string GetDescription();
+
+    protected string FloatToNormalStr(float value) {
+        if (100 <= value)
+            return string.Format("{0:G}", value);
+        return string.Format("{0:F2}", value);
+    }
 
     protected T FindSameStatusEffect<T>(Unit unit) where T : StatusEffect {
         return (T)unit?.StatusEffects.Find((statusEffect) => statusEffect is T && statusEffect != this);

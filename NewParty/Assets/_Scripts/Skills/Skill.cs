@@ -13,7 +13,7 @@ public abstract class Skill : MonoBehaviourPun
     public Sprite IconSp;
 
     public string Name { get; protected set; }
-    public int Cost;
+    //public int Cost;
     public bool IsPassive { get; protected set; }
     
     public Unit Owner {
@@ -22,52 +22,36 @@ public abstract class Skill : MonoBehaviourPun
             if (owner == value) return;
             Unit prev = owner;
             owner = value;
-            OnSetTarget(prev, owner);
+            OnSetOwner(prev, owner);
         }
     }
-    protected virtual void OnSetTarget(Unit prev, Unit current) {
+    protected virtual void OnSetOwner(Unit prev, Unit current) {
 
     }
-
-    public bool CanUse() {
-        return MeetUniqueConditions() && MeetTokenCost();
-    }
-    protected virtual bool MeetTokenCost() {
-        bool result = true;
-        int count = 0;
-        foreach (var token in Owner.Tokens) {
-            if (!token.IsSelected)
-                continue;
-
-            if (token.Type != TokenType.Skill) {
-                result = false;
-                break;
-            }
-
-            ++count;
-        }
-
-        if (count != Cost)
-            result = false;
-
-        return result;
-    }
-    public virtual bool MeetUniqueConditions() {
-        if (IsPassive)
-            return false;
-        return true;
-    }
-    
-    public virtual bool SelectionPred(Unit unit) { return true; }
-    public virtual bool SelectionPred(Party party) { return true; }
-    public abstract BattleSelectionType GetSelectionType();
-    public abstract int GetSelectionNum();
-
-    public void Use() {
-        BattleManager.Instance.ActionCoroutine = CoUse();
-    }
-    public abstract IEnumerator CoUse();
 
     public abstract string GetDescription();
 
+    [PunRPC] protected void SetStatStatusEffectIconRPC(int viewId) {
+        if(viewId == -1) return;
+        StatStatusEffect statStatusEffect = PhotonView.Find(viewId).GetComponent<StatStatusEffect>();
+        statStatusEffect.SetIconSp(IconSp);
+    }
+    protected void SetStatStatusEffectIcon(StatStatusEffect statStatusEffect) {
+        photonView.RPC("SetStatStatusEffectIconRPC", RpcTarget.All, statStatusEffect.photonView.ViewID);
+    }
+
+    protected StatTurnStatusEffect CreateStatTurnStatusEffect(StatForm statForm, StatType statType, StatusEffectForm statusEffectForm, float value, int turn) {
+        StatTurnStatusEffect statusEffect = PhotonNetwork.Instantiate(GameManager.GetStatusEffectPrefabPath("StatTurnStatusEffect"),
+            transform.position, Quaternion.identity)
+            .GetComponent<StatTurnStatusEffect>();
+        statusEffect.StatForm = statForm;
+        statusEffect.StatType = statType;
+        statusEffect.StatusEffectForm = statusEffectForm;
+        statusEffect.Value = value;
+        statusEffect.Turn = turn;
+        statusEffect.Caster = Owner;
+        SetStatStatusEffectIcon(statusEffect);
+
+        return statusEffect;
+    }
 }

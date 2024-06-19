@@ -45,8 +45,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7877b90c82116774a8b81c70e59ee5ae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  IconSp: {fileID: 21300000, guid: 22bcc51c41ba34f4f9b686058b291764, type: 3}
+  IconSp: {fileID: 0}
   Cost: 0
+  Type: 0
   basicAttackPrefab: {fileID: 8369892125802827566, guid: 6ab574c3700811e408be7faa1df05c91, type: 3}
 --- !u!114 &378218534449263370
 MonoBehaviour:

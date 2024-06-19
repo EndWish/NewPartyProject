@@ -82,6 +82,16 @@ MonoBehaviour:
   - CreateReinforceFXRPC
   - TickRPC
   - SpeedMulRPC
+  - CriChaAddRPC
+  - TurnRPC
+  - DmgRPC
+  - CreateHealingFxRPC
+  - CreateFxRPC
+  - SetStatStatusEffectIconRPC
+  - StatFormRPC
+  - StatTypeRPC
+  - StatusEffectFormRPC
+  - ValueRPC
   DisableAutoOpenWizard: 1
   ShowSettings: 0
   DevRegionSetOnce: 1

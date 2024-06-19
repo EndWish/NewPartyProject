@@ -4,21 +4,20 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 
-public class AccelerationSkill : Skill
+public class AccelerationSkill : ActiveSkill
 {
     [SerializeField] protected float tickCoefficient;
     [SerializeField] protected float speedMul;
     [SerializeField] protected GameObject reinforceFXPrefab;
 
-    private void Awake() {
+    protected override void Awake() {
+        base.Awake();
         Name = "가속";
-        IsPassive = false;
     }
 
     public override IEnumerator CoUse() {
         Owner.RemoveSelectedToken();
         CreateReinforceFX();
-        // TODO : 가속 상태이상 생성하고 Owner에게 적용하기
         AccelerationBuff statusEffect = PhotonNetwork.Instantiate(GameManager.GetStatusEffectPrefabPath("AccelerationBuff"),
             transform.position, Quaternion.identity)
             .GetComponent<AccelerationBuff>();
@@ -26,6 +25,7 @@ public class AccelerationSkill : Skill
         statusEffect.Tick = GetTickNum();
         statusEffect.Caster = Owner;
         Owner.AddStatusEffect(statusEffect);
+
         yield return new WaitForSeconds(0.5f);
     }
 

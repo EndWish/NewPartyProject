@@ -89,14 +89,16 @@ public class StatStatusEffect : StatusEffect
     }
 
     public override string GetDescription() {
-        if(statForm == StatForm.AbnormalAdd) {
+        string verb = statusEffectForm == StatusEffectForm.Buff ? "상승" : "감소";
+
+        if (statForm == StatForm.AbnormalAdd) {
             if (StatToKorean.IsPercent(statType))
-                return string.Format("{0}이 {1:G}%p 상승한다.", StatToKorean.Get(statType), value * 100f);
+                return string.Format("{0}이 {1:G}%p {2}한다.", StatToKorean.Get(statType), value * 100f, verb);
             else
-                return string.Format("{0}이 {1:G} 상승한다.", StatToKorean.Get(statType), value);
+                return string.Format("{0}이 {1:G} {2}한다.", StatToKorean.Get(statType), value, verb);
         }
         else if(statForm == StatForm.AbnormalMul) {
-            return string.Format("{0}이 x{1:G} 상승한다.", StatToKorean.Get(statType), value);
+            return string.Format("{0}이 x{1:G} {2}한다.", StatToKorean.Get(statType), value, verb);
         }
 
         return "StatForm ERROR";

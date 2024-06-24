@@ -1,4 +1,5 @@
 using Photon.Pun;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -12,6 +13,8 @@ public abstract class Attack : MonoBehaviourPun
 
     public List<Tag> InitTags;
     public Tags Tags { get; set; } = new Tags();
+
+    public Sprite IconSp;
 
     protected virtual void Awake() {
         if(InitTags != null)
@@ -45,4 +48,29 @@ public abstract class Attack : MonoBehaviourPun
     public void Destroy() {
         photonView.RPC("DestroyRPC", RpcTarget.AllBuffered);
     }
+
+    [PunRPC] protected void SetStatStatusEffectIconRPC(int viewId) {
+        if (viewId == -1) return;
+        StatStatusEffect statStatusEffect = PhotonView.Find(viewId).GetComponent<StatStatusEffect>();
+        statStatusEffect.SetIconSp(IconSp);
+    }
+    protected void SetStatStatusEffectIcon(StatStatusEffect statStatusEffect) {
+        photonView.RPC("SetStatStatusEffectIconRPC", RpcTarget.All, statStatusEffect.photonView.ViewID);
+    }
+
+    protected StatTurnStatusEffect CreateStatTurnStatusEffect(StatForm statForm, StatType statType, StatusEffectForm statusEffectForm, float value, int turn) {
+        StatTurnStatusEffect statusEffect = PhotonNetwork.Instantiate(GameManager.GetStatusEffectPrefabPath("StatTurnStatusEffect"),
+            transform.position, Quaternion.identity)
+            .GetComponent<StatTurnStatusEffect>();
+        statusEffect.StatForm = statForm;
+        statusEffect.StatType = statType;
+        statusEffect.StatusEffectForm = statusEffectForm;
+        statusEffect.Value = value;
+        statusEffect.Turn = turn;
+        statusEffect.Caster = Caster;
+        SetStatStatusEffectIcon(statusEffect);
+
+        return statusEffect;
+    }
+
 }

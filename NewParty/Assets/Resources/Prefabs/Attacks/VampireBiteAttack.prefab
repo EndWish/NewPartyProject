@@ -47,6 +47,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   InitTags: 967500009775000076270000
+  IconSp: {fileID: 21300000, guid: 3da796af8864aae469d3164a73bf50c3, type: 3}
   fx: {fileID: 2916431557521783972}
 --- !u!114 &4758052794893937834
 MonoBehaviour:

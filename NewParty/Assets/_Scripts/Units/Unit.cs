@@ -14,7 +14,7 @@ using System.Linq;
 
 public enum UnitType : int
 {
-    None, Garuda,GrayWolf, RedWolf, SilverManeWolf, BloodyWolf, HowlingWolf,
+    None, Garuda,GrayWolf, RedWolf, SilverManeWolf, BloodyWolf, HowlingWolf, AwlMosquito, DrillMosquito, TransfusionMosquito, InfectedMosquito,
 }
 
 public class Unit : MonoBehaviourPun, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler

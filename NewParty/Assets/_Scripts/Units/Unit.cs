@@ -520,7 +520,7 @@ public class Unit : MonoBehaviourPun, IPointerClickHandler, IPointerEnterHandler
         photonView.RPC("CreateHealingFxRPC", RpcTarget.All);
     }
     public void RecoverHp(float baseAmount) {
-        Ref<float> amount = new Ref<float>(baseAmount);
+        Ref<float> amount = new Ref<float>(baseAmount * GetFinalStat(StatType.Healing));
 
         // 회복할때 (회복수치를 조정가능)
         OnRecoverHp?.Invoke(this, amount);

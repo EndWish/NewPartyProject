@@ -8296,19 +8296,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7783237652193721230, guid: 3da842c263179914899df8f78fffbb9d, type: 3}
       propertyPath: unitDataList.Array.data[0].Type
-      value: 8
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 7783237652193721230, guid: 3da842c263179914899df8f78fffbb9d, type: 3}
       propertyPath: unitDataList.Array.data[1].Type
-      value: 8
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 7783237652193721230, guid: 3da842c263179914899df8f78fffbb9d, type: 3}
       propertyPath: unitDataList.Array.data[2].Type
-      value: 8
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 7783237652193721230, guid: 3da842c263179914899df8f78fffbb9d, type: 3}
       propertyPath: unitDataList.Array.data[3].Type
-      value: 8
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 7809708094059049046, guid: 3da842c263179914899df8f78fffbb9d, type: 3}
       propertyPath: m_AnchorMax.y

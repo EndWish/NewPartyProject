@@ -47,10 +47,10 @@ public class HowlingSkill : ActiveSkill
     public override int GetSelectionNum() {
         return 1;
     }
-    public override bool SelectionPred(Party party) {
-        if (!base.SelectionPred(party))
+    public override bool SelectionPred(Unit unit) {
+        if (!base.SelectionPred(unit))
             return false;
-        return Owner.MyParty.TeamType == party.TeamType;
+        return Owner.MyParty.TeamType == unit.TeamType;
     }
 
     [PunRPC] protected void CreateReinforceFXRPC() {

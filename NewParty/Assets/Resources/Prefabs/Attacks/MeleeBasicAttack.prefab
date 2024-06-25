@@ -47,6 +47,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   InitTags: 9575000097750000
+  IconSp: {fileID: 0}
   fx: {fileID: 4340515167073732975}
 --- !u!114 &4758052794893937834
 MonoBehaviour:

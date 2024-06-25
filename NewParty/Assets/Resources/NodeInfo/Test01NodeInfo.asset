@@ -25,19 +25,19 @@ MonoBehaviour:
   WaveInfoList:
   - Wave: 1
     UnitInfoList:
-    - UnitType: 7
+    - UnitType: 9
       GrowthLevelRange:
         x: 0
         y: 2
-    - UnitType: 7
+    - UnitType: 9
       GrowthLevelRange:
         x: 0
         y: 2
-    - UnitType: 7
+    - UnitType: 9
       GrowthLevelRange:
         x: 0
         y: 2
-    - UnitType: 7
+    - UnitType: 9
       GrowthLevelRange:
         x: 0
         y: 2

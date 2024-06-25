@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 
@@ -198,10 +199,11 @@ public class TokenSelector : MonoBehaviour
             case BattleSelectionType.Party:
                 while (nSelection < maxSelection) {
                     List<Party> parties = new List<Party>();
-                    BattleManager.Instance.ActionAllParty((party) => {
-                        if (activeSkill.SelectionPred(party))
-                            parties.Add(party);
+                    BattleManager.Instance.ActionAllUnit((unit) => {
+                        if (activeSkill.SelectionPred(unit))
+                            parties.Add(unit.MyParty);
                     });
+                    parties = parties.Distinct().ToList();
 
                     if (parties.Count == 0)
                         break;

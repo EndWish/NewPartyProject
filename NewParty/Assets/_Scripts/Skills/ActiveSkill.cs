@@ -40,7 +40,6 @@ public abstract class ActiveSkill : Skill
     }
 
     public virtual bool SelectionPred(Unit unit) { return true; }
-    public virtual bool SelectionPred(Party party) { return true; }
     public abstract BattleSelectionType GetSelectionType();
     public abstract int GetSelectionNum();
 

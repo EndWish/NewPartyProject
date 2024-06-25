@@ -92,6 +92,7 @@ MonoBehaviour:
   - StatTypeRPC
   - StatusEffectFormRPC
   - ValueRPC
+  - CreateFXRPC
   DisableAutoOpenWizard: 1
   ShowSettings: 0
   DevRegionSetOnce: 1

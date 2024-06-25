@@ -212,10 +212,19 @@ public class BattleManager : MonoBehaviourPunCallbacksSingleton<BattleManager>
             #endregion
 
             // (방장) 행동 게이지 랜덤으로 세팅
-            
             if (PhotonNetwork.IsMasterClient) {
                 TestBattlePage = "행동 게이지 세팅 및 토큰 생성중...";
                 ActionAllUnit((unit) => { unit.ActionGauge = UnityEngine.Random.Range(0, Unit.MaxActionGauge); });
+            }
+
+            // (방장) OnBeginWave 함수 발동
+            if (PhotonNetwork.IsMasterClient) {
+                List<Unit> units = new List<Unit>();
+                ActionAllUnit(unit => units.Add(unit));
+                units.Sort((a, b) => { return 0 < (b.ActionGauge - a.ActionGauge) ? 1 : -1; });
+                foreach (var unit in units) {
+                    yield return StartCoroutine(GameManager.CoInvoke(unit.CoOnBeginWave));
+                }
             }
 
             // 턴 반복 ////////////////////////////////////////////////////////
@@ -319,8 +328,6 @@ public class BattleManager : MonoBehaviourPunCallbacksSingleton<BattleManager>
                 }
                 #endregion
 
-
-
                 // (전부) 웨이브 결과 확인
                 if (Parties[(int)TeamType.Player].Count == 0) {
                     // 패배
@@ -340,6 +347,17 @@ public class BattleManager : MonoBehaviourPunCallbacksSingleton<BattleManager>
                         });
                         RaiseSyncCount();
                     }
+
+                    // (방장) OnEndWave 함수 발동
+                    if (PhotonNetwork.IsMasterClient) {
+                        List<Unit> units = new List<Unit>();
+                        ActionAllUnit(unit => units.Add(unit));
+                        units.Sort((a, b) => { return 0 < (b.ActionGauge - a.ActionGauge) ? 1 : -1; });
+                        foreach (var unit in units) {
+                            yield return StartCoroutine(GameManager.CoInvoke(unit.CoOnEndWave));
+                        }
+                    }
+
                     yield return new WaitUntil(() => { return 0 < SyncCount; });
                     DownSyncCount();
 

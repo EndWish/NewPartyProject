@@ -30,7 +30,7 @@ public abstract class Attack : MonoBehaviourPun
     protected IEnumerator Hit(Unit target) {
         DamageCalculator dc = new GameObject("DamageCalculator").AddComponent<DamageCalculator>();
         yield return StartCoroutine(dc.Advance(Dmg, Caster, target, this));
-        yield return StartCoroutine(GameManager.CoInvoke(Caster.CoOnHit, target));
+        yield return StartCoroutine(GameManager.CoInvoke(Caster.CoOnHit, target, this));
     }
     protected IEnumerator CalculateAndHit(Unit target) {
         bool isHit = CalculateHit(target);

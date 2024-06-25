@@ -138,15 +138,17 @@ public class Unit : MonoBehaviourPun, IPointerClickHandler, IPointerEnterHandler
     // 배틀페이지와 관련한 이벤트 변수
     public Func<IEnumerator> CoOnBeginMyTurn, CoOnEndMyTurn;
     public Func<IEnumerator> CoOnBeginTick;
+    public Func<IEnumerator> CoOnBeginWave, CoOnEndWave;
 
     // 전투 관련 코루틴 변수
     public Action<HitCalculator> OnBeforeCalculateHit;
     public Action<DamageCalculator> OnBeforeCalculateDmg, OnAfterCalculateDmg;
     public Func<IEnumerator> CoOnAvoid, CoOnDie;
     public Func<Unit, IEnumerator> CoOnKill; // 매개변수(죽인 대상)
-    public Func<Unit, IEnumerator> CoOnHit; // 매개변수(명중한 대상)
+    public Func<Unit, Attack, IEnumerator> CoOnHit; // 매개변수(명중한 대상, 공격)
     public Func<Unit, DamageCalculator, IEnumerator> CoOnHitDmg; // 매개변수(때린 대상, DamageCalculator)
     public Func<Unit, float, float, IEnumerator> CoOnHitHp; // 매개변수(때린 대상, hp에 준 피해, 초과 피해)
+
 
     // 유니티 함수 ////////////////////////////////////////////////////////////
     protected void Awake() {
@@ -435,6 +437,10 @@ public class Unit : MonoBehaviourPun, IPointerClickHandler, IPointerEnterHandler
         List<Token> selectedTokens = Tokens.FindAll(token => token.IsSelected);
         foreach (Token token in selectedTokens)
             RemoveToken(token);
+    }
+    public void RemoveRandomToken() {
+        if (Tokens.Count == 0) return;
+        RemoveToken(Tokens.PickRandom());
     }
 
     [PunRPC] protected void ClearAllTokenRPC() {

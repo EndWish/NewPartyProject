@@ -15,6 +15,7 @@ public class Party : MonoBehaviourPunCallbacks, IScrollHandler
 
     // 개인 정보 //////////////////////////////////////////////////////////////
     public TeamType TeamType = TeamType.None;
+    private bool isSyncIndex = false;
     private bool isMoveStop = false;
     private int remainRestSkill = 0;
 
@@ -56,6 +57,23 @@ public class Party : MonoBehaviourPunCallbacks, IScrollHandler
 
     public int GetIndex() {
         return BattleManager.Instance.Parties[(int)TeamType].IndexOf(this);
+    }
+    [PunRPC] 
+    private void SetIndexRPC(int index) {
+        List<Party> parites = BattleManager.Instance.Parties[(int)TeamType];
+
+        System.Exception exception = new System.Exception();
+        parites.TrySwap(GetIndex(), index, out exception);
+    }
+    public void SetIndex(int index) {
+        photonView.RPC("SetIndexRPC", RpcTarget.AllViaServer, index);
+    }
+    [PunRPC]
+    private void IsSyncIndexRPC(bool isSyncIndex) {
+        this.isSyncIndex = isSyncIndex;
+    }
+    public void IsSyncIndex(bool isSyncIndex) {
+        photonView.RPC("IsSyncIndexRPC", RpcTarget.All, isSyncIndex);
     }
 
     // 유닛 추가
@@ -120,11 +138,12 @@ public class Party : MonoBehaviourPunCallbacks, IScrollHandler
 
     // IScroll, 오브젝트 위에서 스크롤 되었을 때
     public void OnScroll(PointerEventData eventData) {
-        if (isMoveStop) {
+        if (isSyncIndex && isMoveStop) {
             Vector2 wheelInput = eventData.scrollDelta;
             if (wheelInput.y > 0) {    // 휠 위로
                 BattleManager.Instance.RotateParties(TeamType, 1);
-            } else if (wheelInput.y < 0) {   // 휠 아래로
+            }
+            else if (wheelInput.y < 0) {   // 휠 아래로
                 BattleManager.Instance.RotateParties(TeamType, -1);
             }
         }

@@ -117,8 +117,6 @@ public class BattleManager : MonoBehaviourPunCallbacksSingleton<BattleManager>
         AddParty(myParty, TeamType.Player);
         #endregion
 
-
-
         #region 로딩 처리
         TestBattlePage = "로딩중...";
         // 확인 메시지 보내기
@@ -150,8 +148,19 @@ public class BattleManager : MonoBehaviourPunCallbacksSingleton<BattleManager>
 
         #endregion
 
-        // 게임 시작
-        Debug.Log("게임 시작");
+        // (방장) 파티 순서 동기화하기
+        if (PhotonNetwork.IsMasterClient) {
+            for (int i = 0; i < Parties[(int)TeamType.Player].Count; ++i) {
+                Party party = Parties[(int)TeamType.Player][i];
+                party.SetIndex(i);
+                party.IsSyncIndex(true);
+            }
+            RaiseSyncCount();
+        }
+        // (전부) 턴 계산 및 토큰 지급이 끝날때 까지 대기
+        TestBattlePage = "파티 순서 동기화중...";
+        yield return new WaitUntil(() => { return 0 < SyncCount; });
+        DownSyncCount();
 
         // (웨이브 준비 -> 웨이브) 반복
         while (true) {
@@ -185,29 +194,32 @@ public class BattleManager : MonoBehaviourPunCallbacksSingleton<BattleManager>
             #region (방장)적 파티 생성하기
             if (PhotonNetwork.IsMasterClient) {
                 TestBattlePage = "적 파티 생성중";
-                Party enemyParty = PhotonNetwork.Instantiate("Prefabs/Battles/Party", Vector3.zero, Quaternion.identity).GetComponent<Party>();
+                for(int i = 0; i < clients.Count; ++i) {
+                    Party enemyParty = PhotonNetwork.Instantiate("Prefabs/Battles/Party", Vector3.zero, Quaternion.identity).GetComponent<Party>();
 
 
-                List<DungeonNodeInfo.UnitInfo> unitInfoList = null;
-                // 특정 웨이브 출현정보가 있으면 그대로 생성한다
-                var waveInfo = dungeonNodeInfo.WaveInfoList?.Find((info) => info.Wave == this.Wave);
-                if (waveInfo != null) {
-                    unitInfoList = waveInfo.UnitInfoList;
-                }
-                // 특정 웨이브 출현정보가 없으면 랜덤으로 생성한다
-                else {
-                    // 몇 명을 생성할지 정하고 유닛을 생성한다
-                    int nEnemy = GetRandomEnemyNum();
-                    unitInfoList = dungeonNodeInfo.GetRandomUnitInfo(nEnemy);
-                }
+                    List<DungeonNodeInfo.UnitInfo> unitInfoList = null;
+                    // 특정 웨이브 출현정보가 있으면 그대로 생성한다
+                    var waveInfo = dungeonNodeInfo.WaveInfoList?.Find((info) => info.Wave == this.Wave);
+                    if (waveInfo != null) {
+                        unitInfoList = waveInfo.UnitInfoList;
+                    }
+                    // 특정 웨이브 출현정보가 없으면 랜덤으로 생성한다
+                    else {
+                        // 몇 명을 생성할지 정하고 유닛을 생성한다
+                        int nEnemy = GetRandomEnemyNum();
+                        unitInfoList = dungeonNodeInfo.GetRandomUnitInfo(nEnemy);
+                    }
 
-                foreach (var unitInfo in unitInfoList) {
-                    Unit.Data unitData = unitInfo.ToUnitData();
-                    Unit syncUnit = PhotonNetwork.Instantiate(GameManager.GetUnitPrefabPath() + unitData.Type.ToString(), Vector3.zero, Quaternion.identity).GetComponent<Unit>();
-                    syncUnit.ApplyData(unitData);
-                    enemyParty.AddUnit(syncUnit);
+                    foreach (var unitInfo in unitInfoList) {
+                        Unit.Data unitData = unitInfo.ToUnitData();
+                        Unit syncUnit = PhotonNetwork.Instantiate(GameManager.GetUnitPrefabPath() + unitData.Type.ToString(), Vector3.zero, Quaternion.identity).GetComponent<Unit>();
+                        syncUnit.ApplyData(unitData);
+                        enemyParty.AddUnit(syncUnit);
+                    }
+                    AddParty(enemyParty, TeamType.Enemy);
+                    enemyParty.IsSyncIndex(true);
                 }
-                AddParty(enemyParty, TeamType.Enemy);
             }
             #endregion
 
@@ -387,7 +399,8 @@ public class BattleManager : MonoBehaviourPunCallbacksSingleton<BattleManager>
 
 
 
-    [PunRPC] private void IsAllLoadedRPC(bool result) {
+    [PunRPC] 
+    private void IsAllLoadedRPC(bool result) {
         isAllLoaded = result;
     }
     public bool IsAllLoaded {
@@ -395,7 +408,8 @@ public class BattleManager : MonoBehaviourPunCallbacksSingleton<BattleManager>
         set { photonView.RPC("IsAllLoadedRPC", RpcTarget.All, value); }
     }
 
-    [PunRPC] private void AddPartyRPC(int partyViewId, TeamType teamType) {
+    [PunRPC] 
+    private void AddPartyRPC(int partyViewId, TeamType teamType) {
         Party party = PhotonView.Find(partyViewId).GetComponent<Party>();
         Parties[(int)teamType].Add(party);
         party.OnSetTeam(teamType);
@@ -403,7 +417,8 @@ public class BattleManager : MonoBehaviourPunCallbacksSingleton<BattleManager>
     public void AddParty(Party party, TeamType teamType) {
         photonView.RPC("AddPartyRPC", RpcTarget.All, party.photonView.ViewID, teamType);
     }
-    [PunRPC] private void RemovePartyRPC(int partyViewId, TeamType teamType) {
+    [PunRPC] 
+    private void RemovePartyRPC(int partyViewId, TeamType teamType) {
         Party party = PhotonView.Find(partyViewId).GetComponent<Party>();
         Parties[(int)teamType].Remove(party);
     }
@@ -419,11 +434,15 @@ public class BattleManager : MonoBehaviourPunCallbacksSingleton<BattleManager>
         else
             return Vector3.zero;
     }
-    public void RotateParties(TeamType teamType, int rightOffset) {
+    [PunRPC]
+    private void RotatePartiesRPC(TeamType teamType, int rightOffset) {
         Parties[(int)teamType].Rotate(rightOffset);
-        for(int i = 0; i < Parties[(int)teamType].Count; ++i) {
+        for (int i = 0; i < Parties[(int)teamType].Count; ++i) {
             Party party = Parties[(int)teamType][i];
         }
+    }
+    public void RotateParties(TeamType teamType, int rightOffset) {
+        photonView.RPC("RotatePartiesRPC", RpcTarget.AllViaServer, teamType, rightOffset);
     }
 
     private int GetRandomEnemyNum() {

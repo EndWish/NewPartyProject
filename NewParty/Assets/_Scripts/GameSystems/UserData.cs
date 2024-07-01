@@ -45,7 +45,7 @@ public class UserData : MonoBehaviourSingleton<UserData>
 
     public void SetNewPlayerData(string nickname) {
         Nickname = nickname;
-        ClearNodes = GetDefaultCloearNodes();
+        ClearNodes = GetDefaultClearNodes();
         UnitDataList = GetDefaultUnitDataList();
         UnitList = CreateUnitListFrom(UnitDataList);
         SoulFragmentList = new List<SoulFragment>();
@@ -60,7 +60,7 @@ public class UserData : MonoBehaviourSingleton<UserData>
         Nickname = ES3.Load<string>("Nickname", nickname);
 
         HashSet<NodeName> cloearNoes = new HashSet<NodeName>();
-        ClearNodes = ES3.Load<HashSet<NodeName>>("ClearNodes", nickname, GetDefaultCloearNodes());
+        ClearNodes = ES3.Load<HashSet<NodeName>>("ClearNodes", nickname, GetDefaultClearNodes());
         UnitDataList = ES3.Load<List<Unit.Data>>("UnitDataList", nickname, GetDefaultUnitDataList());
         UnitList = CreateUnitListFrom(UnitDataList);
 
@@ -115,7 +115,7 @@ public class UserData : MonoBehaviourSingleton<UserData>
     }
 
     // Default 정보 불러오는 함수
-    private HashSet<NodeName> GetDefaultCloearNodes() {
+    private HashSet<NodeName> GetDefaultClearNodes() {
         HashSet<NodeName> clearNodes = new HashSet<NodeName>();
         clearNodes.Add(NodeName.Village);
         return clearNodes;
@@ -126,8 +126,10 @@ public class UserData : MonoBehaviourSingleton<UserData>
         };
 
 #if DEVELOPMENT_BUILD || UNITY_EDITOR
-        for(int i = 0; i < 70; ++i) {
-            unitDataList.Add(new Unit.Data(UnitType.Garuda, UnityEngine.Random.Range(-10, 20)));
+        for(int i = 0; i < 4; ++i) {
+            unitDataList.Add(new Unit.Data(UnitType.Garuda, -10 + i * 10));
+            unitDataList.Add(new Unit.Data(UnitType.HowlingWolf, -10 + i * 10));
+            unitDataList.Add(new Unit.Data(UnitType.InfectedMosquito, -10 + i * 10));
         }
 #endif
 

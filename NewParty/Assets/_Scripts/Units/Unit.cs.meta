@@ -5,6 +5,7 @@ MonoImporter:
   serializedVersion: 2
   defaultReferences:
   - damageTextPrefab: {fileID: 2881550184623929366, guid: f5d1e68190a73d8418c5b39401d9e5c6, type: 3}
+  - HealingFxPrefab: {fileID: 5097042485739383194, guid: a72f858eaab9f75438787a63abbea6ab, type: 3}
   - tokenPrefab: {fileID: 8702565092637999532, guid: 882856b875f2a3c4ebca75c3d9971f36, type: 3}
   - tokensParent: {instanceID: 0}
   - growthLevelText: {instanceID: 0}
@@ -14,7 +15,9 @@ MonoImporter:
   - hpGaugeFill: {instanceID: 0}
   - hpGaugeBgFill: {instanceID: 0}
   - barrierGaugeFill: {instanceID: 0}
-  - BasicAtkSkill: {instanceID: 0}
+  - statusEffectIconParent: {instanceID: 0}
+  - BasicAtkSkill: {fileID: -5586483465949782403, guid: 3173c32698c226049a4f4eddf11dbca7, type: 3}
+  - BasicBarrierSkill: {fileID: -7218852982965067321, guid: bc91e0ec4d9fffb4d9462b9d4523ffe2, type: 3}
   - skillsParent: {instanceID: 0}
   executionOrder: 0
   icon: {instanceID: 0}

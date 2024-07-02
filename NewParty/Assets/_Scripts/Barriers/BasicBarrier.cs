@@ -21,6 +21,12 @@ public class BasicBarrier : Barrier
         }
     }
 
+    public void Init(Unit caster, float amount) {
+        Amount = amount;
+        Caster = caster;
+        caster.AddBarrier(this);
+    }
+
     public override float GetPriority() {
         return float.MaxValue;
     }

@@ -11,7 +11,6 @@ public class BasicAttackSkill : ActiveSkill
     }
 
     public BasicAttackType Type;
-    [SerializeField] private BasicAttack basicAttackPrefab;
 
     protected override void Awake() {
         base.Awake();

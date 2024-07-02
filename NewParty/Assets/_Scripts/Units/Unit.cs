@@ -83,6 +83,7 @@ public class Unit : MonoBehaviourPun, IPointerClickHandler, IPointerEnterHandler
     public Transform StatusEffectIconParent { get { return statusEffectIconParent; } }
 
     public BasicAttackSkill BasicAtkSkill;
+    public BasicBarrierSkill BasicBarrierSkill;
     [SerializeField] protected Transform skillsParent;
 
     // 개인 정보 //////////////////////////////////////////////////////////////
@@ -161,6 +162,7 @@ public class Unit : MonoBehaviourPun, IPointerClickHandler, IPointerEnterHandler
         actionGauge = 0;
 
         BasicAtkSkill.Owner = this;
+        BasicBarrierSkill.Owner = this;
 
         foreach (Skill skill in skillsParent.GetComponentsInChildren<Skill>(true)) {
             skill.Owner = this;
@@ -397,7 +399,7 @@ public class Unit : MonoBehaviourPun, IPointerClickHandler, IPointerEnterHandler
         else if (random <= GetFinalStat(StatType.AtkTokenWeight) + GetFinalStat(StatType.SkillTokenWeight))
             type = TokenType.Skill;
         else
-            type = TokenType.Shield;
+            type = TokenType.Barrier;
 
         photonView.RPC("CreateTokenRPC", RpcTarget.All, type);
 
@@ -459,28 +461,6 @@ public class Unit : MonoBehaviourPun, IPointerClickHandler, IPointerEnterHandler
     public IEnumerator CoDiscardAction() {
         RemoveSelectedToken();
         yield return new WaitForSeconds(0.3f);
-    }
-    public IEnumerator CoBasicBarrier() {
-        // 토큰을 개수를 세고 삭제한다
-        int tokenStack = Tokens.FindAll(token => token.IsSelected).Count;
-        RemoveSelectedToken();
-
-        // 기본 배리어 생성 및 적용
-        BasicBarrier barrier = PhotonNetwork.Instantiate(GameManager.GetBarrierPrefabPath("BasicBarrier"), 
-            transform.position, Quaternion.identity)
-            .GetComponent<BasicBarrier>();
-        barrier.Amount = GetFinalStat(StatType.Shield) * (1f + GetFinalStat(StatType.StackShield) * (tokenStack - 1));
-        barrier.Caster = this;
-        AddBarrier(barrier);
-
-        // 기본 배리어 과부하 상태이상 생성 및 적용
-        BasicBarrierOverload statusEffect = PhotonNetwork.Instantiate(GameManager.GetStatusEffectPrefabPath("BasicBarrierOverload"),
-            transform.position, Quaternion.identity)
-            .GetComponent<BasicBarrierOverload>();
-        statusEffect.Caster = this;
-        AddStatusEffect(statusEffect);
-
-        yield break;
     }
 
     public bool HasTurn() {

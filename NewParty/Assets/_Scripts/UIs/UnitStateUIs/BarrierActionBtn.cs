@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ShieldActionBtn : FixedActionBtn
+public class BarrierActionBtn : FixedActionBtn
 {
     protected override void UpdateBtn() {
         BattleManager battleManager = BattleManager.Instance;
@@ -18,9 +18,10 @@ public class ShieldActionBtn : FixedActionBtn
             if (!token.IsSelected)
                 continue;
 
-            if (token.Type == TokenType.Shield) {
+            if (token.Type == TokenType.Barrier) {
                 result = true;
-            } else {
+            } 
+            else {
                 result = false;
                 break;
             }
@@ -34,12 +35,12 @@ public class ShieldActionBtn : FixedActionBtn
 
         if (MeetClickCondition()) {
             BattleSelectable.StopSelectMode();
-            battleManager.ActionCoroutine = targetUnit.CoBasicBarrier();
+            battleManager.ActionCoroutine = targetUnit.BasicBarrierSkill.CoUse();
         }
     }
 
     protected override string GetTooltipTitle() {
-        return "기본 방어막 생성";
+        return targetUnit?.BasicBarrierSkill.Name;
     }
 
     protected override string GetTooltipRightUpperText() {
@@ -47,6 +48,6 @@ public class ShieldActionBtn : FixedActionBtn
     }
 
     protected override string GetTooltipDescription() {
-        return "쉴드의 100% 만큼 방어막을 생성한다. 방어 토큰을 추가로 사용할 경우 개당 스택 쉴드 만큼 방어막이 늘어난다.";
+        return targetUnit?.BasicBarrierSkill.GetDescription();
     }
 }

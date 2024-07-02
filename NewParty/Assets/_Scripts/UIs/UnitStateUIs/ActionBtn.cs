@@ -58,10 +58,6 @@ public abstract class ActionBtn : MonoBehaviour
 
     protected virtual bool MeetClickCondition() {
         BattleManager battleManager = BattleManager.Instance;
-        Debug.Log("targetUnit.IsMine() : " + targetUnit?.IsMine()
-            + "\n targetUnit == battleManager.UnitOfTurn : " + (targetUnit == battleManager.UnitOfTurn)
-             + "\n battleManager.ActionCoroutine == null : " + (battleManager.ActionCoroutine == null));
-
         return Active && targetUnit != null && targetUnit.IsMine() && targetUnit == battleManager.UnitOfTurn && battleManager.ActionCoroutine == null;
     }
     public abstract void OnClick();
@@ -78,7 +74,6 @@ public abstract class ActionBtn : MonoBehaviour
     protected abstract string GetTooltipDescription();
 
     public void OnPointerEnter() {
-        Debug.Log("ActionBtn - OnPointerEnter");
         Tooltip tooltip = Tooltip.Instance;
         tooltip.IconImg.sprite = iconImg.sprite;
         tooltip.TitleText.text = GetTooltipTitle();

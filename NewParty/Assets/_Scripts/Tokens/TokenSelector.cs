@@ -36,7 +36,7 @@ public class TokenSelector : MonoBehaviour
         // 방어 토큰이 많을 경우
         // 배리어를 사용하면 효과가 있을 때 사용한다
         if (4 <= nShield && IsEffectiveBarrier(unit, nShield)) {
-            SelectAllTokens(unit, TokenType.Shield);
+            SelectAllTokens(unit, TokenType.Barrier);
             return ActionResult.Shield;
         }
 
@@ -48,7 +48,7 @@ public class TokenSelector : MonoBehaviour
 
         // 배리어를 사용하면 효과가 있을 때 사용한다
         if(0 < nShield && IsEffectiveBarrier(unit, nShield)) {
-            SelectAllTokens(unit, TokenType.Shield);
+            SelectAllTokens(unit, TokenType.Barrier);
             return ActionResult.Shield;
         }
 
@@ -83,7 +83,7 @@ public class TokenSelector : MonoBehaviour
         });
         nAtk = nTokens[(int)TokenType.Atk];
         nSkill = nTokens[(int)TokenType.Skill];
-        nShield = nTokens[(int)TokenType.Shield];
+        nShield = nTokens[(int)TokenType.Barrier];
     }
     static protected void SelectAllTokens(Unit unit) {
         foreach (var token in unit.Tokens) {
@@ -154,7 +154,7 @@ public class TokenSelector : MonoBehaviour
             unit.BasicAtkSkill.Use();
         }
         else if (actionResult == ActionResult.Shield) {
-            BattleManager.Instance.ActionCoroutine = unit.CoBasicBarrier();
+            BattleManager.Instance.ActionCoroutine = unit.BasicBarrierSkill.CoUse();
         }
         else if (actionResult == ActionResult.Skill
             && SelectRandomTarget(SelectRandomSkill(unit, out selectedSkill))) {

@@ -23,4 +23,16 @@ public class PassActionBtn : FixedActionBtn
             battleManager.ActionCoroutine = targetUnit.CoPassAction();
         }
     }
+
+    protected override string GetTooltipTitle() {
+        return "패스";
+    }
+
+    protected override string GetTooltipRightUpperText() {
+        return "";
+    }
+
+    protected override string GetTooltipDescription() {
+        return "아무런 행동을 하지 않고 턴을 종료한다.";
+    }
 }

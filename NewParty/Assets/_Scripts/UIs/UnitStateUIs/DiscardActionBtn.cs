@@ -32,4 +32,16 @@ public class DiscardActionBtn : FixedActionBtn
             battleManager.ActionCoroutine = targetUnit.CoDiscardAction();
         }
     }
+
+    protected override string GetTooltipTitle() {
+        return "선택한 토큰 버리기";
+    }
+
+    protected override string GetTooltipRightUpperText() {
+        return "토큰 1개 이상 선택";
+    }
+
+    protected override string GetTooltipDescription() {
+        return "선택한 토큰을 전부 버리고 턴을 종료한다.";
+    }
 }

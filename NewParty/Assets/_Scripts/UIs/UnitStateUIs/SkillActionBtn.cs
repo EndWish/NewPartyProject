@@ -6,7 +6,6 @@ using UnityEngine.UI;
 
 public class SkillActionBtn : ActionBtn
 {
-    [SerializeField] protected Image IconImg;
     [SerializeField] protected TextMeshProUGUI CostText;
     protected Skill targetSkill;
 
@@ -20,7 +19,7 @@ public class SkillActionBtn : ActionBtn
 
         targetUnit = unit;
         targetSkill = skill;
-        IconImg.sprite = targetSkill.IconSp;
+        iconImg.sprite = targetSkill.IconSp;
         CostText.text = targetSkill is ActiveSkill ? ((ActiveSkill)targetSkill).Cost.ToString() : "";
 
         BattleManager battleManager = BattleManager.Instance;
@@ -71,4 +70,15 @@ public class SkillActionBtn : ActionBtn
         base.OnCompleteSelection();
     }
 
+    protected override string GetTooltipTitle() {
+        return targetSkill.Name;
+    }
+
+    protected override string GetTooltipRightUpperText() {
+        return targetSkill is PassiveSkill ? "패시브" : "액티브";
+    }
+
+    protected override string GetTooltipDescription() {
+        return targetSkill.GetDescription();
+    }
 }

@@ -74,8 +74,8 @@ public class MassTransfusionSkill : ActiveSkill
     }
 
     public override string GetDescription() {
-        return string.Format("현재 체력의 {0:G}%를 소모하여 자신의 파티원들을 (소모한 체력 + 방어 관통력의 {1:G}%)만큼 체력을 회복시킨다. 그리고 자신에게 {2}턴간 회복력을 x{3:F2}증가시킨다.",
-            hpConsumptionRate * 100f, recoverDefPenCoefficient * 100f, turn, healingMul);
+        return string.Format("현재 체력의 {0:G}%를 소모하여 자신의 파티원들을 {1:G}만큼 체력을 회복시킨다. 그리고 자신에게 {2}턴간 회복력을 x{3:F2} 증가시킨다.",
+            hpConsumptionRate * 100f, Owner.Hp * hpConsumptionRate + Owner.GetFinalStat(StatType.DefPen) * recoverDefPenCoefficient, turn, healingMul);
     }
     
 }

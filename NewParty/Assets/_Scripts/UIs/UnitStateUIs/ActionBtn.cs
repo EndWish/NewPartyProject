@@ -5,6 +5,7 @@ using UnityEngine.UI;
 
 public abstract class ActionBtn : MonoBehaviour
 {
+    [SerializeField] protected Image iconImg;
     [SerializeField] protected Image bgImg;
     protected Color activedBgColor;
     protected Color disactivedBgColor;
@@ -72,5 +73,28 @@ public abstract class ActionBtn : MonoBehaviour
         ActionUnit = null;
     }
 
+    protected abstract string GetTooltipTitle();
+    protected abstract string GetTooltipRightUpperText();
+    protected abstract string GetTooltipDescription();
+
+    public void OnPointerEnter() {
+        Debug.Log("ActionBtn - OnPointerEnter");
+        Tooltip tooltip = Tooltip.Instance;
+        tooltip.IconImg.sprite = iconImg.sprite;
+        tooltip.TitleText.text = GetTooltipTitle();
+        tooltip.RightUpperText.text = GetTooltipRightUpperText();
+        tooltip.DescriptionText.text = GetTooltipDescription();
+
+        tooltip.transform.position = Input.mousePosition;
+        tooltip.gameObject.SetActive(true);
+
+        for (int i = 0; i < 2; ++i) {
+            LayoutRebuilder.ForceRebuildLayoutImmediate(tooltip.GetComponent<RectTransform>());
+        }
+
+    }
+    public void OnPointerExit() {
+        Tooltip.Instance.gameObject.SetActive(false);
+    }
 
 }

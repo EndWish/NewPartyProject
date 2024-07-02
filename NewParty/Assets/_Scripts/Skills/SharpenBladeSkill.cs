@@ -47,7 +47,7 @@ public class SharpenBladeSkill : ActiveSkill
     }
 
     public override string GetDescription() {
-        return string.Format("{0}턴 동안 치명타 확률이 {1:G}%p 상승한다.", turn, criChaAdd);
+        return string.Format("{0}턴 동안 치명타 확률이 {1:G}%p 상승한다.", turn, criChaAdd * 100f);
     }
     
 }

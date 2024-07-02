@@ -28,7 +28,7 @@ public class BasicAttackSkill : ActiveSkill
         BasicAttack attack = PhotonNetwork.Instantiate(GameManager.GetAttackPrefabPath(Type.ToString() + "BasicAttack"),
             target.transform.position, Quaternion.identity)
         .GetComponent<BasicAttack>();
-        float dmg = Owner.GetFinalStat(StatType.Str) * (1f + Owner.GetFinalStat(StatType.StackStr) * (tokenStack - 1));
+        float dmg = CalculateDmg(tokenStack);
         attack.Init(Owner, target, tokenStack, dmg);
 
         yield return StartCoroutine(attack.Animate());
@@ -67,7 +67,12 @@ public class BasicAttackSkill : ActiveSkill
         return result;
     }
 
+    protected float CalculateDmg(int tokenStack) {
+        return Owner.GetFinalStat(StatType.Str) * (1f + Owner.GetFinalStat(StatType.StackStr) * (tokenStack - 1));
+    }
+
     public override string GetDescription() {
-        return "기본 공격을 하여 공격력의 100% 만큼 피해를 준다.";
+        return string.Format("적을 공격하여 {0}의 데미지를 준다.", 
+            CalculateDmg(Mathf.Max(1, Owner.Tokens.FindAll(token => token.IsSelected && token.Type == TokenType.Atk).Count)));
     }
 }

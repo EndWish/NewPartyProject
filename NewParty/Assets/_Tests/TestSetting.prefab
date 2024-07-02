@@ -49,7 +49,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ab5da353a0996be40806826cced497de, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  nickname: "\uAE40\uC2DC\uC778"
+  nickname: t1
 --- !u!114 &6215669389552449629
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -75,10 +75,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   unitDataList:
-  - Type: 1
-  - Type: 1
-  - Type: 1
-  - Type: 1
+  - Type: 10
+  - Type: 10
+  - Type: 10
+  - Type: 10
 --- !u!114 &3096687417838399773
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -244,6 +244,22 @@ PrefabInstance:
     - target: {fileID: 2732865201644102491, guid: 8708921dd9f912841be430737214fae3, type: 3}
       propertyPath: m_Name
       value: StaticOverlayCanvas
+      objectReference: {fileID: 0}
+    - target: {fileID: 3630783369395922872, guid: 8708921dd9f912841be430737214fae3, type: 3}
+      propertyPath: m_Pivot.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3630783369395922872, guid: 8708921dd9f912841be430737214fae3, type: 3}
+      propertyPath: m_Pivot.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3630783369395922872, guid: 8708921dd9f912841be430737214fae3, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 599.8735
+      objectReference: {fileID: 0}
+    - target: {fileID: 3630783369395922872, guid: 8708921dd9f912841be430737214fae3, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 436.695
       objectReference: {fileID: 0}
     - target: {fileID: 6068527794567798399, guid: 8708921dd9f912841be430737214fae3, type: 3}
       propertyPath: m_AnchorMax.y

@@ -42,7 +42,7 @@ public class PierceShieldSkill : ActiveSkill
     }
 
     public override string GetDescription() {
-        return string.Format("적에게 공격력의 {0}%의  (#스킬공격 #근거리 #관통)데미지를 주고 {1}턴간 방어력을 x{2:F2} 감소시킨다.",
+        return string.Format("적에게 공격력의 {0}의  (#스킬공격 #근거리 #관통)데미지를 주고 {1}턴간 방어력을 x{2:F2} 감소시킨다.",
             Owner.GetFinalStat(StatType.Str) * dmgCoefficient, turn, defMul);
     }
 }

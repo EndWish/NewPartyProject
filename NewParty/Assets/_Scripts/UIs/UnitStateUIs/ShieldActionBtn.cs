@@ -37,4 +37,16 @@ public class ShieldActionBtn : FixedActionBtn
             battleManager.ActionCoroutine = targetUnit.CoBasicBarrier();
         }
     }
+
+    protected override string GetTooltipTitle() {
+        return "기본 방어막 생성";
+    }
+
+    protected override string GetTooltipRightUpperText() {
+        return "방어 토큰 1개 이상";
+    }
+
+    protected override string GetTooltipDescription() {
+        return "쉴드의 100% 만큼 방어막을 생성한다. 방어 토큰을 추가로 사용할 경우 개당 스택 쉴드 만큼 방어막이 늘어난다.";
+    }
 }

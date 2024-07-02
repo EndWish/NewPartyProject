@@ -61,7 +61,7 @@ public abstract class StatusEffect : MonoBehaviourPun
     }
 
 
-    protected virtual void InitIcon() {
+    public virtual void InitIcon() {
         seIcon.IconImg.sprite = this.IconSp;
         seIcon.GetTooltipTitle = () => Name;
         seIcon.GetTooltipRightUpperText = () => {
@@ -76,6 +76,19 @@ public abstract class StatusEffect : MonoBehaviourPun
                     return "형식 없음";
             }
         };
+        switch (Form) {
+            case StatusEffectForm.Buff:
+                seIcon.BgImg.color = Color.green; break;
+            case StatusEffectForm.Debuff:
+                seIcon.BgImg.color = Color.red; break;
+            case StatusEffectForm.Passive:
+                seIcon.BgImg.color = Color.gray; break;
+            default:
+                seIcon.BgImg.color = Color.black; break;
+        }
+
+        
+
         seIcon.GetTooltipDescription = GetDescription;
 
     }

@@ -149,8 +149,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4289789696
-  m_fontColor: {r: 0, g: 1, b: 0.69090366, a: 1}
+    rgba: 4278242815
+  m_fontColor: {r: 1, g: 0.8057231, b: 0, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -263,6 +263,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   iconImg: {fileID: 3162989245209789977}
+  bgImg: {fileID: 6708235577162191597}
   rightLowerText: {fileID: 4267739148294274521}
 --- !u!114 &1817770812775896367
 MonoBehaviour:

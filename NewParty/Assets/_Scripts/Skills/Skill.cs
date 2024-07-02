@@ -51,6 +51,7 @@ public abstract class Skill : MonoBehaviourPun
         statusEffect.Turn = turn;
         statusEffect.Caster = Owner;
         SetStatStatusEffectIcon(statusEffect);
+        statusEffect.InitIcon();
 
         return statusEffect;
     }

@@ -8,12 +8,14 @@ using UnityEngine.UI;
 public class StatusEffectIcon : MonoBehaviour
 {
     [SerializeField] protected Image iconImg;
+    [SerializeField] protected Image bgImg;
     [SerializeField] protected TextMeshProUGUI rightLowerText;
     public Func<string> GetTooltipDescription;
     public Func<string> GetTooltipRightUpperText;
     public Func<string> GetTooltipTitle;
 
     public Image IconImg { get { return iconImg; } }
+    public Image BgImg { get { return bgImg; } }
     public TextMeshProUGUI RightLowerText { get { return rightLowerText; } }
 
     public void OnPointerEnter() {

@@ -350,6 +350,7 @@ GameObject:
   - component: {fileID: 4180694268467541313}
   - component: {fileID: 3665171078027082905}
   - component: {fileID: 6136754302276393465}
+  - component: {fileID: 4477121068790699792}
   m_Layer: 0
   m_Name: TransfusionMosquito
   m_TagString: Untagged
@@ -533,6 +534,18 @@ SortingGroup:
   m_SortingLayer: -5
   m_SortingOrder: 10
   m_SortAtRoot: 0
+--- !u!114 &4477121068790699792
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2956000546201537875}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8901b1a0c676498479be8e35495dfa59, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &3530754540832985520
 GameObject:
   m_ObjectHideFlags: 0

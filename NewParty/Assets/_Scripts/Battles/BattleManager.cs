@@ -115,6 +115,7 @@ public class BattleManager : MonoBehaviourPunCallbacksSingleton<BattleManager>
             myParty.AddUnit(syncUnit);
         }
         AddParty(myParty, TeamType.Player);
+
         #endregion
 
         #region 로딩 처리
@@ -261,6 +262,9 @@ public class BattleManager : MonoBehaviourPunCallbacksSingleton<BattleManager>
                         unit.ActionGauge += gaugeFillingTime * unit.GetFinalStat(StatType.Speed);
                     });
                     UnitOfTurn.ActionGauge = 0;
+
+                    RotateParties(UnitOfTurn.TeamType, -UnitOfTurn.MyParty.GetIndex());
+                    yield return new WaitForSeconds(0.3f);
 
                     // 토큰을 지급한다
                     yield return StartCoroutine(GameManager.CoInvoke(UnitOfTurn.CoOnBeginMyTurn));

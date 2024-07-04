@@ -51,8 +51,8 @@ public class UnitStateUI : MonoBehaviour
         rightArrow.SetActive(skillActionBtnOffset != skillActionBtnMaxOffset);
 
         // 프로필 업데이트
-        profileImg.sprite = targetUnit?.profileImage.sprite;
-        growthLevelText.text = targetUnit?.GetGrowthLevelStr();
+        profileImg.sprite = targetUnit?.ProfileImage.sprite;
+        growthLevelText.text = targetUnit == null ? "" : GrowthLevelToStr(targetUnit.GrowthLevel);
 
         // 능력치 텍스트 표시
         HpmText.text = targetUnit == null ? "-" : FloatToNormalStr(targetUnit.Hp) + "/" + FloatToNormalStr(targetUnit.GetFinalStat(StatType.Hpm));
@@ -119,6 +119,10 @@ public class UnitStateUI : MonoBehaviour
         } else if (wheelInput.y < 0) {   // 휠 아래로
             RaiseSkillActionBtnOffset();
         }
+    }
+
+    public string GrowthLevelToStr(int level) {
+        return 0 <= level ? ("+" + level.ToString()) : level.ToString();
     }
 
 }

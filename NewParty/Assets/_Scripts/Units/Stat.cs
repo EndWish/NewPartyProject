@@ -19,6 +19,30 @@ public enum StatForm
     Num
 }
 
+public static class StatClamp
+{
+    public static float[] MinStats { get; set; } = new float[(int)StatType.Num] {
+        1f, //Hpm
+        1f, //Speed
+        0f, //Str
+        1f, //StackStr
+        0f, //SkillStr
+        0f, //DefPen
+        0f, //CriCha
+        1f, //CriMul
+        0f, //Def
+        0f, //Shield
+        1f, //StackShield
+        0f, //Acc
+        0f, //Avoid
+        0f, //Healing
+        0f, //AtkTokenWeight
+        0f, //SkillTokenWeight
+        0f, //ShieldTokenWeight
+        //Num
+    };
+}
+
 public class StatToKorean
 {
     static private string[] mapping = { 

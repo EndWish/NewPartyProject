@@ -66,20 +66,16 @@ public class Unit : MonoBehaviourPun, IPointerClickHandler, IPointerEnterHandler
     // 연결 정보 //////////////////////////////////////////////////////////////
     [SerializeField] protected DamageText damageTextPrefab;
     [SerializeField] protected GameObject HealingFxPrefab;
-
     [SerializeField] protected Token tokenPrefab;
-    [SerializeField] protected Transform tokensParent;
-    [SerializeField] protected TextMeshProUGUI growthLevelText;
 
-    [SerializeField] protected Image flagBorderImage;
-    public Image profileImage;
+    [SerializeField] protected UnitCanvas unitCanvas;
 
-    [SerializeField] protected RectTransform actionGaugeFill;
-    [SerializeField] protected RectTransform hpGaugeFill;
-    [SerializeField] protected RectTransform hpGaugeBgFill;
-    [SerializeField] protected RectTransform barrierGaugeFill;
+    protected Image profileImage;
+    public Image ProfileImage { get { return profileImage; } }
 
-    [SerializeField] protected Transform statusEffectIconParent;
+    protected Transform tokensParent;
+
+    protected Transform statusEffectIconParent;
     public Transform StatusEffectIconParent { get { return statusEffectIconParent; } }
 
     public BasicAttackSkill BasicAtkSkill;
@@ -155,8 +151,6 @@ public class Unit : MonoBehaviourPun, IPointerClickHandler, IPointerEnterHandler
     protected void Awake() {
         if (InitTags != null)
             Tags.AddTag(InitTags);
-
-        growthLevelText.text = GetGrowthLevelStr();
         UpdateAllStat();
         
         actionGauge = 0;
@@ -168,6 +162,10 @@ public class Unit : MonoBehaviourPun, IPointerClickHandler, IPointerEnterHandler
             skill.Owner = this;
             Skills.Add(skill);
         }
+
+        profileImage = unitCanvas.transform.Find("Profile").GetComponent<Image>();
+        tokensParent = unitCanvas.transform.Find("TokensParent").GetComponent<Transform>();
+        statusEffectIconParent = unitCanvas.transform.Find("StatusEffectIconParent").GetComponent<Transform>();
     }
 
     protected void Start() {
@@ -190,23 +188,12 @@ public class Unit : MonoBehaviourPun, IPointerClickHandler, IPointerEnterHandler
             transform.localPosition = Vector3.MoveTowards(transform.localPosition, pos, 10f * Time.deltaTime);
         }
 
-        // 게이지
-        hpGaugeFill.localScale = new Vector3(Hp / GetFinalStat(StatType.Hpm), 1, 1);
-        hpGaugeBgFill.localScale = new Vector3(MathF.Max(hpGaugeBgFill.localScale.x - Time.deltaTime * 2, hpGaugeFill.localScale.x), 1, 1);
-        actionGaugeFill.localScale = new Vector3(ActionGauge / MaxActionGauge, 1, 1);
-        float sumBarrierAmount = 0;
-        UsefulMethod.ActionAll(Barriers, (barrier) => { sumBarrierAmount += barrier.Amount; });
-        barrierGaugeFill.localScale = new Vector3( Mathf.Min(1, sumBarrierAmount / GetFinalStat(StatType.Hpm)), 1, 1);
-
         // 크기
         if (HasTurn()) {
             transform.localScale = Vector3.MoveTowards(transform.localScale, Vector3.one * 1.3f, Time.deltaTime * 2f);
         } else {
             transform.localScale = Vector3.MoveTowards(transform.localScale, Vector3.one, Time.deltaTime * 2f);
         }
-
-        // 깃발 테두기 색상
-        if (IsClicked()) { flagBorderImage.color = new Color(1, 1, 0); } else if (IsOverOnMouse()) { flagBorderImage.color = new Color(1, 0.7f, 0); } else { flagBorderImage.color = new Color(1, 1, 1); }
 
     }
 
@@ -215,7 +202,6 @@ public class Unit : MonoBehaviourPun, IPointerClickHandler, IPointerEnterHandler
         get { return MyData.GrowthLevel; }
         set {
             MyData.GrowthLevel = value;
-            growthLevelText.text = GetGrowthLevelStr();
             UpdateBaseStat(true);
         }
     }
@@ -281,7 +267,7 @@ public class Unit : MonoBehaviourPun, IPointerClickHandler, IPointerEnterHandler
 
     // 능력치 관련 함수
     public float GetFinalStat(StatType type) {
-        return Stats[(int)StatForm.Final, (int)type];
+        return Mathf.Max(StatClamp.MinStats[(int)type], Stats[(int)StatForm.Final, (int)type]);
     }
 
     public void UpdateFinalStat(StatType type) {
@@ -488,7 +474,6 @@ public class Unit : MonoBehaviourPun, IPointerClickHandler, IPointerEnterHandler
     [PunRPC] protected void ApplyDataRPC(Unit.Data data) {
         this.MyData = data;
         UpdateAllStat();
-        growthLevelText.text = GetGrowthLevelStr();
         // 프로필 이미지도 적용
     }
     public void ApplyData(Unit.Data data) {
@@ -624,9 +609,9 @@ public class Unit : MonoBehaviourPun, IPointerClickHandler, IPointerEnterHandler
     public void OnSetTeam(TeamType type) {
         TeamType = type;
         if(TeamType == TeamType.Player) {
-            profileImage.transform.localScale = new Vector3(1, 1, 1);
+            ProfileImage.transform.localScale = new Vector3(1, 1, 1);
         } else if(TeamType == TeamType.Enemy) {
-            profileImage.transform.localScale = new Vector3(-1, 1, 1);
+            ProfileImage.transform.localScale = new Vector3(-1, 1, 1);
         }
     }
     public int GetIndex() {
@@ -639,11 +624,6 @@ public class Unit : MonoBehaviourPun, IPointerClickHandler, IPointerEnterHandler
     }
     public void Destroy() {
         photonView.RPC("DestroyRPC", RpcTarget.AllBuffered);
-    }
-
-    // 기타
-    public string GetGrowthLevelStr() {
-        return 0 <= GrowthLevel ? ("+" + GrowthLevel.ToString()) : GrowthLevel.ToString();
     }
 
 }

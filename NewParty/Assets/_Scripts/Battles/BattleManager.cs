@@ -257,7 +257,7 @@ public class BattleManager : MonoBehaviourPunCallbacksSingleton<BattleManager>
                     TestBattlePage = "턴 계산 및 토큰 지급중...";
                     // 누구의 턴인지 찾고 행동 게이지를 수정해 준다.
                     UnitOfTurn = CalculateUnitOfTurn();
-                    float gaugeFillingTime = (Unit.MaxActionGauge - UnitOfTurn.ActionGauge) / MathF.Max(UnitOfTurn.GetFinalStat(StatType.Speed), 1f);
+                    float gaugeFillingTime = (Unit.MaxActionGauge - UnitOfTurn.ActionGauge) / UnitOfTurn.GetFinalStat(StatType.Speed);
                     ActionAllUnit((unit) => {
                         unit.ActionGauge += gaugeFillingTime * unit.GetFinalStat(StatType.Speed);
                     });

@@ -119,14 +119,20 @@ public class BattleSelectable : MonoBehaviour, IPointerEnterHandler, IPointerExi
 
     // 연결 변수 //////////////////////////////////////////////////////////////
     private Unit myUnit;
-    [SerializeField] private GameObject SelectionUI;
-    [SerializeField] private TextMeshProUGUI SelectionUIText;
+    [SerializeField] private UnitCanvas unitCanvas;
+    private GameObject SelectionUI;
+    private TextMeshProUGUI SelectionUIText;
 
     // 개인 변수 //////////////////////////////////////////////////////////////
     private int numSelection = 0;
     private bool isOnMouse = false;
 
     // 유니티 함수 ////////////////////////////////////////////////////////////
+    private void Awake() {
+        SelectionUI = unitCanvas.transform.Find("SelectionUI").gameObject;
+        SelectionUIText = SelectionUI.transform.Find("Text").GetComponent<TextMeshProUGUI>();
+    }
+
     private void Start() {
         SelectionUI.SetActive(false);
         myUnit = GetComponent<Unit>();

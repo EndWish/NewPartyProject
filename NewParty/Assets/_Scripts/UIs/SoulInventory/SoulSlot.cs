@@ -20,7 +20,7 @@ public class SoulSlot : PageViewSlot<SoulFragment>
             profileImage.color = new Color(0, 0, 0, 0);
         } else {
             iconImage.color = Color.white;
-            profileImage.sprite = Data.Target.profileImage.sprite;
+            profileImage.sprite = Data.Target.ProfileImage.sprite;
             profileImage.color = Color.white;
         }
 

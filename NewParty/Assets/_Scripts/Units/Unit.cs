@@ -2,22 +2,18 @@ using Photon.Pun;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEditor;
-using System.IO;
-using TMPro;
 using UnityEngine.UI;
-using UnityEngine.EventSystems;
-using JetBrains.Annotations;
-using System.Linq;
 
 public enum UnitType : int
 {
     None, Garuda,GrayWolf, RedWolf, SilverManeWolf, BloodyWolf, HowlingWolf, AwlMosquito, DrillMosquito, TransfusionMosquito, InfectedMosquito,
 }
 
-public class Unit : MonoBehaviourPun, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler
+public class Unit : MonoBehaviourPun
 {
     // 서브 클래스 ////////////////////////////////////////////////////////////
     [Serializable]
@@ -64,17 +60,15 @@ public class Unit : MonoBehaviourPun, IPointerClickHandler, IPointerEnterHandler
     static public int NumSoulFragmentRequiredForSummon = 100;
 
     // 연결 정보 //////////////////////////////////////////////////////////////
+    public UnitStaticData StaticData;
+
     [SerializeField] protected DamageText damageTextPrefab;
     [SerializeField] protected GameObject HealingFxPrefab;
     [SerializeField] protected Token tokenPrefab;
 
     [SerializeField] protected UnitCanvas unitCanvas;
-
-    protected Image profileImage;
-    public Image ProfileImage { get { return profileImage; } }
-
+    public Image ProfileImage { get { return unitCanvas.ProfileImage; } }
     protected Transform tokensParent;
-
     protected Transform statusEffectIconParent;
     public Transform StatusEffectIconParent { get { return statusEffectIconParent; } }
 
@@ -83,11 +77,6 @@ public class Unit : MonoBehaviourPun, IPointerClickHandler, IPointerEnterHandler
     [SerializeField] protected Transform skillsParent;
 
     // 개인 정보 //////////////////////////////////////////////////////////////
-    // 이름
-    public string Name;
-
-    // 영혼파편 가치
-    public int SoulFragmentValueAsDust;
 
     // 저장에 필요한 변수
     public Data MyData;
@@ -97,7 +86,6 @@ public class Unit : MonoBehaviourPun, IPointerClickHandler, IPointerEnterHandler
     private Unit murderer = null;
 
     // 능력치 관련 변수
-    [SerializeField, EnumNamedArrayAttribute(typeof(StatType))] protected float[] initStats = new float[(int)StatType.Num];
     public float[,] Stats { get; set; } = new float[(int)StatForm.Num, (int)StatType.Num];
     public UnityAction<Unit>[] OnUpdateFinalStat = new UnityAction<Unit>[(int)StatType.Num];
 
@@ -108,7 +96,6 @@ public class Unit : MonoBehaviourPun, IPointerClickHandler, IPointerEnterHandler
     protected float actionGauge = 0;
 
     // 태그 관련 변수
-    public List<Tag> InitTags;
     public Tags Tags { get; set; } = new Tags();
 
     // 토큰 관련 변수
@@ -149,8 +136,8 @@ public class Unit : MonoBehaviourPun, IPointerClickHandler, IPointerEnterHandler
 
     // 유니티 함수 ////////////////////////////////////////////////////////////
     protected void Awake() {
-        if (InitTags != null)
-            Tags.AddTag(InitTags);
+        if (StaticData.InitTags != null)
+            Tags.AddTag(StaticData.InitTags);
         UpdateAllStat();
         
         actionGauge = 0;
@@ -163,7 +150,6 @@ public class Unit : MonoBehaviourPun, IPointerClickHandler, IPointerEnterHandler
             Skills.Add(skill);
         }
 
-        profileImage = unitCanvas.transform.Find("Profile").GetComponent<Image>();
         tokensParent = unitCanvas.transform.Find("TokensParent").GetComponent<Transform>();
         statusEffectIconParent = unitCanvas.transform.Find("StatusEffectIconParent").GetComponent<Transform>();
     }
@@ -173,31 +159,10 @@ public class Unit : MonoBehaviourPun, IPointerClickHandler, IPointerEnterHandler
         CoOnAvoid += CoCreateAvoidText;
     }
 
-    protected void Update() {
-        // 위치
-        if (TeamType != TeamType.None) {
-            Vector3 pos = Vector3.zero;
-
-            int sign = 0;
-            if (TeamType == TeamType.Player) sign = -1;
-            else if (TeamType == TeamType.Enemy) sign = 1;
-
-            int index = GetIndex();
-            pos += new Vector3(1.5f * sign * index, 0, -1); // 갈수록 작아지도록 하고 싶다
-
-            transform.localPosition = Vector3.MoveTowards(transform.localPosition, pos, 10f * Time.deltaTime);
-        }
-
-        // 크기
-        if (HasTurn()) {
-            transform.localScale = Vector3.MoveTowards(transform.localScale, Vector3.one * 1.3f, Time.deltaTime * 2f);
-        } else {
-            transform.localScale = Vector3.MoveTowards(transform.localScale, Vector3.one, Time.deltaTime * 2f);
-        }
-
-    }
-
     // 함수 ///////////////////////////////////////////////////////////////////
+    public string Name {
+        get { return StaticData.Name; }
+    }
     public int GrowthLevel {
         get { return MyData.GrowthLevel; }
         set {
@@ -245,26 +210,6 @@ public class Unit : MonoBehaviourPun, IPointerClickHandler, IPointerEnterHandler
 
     public float RemainHp { get { return GetFinalStat(StatType.Hpm) - hp; } }
 
-    // 클릭 관련 함수
-    public void OnPointerClick(PointerEventData eventData) {
-        if (BattleSelectable.IsRunning)
-            return;
-
-        BattleManager battleManager = BattleManager.Instance;
-        if (battleManager.UnitClicked == this)
-            battleManager.UnitClicked = null;
-        else
-            battleManager.UnitClicked = this;
-    }
-    public void OnPointerEnter(PointerEventData eventData) {
-        BattleManager battleManager = BattleManager.Instance;
-        battleManager.UnitOnMouse = this;
-    }
-    public void OnPointerExit(PointerEventData eventData) {
-        BattleManager battleManager = BattleManager.Instance;
-        battleManager.UnitOnMouse = null;
-    }
-
     // 능력치 관련 함수
     public float GetFinalStat(StatType type) {
         return Mathf.Max(StatClamp.MinStats[(int)type], Stats[(int)StatForm.Final, (int)type]);
@@ -290,7 +235,7 @@ public class Unit : MonoBehaviourPun, IPointerClickHandler, IPointerEnterHandler
     public void UpdateBaseStat(bool updateFinalStat) {
         // 기본 능력치 계산
         for (StatType type = 0; type < StatType.Num; ++type) {
-            Stats[(int)StatForm.Base, (int)type] = initStats[(int)type] * (1f + 0.01f * GrowthLevel);
+            Stats[(int)StatForm.Base, (int)type] = StaticData.InitStats[(int)type] * (1f + 0.01f * GrowthLevel);
         }
 
         // 최종 능력치에 적용

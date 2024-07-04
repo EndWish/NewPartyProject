@@ -119,7 +119,7 @@ public class SoulTorchUI : MonoBehaviour
             int num = 0;
             int dustAmount = 0;
             if (int.TryParse(str, out num)) {
-                dustAmount = num * SoulFragment.Target.SoulFragmentValueAsDust / 2;
+                dustAmount = num * SoulFragment.Target.StaticData.SoulFragmentValueAsDust / 2;
             }
             yesNoInputPopup.SetQuestionText(string.Format("해당 영혼 파편을 분해하시겠 습니까?\n\n{0:G}개 분해 시 {1:G} 개의 가루를 얻습니다.", num, dustAmount));
         });
@@ -138,7 +138,7 @@ public class SoulTorchUI : MonoBehaviour
 
                 UserData userData = UserData.Instance;
 
-                int dustAmount = num * SoulFragment.Target.SoulFragmentValueAsDust / 2;
+                int dustAmount = num * SoulFragment.Target.StaticData.SoulFragmentValueAsDust / 2;
                 userData.SoulDust += dustAmount;
 
                 SoulFragment.AddNum(-num);
@@ -246,7 +246,7 @@ public class SoulTorchUI : MonoBehaviour
         return 100f * Mathf.Pow(0.92f, level);
     }
     private int GetDecompositionDustAmount(Unit unit) {
-        return unit.SoulFragmentValueAsDust * Unit.NumSoulFragmentRequiredForSummon / 2;
+        return unit.StaticData.SoulFragmentValueAsDust * Unit.NumSoulFragmentRequiredForSummon / 2;
     }
 
 }

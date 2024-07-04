@@ -927,6 +927,7 @@ MonoBehaviour:
   hpGaugeBgFill: {fileID: 5790341427613338624}
   barrierGaugeFill: {fileID: 2766891105861215436}
   flagBorderImage: {fileID: 3039245479190687603}
+  profileImage: {fileID: 1078203237539517467}
   growthLevelText: {fileID: 9121316250125573414}
 --- !u!1 &8278417432818705093
 GameObject:

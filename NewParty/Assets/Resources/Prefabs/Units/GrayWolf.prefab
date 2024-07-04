@@ -48,6 +48,7 @@ GameObject:
   - component: {fileID: 3665171078027082905}
   - component: {fileID: 6136754302276393465}
   - component: {fileID: -3709834582558503829}
+  - component: {fileID: 7116887673470728139}
   m_Layer: 0
   m_Name: GrayWolf
   m_TagString: Untagged
@@ -93,29 +94,9 @@ MonoBehaviour:
   BasicAtkSkill: {fileID: 1467067061474094711}
   BasicBarrierSkill: {fileID: 4046062660322152807}
   skillsParent: {fileID: 8572338997569936211}
-  Name: "\uD68C\uC0C9 \uB291\uB300"
-  SoulFragmentValueAsDust: 100
+  StaticData: {fileID: 11400000, guid: 8ec5a16e741269544b4c86b9dd15e318, type: 2}
   MyData:
     Type: 2
-  initStats:
-  - 20
-  - 10
-  - 10
-  - 0.2
-  - 1
-  - 10
-  - 0.15
-  - 1.5
-  - 10
-  - 4
-  - 0.2
-  - 10
-  - 12
-  - 1
-  - 40
-  - 30
-  - 30
-  InitTags: a69c0000
   Tokens: []
 --- !u!114 &1450987356555728983
 MonoBehaviour:
@@ -232,6 +213,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8901b1a0c676498479be8e35495dfa59, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &7116887673470728139
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2956000546201537875}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14fbcbaa7d35e784c9e6a7abfd9f5fee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1001 &1646370307377279049

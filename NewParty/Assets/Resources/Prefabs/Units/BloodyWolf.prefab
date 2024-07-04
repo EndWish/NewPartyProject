@@ -51,6 +51,7 @@ GameObject:
   - component: {fileID: 3665171078027082905}
   - component: {fileID: 6136754302276393465}
   - component: {fileID: 5989339888020319274}
+  - component: {fileID: -8582680871338871305}
   m_Layer: 0
   m_Name: BloodyWolf
   m_TagString: Untagged
@@ -96,29 +97,9 @@ MonoBehaviour:
   BasicAtkSkill: {fileID: 1467067061474094711}
   BasicBarrierSkill: {fileID: 6883371513050825008}
   skillsParent: {fileID: 8572338997569936211}
-  Name: "\uD53C\uBE44\uB9B0\uB0B4 \uB291\uB300"
-  SoulFragmentValueAsDust: 100
+  StaticData: {fileID: 11400000, guid: 11800c8b11b85c34db837f8f8ecdc812, type: 2}
   MyData:
     Type: 5
-  initStats:
-  - 30
-  - 15
-  - 15
-  - 0.25
-  - 1
-  - 15
-  - 0.2
-  - 1.7
-  - 15
-  - 6.5
-  - 0.2
-  - 16
-  - 18
-  - 1
-  - 40
-  - 30
-  - 30
-  InitTags: a69c0000
   Tokens: []
 --- !u!114 &1450987356555728983
 MonoBehaviour:
@@ -235,6 +216,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8901b1a0c676498479be8e35495dfa59, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &-8582680871338871305
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2956000546201537875}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14fbcbaa7d35e784c9e6a7abfd9f5fee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1001 &274062950494644893

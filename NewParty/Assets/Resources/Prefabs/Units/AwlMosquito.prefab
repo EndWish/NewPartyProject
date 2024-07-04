@@ -46,9 +46,10 @@ GameObject:
   - component: {fileID: 1450987356555728983}
   - component: {fileID: 6743452321893632350}
   - component: {fileID: 4180694268467541313}
-  - component: {fileID: 3665171078027082905}
   - component: {fileID: 6136754302276393465}
   - component: {fileID: 5455179124022659878}
+  - component: {fileID: -4679576223199324942}
+  - component: {fileID: 1997971674739389635}
   m_Layer: 0
   m_Name: AwlMosquito
   m_TagString: Untagged
@@ -94,29 +95,9 @@ MonoBehaviour:
   BasicAtkSkill: {fileID: 1467067061474094711}
   BasicBarrierSkill: {fileID: 5156982355835929246}
   skillsParent: {fileID: 8572338997569936211}
-  Name: "\uC1A1\uACF3 \uBAA8\uAE30"
-  SoulFragmentValueAsDust: 100
+  StaticData: {fileID: 11400000, guid: 8071b5049bf7865468520a0d8559c401, type: 2}
   MyData:
     Type: 7
-  initStats:
-  - 20
-  - 10.5
-  - 11
-  - 0.2
-  - 1
-  - 15
-  - 0.1
-  - 1.5
-  - 8
-  - 5
-  - 0.2
-  - 12.5
-  - 10.5
-  - 1
-  - 40
-  - 30
-  - 30
-  InitTags: 099d0000
   Tokens: []
 --- !u!114 &1450987356555728983
 MonoBehaviour:
@@ -166,7 +147,43 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   unitCanvas: {fileID: 4189298352238270460}
---- !u!61 &3665171078027082905
+--- !u!210 &6136754302276393465
+SortingGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2956000546201537875}
+  m_Enabled: 1
+  m_SortingLayerID: -1186223569
+  m_SortingLayer: -5
+  m_SortingOrder: 10
+  m_SortAtRoot: 0
+--- !u!114 &5455179124022659878
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2956000546201537875}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8901b1a0c676498479be8e35495dfa59, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &-4679576223199324942
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2956000546201537875}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14fbcbaa7d35e784c9e6a7abfd9f5fee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!61 &1997971674739389635
 BoxCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -211,30 +228,6 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1, y: 2}
   m_EdgeRadius: 0
---- !u!210 &6136754302276393465
-SortingGroup:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2956000546201537875}
-  m_Enabled: 1
-  m_SortingLayerID: -1186223569
-  m_SortingLayer: -5
-  m_SortingOrder: 10
-  m_SortAtRoot: 0
---- !u!114 &5455179124022659878
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2956000546201537875}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8901b1a0c676498479be8e35495dfa59, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &1862077165926081018
 PrefabInstance:
   m_ObjectHideFlags: 0

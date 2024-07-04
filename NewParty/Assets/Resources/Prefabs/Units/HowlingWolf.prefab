@@ -53,6 +53,7 @@ GameObject:
   - component: {fileID: 3665171078027082905}
   - component: {fileID: 6136754302276393465}
   - component: {fileID: 8823125693851705989}
+  - component: {fileID: 6744618854605224746}
   m_Layer: 0
   m_Name: HowlingWolf
   m_TagString: Untagged
@@ -91,6 +92,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 40978b0007ec1c246a1ab5185cb9eccd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  StaticData: {fileID: 11400000, guid: fccdedd8e805c2443bf5499b9be74674, type: 2}
   damageTextPrefab: {fileID: 2881550184623929366, guid: f5d1e68190a73d8418c5b39401d9e5c6, type: 3}
   HealingFxPrefab: {fileID: 5097042485739383194, guid: a72f858eaab9f75438787a63abbea6ab, type: 3}
   tokenPrefab: {fileID: 8702565092637999532, guid: 882856b875f2a3c4ebca75c3d9971f36, type: 3}
@@ -98,29 +100,8 @@ MonoBehaviour:
   BasicAtkSkill: {fileID: 1467067061474094711}
   BasicBarrierSkill: {fileID: 1016374323947751149}
   skillsParent: {fileID: 8572338997569936211}
-  Name: "\uC6B8\uBD80\uC9D6\uB294 \uB291\uB300"
-  SoulFragmentValueAsDust: 100
   MyData:
     Type: 6
-  initStats:
-  - 30
-  - 15
-  - 15
-  - 0.25
-  - 1
-  - 15
-  - 0.2
-  - 1.7
-  - 15
-  - 6.5
-  - 0.2
-  - 16
-  - 18
-  - 1
-  - 40
-  - 30
-  - 30
-  InitTags: a69c0000
   Tokens: []
 --- !u!114 &1450987356555728983
 MonoBehaviour:
@@ -237,6 +218,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8901b1a0c676498479be8e35495dfa59, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &6744618854605224746
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2956000546201537875}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14fbcbaa7d35e784c9e6a7abfd9f5fee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1001 &945204856243917654

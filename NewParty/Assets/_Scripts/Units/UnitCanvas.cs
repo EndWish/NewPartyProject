@@ -15,11 +15,14 @@ public class UnitCanvas : MonoBehaviour
     [SerializeField] protected RectTransform barrierGaugeFill;
 
     [SerializeField] protected Image flagBorderImage;
+    [SerializeField] protected Image profileImage;
+    public Image ProfileImage { get { return profileImage; } }
 
     [SerializeField] protected TextMeshProUGUI growthLevelText;
 
     private void Awake() {
         unit = transform.parent.GetComponent<Unit>();
+        ProfileImage.sprite = unit.StaticData.ProfileSprite;
     }
 
     private void Update() {

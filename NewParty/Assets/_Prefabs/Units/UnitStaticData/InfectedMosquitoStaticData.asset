@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 38aa9058387ff7f41a3d66bf6a65ed0d, type: 3}
+  m_Name: InfectedMosquitoStaticData
+  m_EditorClassIdentifier: 
+  ProfileSprite: {fileID: 21300000, guid: 5b611cf179fbde44a9584aea81001b50, type: 3}
+  Name: "\uAC10\uC5FC\uB41C \uBAA8\uAE30"
+  Type: 10
+  InitStats:
+  - 20
+  - 10.5
+  - 11
+  - 0.2
+  - 1
+  - 15
+  - 0.1
+  - 1.5
+  - 8
+  - 5
+  - 0.2
+  - 12.5
+  - 10.5
+  - 1
+  - 40
+  - 30
+  - 30
+  InitTags: 099d0000
+  SoulFragmentValueAsDust: 100

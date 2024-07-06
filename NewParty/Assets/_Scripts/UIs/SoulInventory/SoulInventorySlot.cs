@@ -33,7 +33,7 @@ public class SoulInventorySlot : SoulSlot, IBeginDragHandler, IEndDragHandler, I
     }
 
     public void OnBeginDrag(PointerEventData eventData) {
-        dragProfileImg.sprite = Data?.Target.ProfileImage.sprite;
+        dragProfileImg.sprite = Data?.UnitProfileSprite;
         dragTransform.gameObject.SetActive(true);
     }
 

@@ -88,7 +88,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 40978b0007ec1c246a1ab5185cb9eccd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  StaticData: {fileID: 11400000, guid: a98a6293dd1c94247884d61bb5b3126d, type: 2}
   damageTextPrefab: {fileID: 2881550184623929366, guid: f5d1e68190a73d8418c5b39401d9e5c6, type: 3}
   HealingFxPrefab: {fileID: 5097042485739383194, guid: a72f858eaab9f75438787a63abbea6ab, type: 3}
   tokenPrefab: {fileID: 8702565092637999532, guid: 882856b875f2a3c4ebca75c3d9971f36, type: 3}
@@ -97,8 +96,8 @@ MonoBehaviour:
   BasicBarrierSkill: {fileID: 6909847815408026017}
   skillsParent: {fileID: 8572338997569936211}
   MyData:
-    Type: 0
-  Tokens: []
+    sharedData: {fileID: 11400000, guid: a98a6293dd1c94247884d61bb5b3126d, type: 2}
+    growthLevel: 0
 --- !u!114 &1450987356555728983
 MonoBehaviour:
   m_ObjectHideFlags: 0

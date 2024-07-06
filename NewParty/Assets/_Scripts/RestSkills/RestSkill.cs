@@ -27,14 +27,11 @@ public abstract class RestSkill : MonoBehaviour
             if (UserParty == null) {
                 BattleSelectable.StopSelectMode();  // StopSelectMode 를 하면 targetParty가 null 이 되기 때문에 {} 안에서 실행
                 RunSelectMode();
-                Debug.Log("다른 선택 모드를 끄고 나를 켠다");
             } else {
                 BattleSelectable.StopSelectMode();
-                Debug.Log("나를 끈다");
             }
         } else {
             RunSelectMode();
-            Debug.Log("나를 켠다");
         }
     }
 

@@ -22,21 +22,21 @@ public class SoulTorchUI : MonoBehaviour
         get { return soulFragment; }
         set {
             soulFragment = value;
-            if( soulFragment != null && unit != null 
-                && soulFragment.GetUnitType() != unit.MyData.Type) {
-                unit = null;
+            if( soulFragment != null && unitData != null 
+                && soulFragment.Type != unitData.Type) {
+                unitData = null;
             }
             BtnLayerUpdate();
         }
     }
 
-    private Unit unit;
-    public Unit Unit {
-        get { return unit; }
+    private Unit.Data unitData;
+    public Unit.Data UnitData {
+        get { return unitData; }
         set { 
-            unit = value;
-            if (soulFragment != null && unit != null
-                && soulFragment.GetUnitType() != unit.MyData.Type) {
+            unitData = value;
+            if (soulFragment != null && unitData != null
+                && soulFragment.Type != unitData.Type) {
                 soulFragment = null;
             }
             BtnLayerUpdate();
@@ -49,7 +49,7 @@ public class SoulTorchUI : MonoBehaviour
 
     private void Update() {
         soulTorchSlot.SlotUpdate(SoulFragment, 0);
-        unitTorchSlot.SlotUpdate(Unit, 0);
+        unitTorchSlot.SlotUpdate(UnitData, 0);
     }
 
     private void OnDestroy() {
@@ -61,7 +61,7 @@ public class SoulTorchUI : MonoBehaviour
         if (yesNoPopup != null)
             Destroy(yesNoPopup.gameObject);
 
-        bool hasUnit = Unit != null;
+        bool hasUnit = UnitData != null;
         bool hasSoulFragment = SoulFragment != null;
 
         GameObject targetLayer = null;
@@ -89,16 +89,16 @@ public class SoulTorchUI : MonoBehaviour
         if (yesNoPopup != null)
             return;
 
-        if(Unit.NumSoulFragmentRequiredForSummon <= SoulFragment.GetNum()) {
-            Unit.Data unitData = new Unit.Data(SoulFragment.GetUnitType(), Unit.GrowthLevelWhenSummoned);
-            Unit newUnit = UserData.Instance.AddUnitData(unitData);
-            SoulFragment.AddNum(-Unit.NumSoulFragmentRequiredForSummon);
-            if (SoulFragment.GetNum() <= 0) {
-                UserData.Instance.SoulFragmentList.Remove(SoulFragment);
+        if(Unit.NumSoulFragmentRequiredForSummon <= SoulFragment.Num) {
+            // 비용 지불
+            SoulFragment.Num -= Unit.NumSoulFragmentRequiredForSummon;
+            if (SoulFragment.Num <= 0) {
+                UserData.Instance.RemoveSoulFragment(SoulFragment);
                 SoulFragment = null;
             }
 
-            Unit = newUnit;
+            Unit.Data unitData = new Unit.Data(SoulFragment.Type, Unit.GrowthLevelWhenSummoned);
+            UserData.Instance.AddUnitData(unitData);
         }
     }
     public void OnClickSoulDecompositionBtn() {
@@ -107,24 +107,26 @@ public class SoulTorchUI : MonoBehaviour
 
         Debug.Log("입력이 있는 팝업창을 띄운다");
         yesNoPopup = Instantiate(yesNoInputPopupPrefab, new Vector3(Screen.width / 2, Screen.height / 2), Quaternion.identity,
-    this.transform.parent);
+            this.transform.parent);
 
         YesNoInputPopup yesNoInputPopup = yesNoPopup as YesNoInputPopup;
 
+        // 질문
         yesNoInputPopup.SetQuestionText(string.Format("해당 영혼 파편을 분해하시겠 습니까?\n\n{0:G}개 분해 시 {1:G} 개의 가루를 얻습니다.", 0, 0));
 
+        // 입력 필드 설정
         yesNoInputPopup.SetContentType(TMPro.TMP_InputField.ContentType.IntegerNumber);
-        
         yesNoInputPopup.AddActionToInputField((str) => {
             int num = 0;
             int dustAmount = 0;
             if (int.TryParse(str, out num)) {
-                dustAmount = num * SoulFragment.Target.StaticData.SoulFragmentValueAsDust / 2;
+                dustAmount = num * SoulFragment.UnitSharedData.SoulFragmentValueAsDust / 2;
             }
             yesNoInputPopup.SetQuestionText(string.Format("해당 영혼 파편을 분해하시겠 습니까?\n\n{0:G}개 분해 시 {1:G} 개의 가루를 얻습니다.", num, dustAmount));
         });
-        yesNoInputPopup.AddActionToInputField(yesNoInputPopup.GetInputIntegerLimitAction(0, SoulFragment.GetNum()));
+        yesNoInputPopup.AddActionToInputField(yesNoInputPopup.GetInputIntegerLimitAction(0, SoulFragment.Num));
 
+        // Yes 버튼 설정
         yesNoInputPopup.SetYesText("분해하기");
         yesNoInputPopup.AddActionToYes(yesNoInputPopup.GetCloseAction());
         yesNoInputPopup.AddActionToYes(() => {
@@ -133,17 +135,17 @@ public class SoulTorchUI : MonoBehaviour
 
             int num;
             if (int.TryParse(yesNoInputPopup.GetInputFieldText(), out num)) {
-                if (num <= 0 || SoulFragment.GetNum() < num)
+                if (num <= 0 || SoulFragment.Num < num)
                     return;
 
                 UserData userData = UserData.Instance;
 
-                int dustAmount = num * SoulFragment.Target.StaticData.SoulFragmentValueAsDust / 2;
+                int dustAmount = num * SoulFragment.UnitSharedData.SoulFragmentValueAsDust / 2;
                 userData.SoulDust += dustAmount;
 
-                SoulFragment.AddNum(-num);
-                if (SoulFragment.GetNum() <= 0) {
-                    userData.SoulFragmentList.Remove(SoulFragment);
+                SoulFragment.Num -= num;
+                if (SoulFragment.Num <= 0) {
+                    userData.RemoveSoulFragment(SoulFragment);
                     SoulFragment = null;
                 }
             }
@@ -151,6 +153,7 @@ public class SoulTorchUI : MonoBehaviour
 
         });
 
+        // No 버튼 설정
         yesNoInputPopup.SetNoText("취소");
         yesNoInputPopup.AddActionToNo(yesNoInputPopup.GetCloseAction());
 
@@ -166,14 +169,14 @@ public class SoulTorchUI : MonoBehaviour
             return;
 
         UserData userData = UserData.Instance;
-        int cost = GetCostSoulFragmentForGrowth(Unit.GrowthLevel) * Unit.NumSoulFragmentRequiredForSummon;
+        int cost = GetCostSoulFragmentForGrowth(UnitData.GrowthLevel) * Unit.NumSoulFragmentRequiredForSummon;
         if (cost <= userData.SoulDust) {
             // 영혼파편 사용
             userData.SoulDust -= cost;
 
             // 확률적으로 성장
-            if (Random.Range(0f, 100f) <= GetSuccessProbabilityForGrowth(Unit.GrowthLevel)) {
-                Unit.GrowthLevel += 1;
+            if (Random.Range(0f, 100f) <= GetSuccessProbabilityForGrowth(UnitData.GrowthLevel)) {
+                UnitData.GrowthLevel += 1;
             }
             else {
                 Debug.Log("영혼 가루을 이용한 성장 실패");
@@ -189,18 +192,18 @@ public class SoulTorchUI : MonoBehaviour
         yesNoPopup = Instantiate(yesNoPopupPrefab, new Vector3(Screen.width / 2, Screen.height / 2), Quaternion.identity, 
             this.transform.parent);
 
-        int dustAmount = GetDecompositionDustAmount(Unit);
+        int dustAmount = GetDecompositionDustAmount(UnitData.SharedData);
         yesNoPopup.SetQuestionText(string.Format("해당 유닛을 분해하시겠 습니까?\n\n분해 시 {0:G} 개의 가루를 얻습니다.", dustAmount));
         yesNoPopup.SetYesText("분해하기");
         yesNoPopup.AddActionToYes(() => {
-            if (Unit == null)
+            if (UnitData == null)
                 return;
 
             UserData userData = UserData.Instance;
 
-            userData.SoulDust += GetDecompositionDustAmount(Unit);
-            userData.RemoveUnitData(Unit);
-            Unit = null;
+            userData.SoulDust += GetDecompositionDustAmount(UnitData.SharedData);
+            userData.RemoveUnitData(UnitData);
+            UnitData = null;
         });
         yesNoPopup.AddActionToYes(yesNoPopup.GetCloseAction());
 
@@ -218,18 +221,19 @@ public class SoulTorchUI : MonoBehaviour
         if (yesNoPopup != null)
             return;
 
-        int cost = GetCostSoulFragmentForGrowth(Unit.GrowthLevel);
-        if (cost <= SoulFragment.GetNum()) {
+        int cost = GetCostSoulFragmentForGrowth(UnitData.GrowthLevel);
+        if (cost <= SoulFragment.Num) {
             // 영혼파편 사용
-            SoulFragment.AddNum(-cost);
-            if(SoulFragment.GetNum() <= 0) {
-                UserData.Instance.SoulFragmentList.Remove(SoulFragment);
+            SoulFragment.Num -= cost;
+            if(SoulFragment.Num <= 0) {
+                UserData.Instance.RemoveSoulFragment(SoulFragment);
                 SoulFragment = null;
+
             }
 
             // 확률적으로 성장
-            if (Random.Range(0f, 100f) <= GetSuccessProbabilityForGrowth(Unit.GrowthLevel)) {
-                Unit.GrowthLevel += 1;
+            if (Random.Range(0f, 100f) <= GetSuccessProbabilityForGrowth(UnitData.GrowthLevel)) {
+                UnitData.GrowthLevel += 1;
             }
             else {
                 Debug.Log("영혼 파편을 이용한 성장 실패");
@@ -245,8 +249,8 @@ public class SoulTorchUI : MonoBehaviour
             return 100f;
         return 100f * Mathf.Pow(0.92f, level);
     }
-    private int GetDecompositionDustAmount(Unit unit) {
-        return unit.StaticData.SoulFragmentValueAsDust * Unit.NumSoulFragmentRequiredForSummon / 2;
+    private int GetDecompositionDustAmount(UnitSharedData unitSharedData) {
+        return unitSharedData.SoulFragmentValueAsDust * Unit.NumSoulFragmentRequiredForSummon / 2;
     }
 
 }

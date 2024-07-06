@@ -22,7 +22,7 @@ public class UnitCanvas : MonoBehaviour
 
     private void Awake() {
         unit = transform.parent.GetComponent<Unit>();
-        ProfileImage.sprite = unit.StaticData.ProfileSprite;
+        ProfileImage.sprite = unit.SharedData.ProfileSprite;
     }
 
     private void Update() {

@@ -1,13 +1,15 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class UserData : MonoBehaviourSingleton<UserData>
 {
 
     // 공유 정보 //////////////////////////////////////////////////////////////
-    static public int MaxPartyUnit = 4;
+    static public int PartySequenceMax = 4;
 
     // 개인 정보 //////////////////////////////////////////////////////////////
     public string Nickname { get; private set; }
@@ -17,11 +19,10 @@ public class UserData : MonoBehaviourSingleton<UserData>
     public HashSet<NodeName> ClearNodes { get; private set; }   // 저장 정보
 
     public List<Unit.Data> UnitDataList { get; private set; }   // 저장 정보
-    public List<Unit> UnitList { get; private set; } = new List<Unit>();
 
-    public Unit[] PartyUnitList { get; private set; } = new Unit[MaxPartyUnit];
+    public Unit.Data[] PartySequence { get; private set; }
 
-    public int SoulDust { get; set; } // 저장 정보
+    private int soulDust;
     public List<SoulFragment> SoulFragmentList { get; private set; }    // Data로 변환해서 저장
 
     // 유니티 함수 ////////////////////////////////////////////////////////////
@@ -31,158 +32,188 @@ public class UserData : MonoBehaviourSingleton<UserData>
         DontDestroyOnLoad(this);
     }
 
-#if DEVELOPMENT_BUILD || UNITY_EDITOR
-    private void Update() {
-        if (Input.GetKeyDown(KeyCode.F1)) {
-            Save();
-            OnlyDebug.Log("저장되었습니다.");
-        }
-
-    }
-#endif
-
     // 함수 ///////////////////////////////////////////////////////////////////
 
     public void SetNewPlayerData(string nickname) {
+        // 닉네임
         Nickname = nickname;
-        ClearNodes = GetDefaultClearNodes();
-        UnitDataList = GetDefaultUnitDataList();
-        UnitList = CreateUnitListFrom(UnitDataList);
-        SoulFragmentList = new List<SoulFragment>();
+        ES3.Save<string>("Nickname", Nickname, Nickname);
+
+        SetDefaultUnitData();
+        SetDefaultClearNodes();
+        SetDefaultSoulFragment();
         SoulDust = 0;
 
-        Save();
+        SetDefaultPartySequence();
+
     }
     public bool Load(string nickname) {
         if (!ES3.FileExists(nickname))
             return false;
 
         Nickname = ES3.Load<string>("Nickname", nickname);
-
-        HashSet<NodeName> cloearNoes = new HashSet<NodeName>();
-        ClearNodes = ES3.Load<HashSet<NodeName>>("ClearNodes", nickname, GetDefaultClearNodes());
-        UnitDataList = ES3.Load<List<Unit.Data>>("UnitDataList", nickname, GetDefaultUnitDataList());
-        UnitList = CreateUnitListFrom(UnitDataList);
-
-        LoadPartyUnit(nickname);
-
-        SoulFragmentList = new List<SoulFragment> { 
-#if DEVELOPMENT_BUILD || UNITY_EDITOR
-            new SoulFragment(new SoulFragment.Data(UnitType.Garuda, 15)) 
-#endif
-        };
-        List<SoulFragment.Data> soulFragmentDataList = ES3.Load("SoulFragmentDataList", nickname, new List<SoulFragment.Data>());
-        UsefulMethod.ActionAll(soulFragmentDataList, (x) => { SoulFragmentList.Add(new SoulFragment(x)); });
-
-        SoulDust = ES3.Load<int>("SoulDust", nickname, 0);
-
+        if (!LoadUnitDataList()) SetDefaultUnitData();
+        if (!LoadClearNodes()) SetDefaultClearNodes();
+        if (!LoadSoulFragmentList()) SetDefaultSoulFragment();
+        LoadSouldust();
+        if (!LoadPartySequence()) SetDefaultPartySequence();
         return true;
     }
+    
+    // 유닛 관련 함수
+    private void SetDefaultUnitData() {
+        UnitDataList = new List<Unit.Data>();
 
-    public void Save() {
-        ES3.Save<string>("Nickname", Nickname, Nickname);
-        ES3.Save<HashSet<NodeName>>("ClearNodes", ClearNodes, Nickname);
-        ES3.Save<List<Unit.Data>>("UnitDataList", UnitDataList, Nickname);
+        this.AddUnitData(new Unit.Data(UnitType.Garuda, 0));
 
-        List<SoulFragment.Data> soulFragmentDataList = new List<SoulFragment.Data>();
-        UsefulMethod.ActionAll(SoulFragmentList, (x) => { soulFragmentDataList.Add(x.GetData()); });
-        ES3.Save<List<SoulFragment.Data>>("SoulFragmentDataList", soulFragmentDataList, Nickname);
-        ES3.Save<int>("SoulDust", SoulDust, Nickname);
-
-        SavePartyUnit();
-    }
-
-    public void SavePartyUnit() {
-        int[] partyUnitIndices = GetDefaultPartyUnitIndices();
-
-        for (int i = 0; i < MaxPartyUnit; ++i) {
-            Unit partyUnit = PartyUnitList[i];
-            if (partyUnit != null)
-                partyUnitIndices[i] = UnitDataList.IndexOf(partyUnit.MyData);
+#if DEVELOPMENT_BUILD || UNITY_EDITOR
+        for (int i = 0; i < 4; ++i) {
+            this.AddUnitData(new Unit.Data(UnitType.Garuda, -10 + i * 10));
+            this.AddUnitData(new Unit.Data(UnitType.HowlingWolf, -10 + i * 10));
+            this.AddUnitData(new Unit.Data(UnitType.InfectedMosquito, -10 + i * 10));
         }
-        ES3.Save<int[]>("PartyUnitIndices", partyUnitIndices, Nickname);
+#endif
     }
-    public void LoadPartyUnit(string nickname) {
-        int[] partyUnitIndices = ES3.Load<int[]>("PartyUnitIndices", nickname, GetDefaultPartyUnitIndices());
+    public void AddUnitData(Unit.Data unitData) {
+        UnitDataList.Add(unitData);
 
-        for(int i = 0; i < MaxPartyUnit; ++i) {
-            int index = partyUnitIndices[i];
-            if (index != -1) {
-                Unit.Data unitData = UnitDataList[index];
-                PartyUnitList[i] = UnitList.Find(unit => unit.MyData == unitData);
+        // 새로운 정보일 경우 바로 저장한다.
+        if(unitData.SaveKey == -1) {
+            unitData.Save();
+            SaveUnitDataKeyList();
+        }
+    }
+    public void RemoveUnitData(Unit.Data unitData) {
+        unitData.DeleteSaveData();
+        UnitDataList.Remove(unitData);
+        SaveUnitDataKeyList();
+
+        // 파티슬롯에 끼워져 있을경우 제거하고 저장한다.
+        for (int i = 0; i < PartySequenceMax; ++i) {
+            if(PartySequence[i] == unitData) {
+                PartySequence[i] = null;
+                SavePartySequence();
+                break;
             }
         }
     }
-
-    // Default 정보 불러오는 함수
-    private HashSet<NodeName> GetDefaultClearNodes() {
-        HashSet<NodeName> clearNodes = new HashSet<NodeName>();
-        clearNodes.Add(NodeName.Village);
-        return clearNodes;
+    public void SaveUnitDataKeyList() {
+        List<long> keyList = UnitDataList.Select(data => data.SaveKey).ToList();
+        ES3.Save<List<long>>("UnitDataKeyList", keyList, Nickname);
     }
-    private List<Unit.Data> GetDefaultUnitDataList() {
-        List<Unit.Data> unitDataList = new List<Unit.Data> {
-            new Unit.Data(UnitType.Garuda, 0),
-        };
+    private bool LoadUnitDataList() {
+        if (ES3.KeyExists("UnitDataKeyList", Nickname)) {
+            
+            UnitDataList = new List<Unit.Data>();
+            List<long> dataKeyList = ES3.Load<List<long>>("UnitDataKeyList", Nickname);
+            foreach (long key in dataKeyList) {
+                UnitSaveFormat unitSaveFormat = ES3.Load<UnitSaveFormat>(key.ToString(), Nickname);
+                Unit.Data data = new Unit.Data().From(unitSaveFormat);
+                this.AddUnitData(data);
+            }
+            return true;
+        }
+        return false;
+    }
+
+    // 클리어 노드 추가
+    private void SetDefaultClearNodes() {
+        ClearNodes = new HashSet<NodeName>();
+        ClearNodes.Add(NodeName.Village);
+        SaveClearNodes();
+    }
+    public void AddClearNode(NodeName node) {
+        ClearNodes.Add(node);
+        SaveClearNodes();
+    }
+    public void SaveClearNodes() {
+        ES3.Save<HashSet<NodeName>>("ClearNodes", ClearNodes, Nickname);
+    }
+    private bool LoadClearNodes() {
+        if (ES3.KeyExists("ClearNodes", Nickname)) {
+            ClearNodes = ES3.Load<HashSet<NodeName>>("ClearNodes", Nickname);
+            return true;
+        }
+        return false;
+    }
+
+    // 소울 파편
+    private void SetDefaultSoulFragment() {
+        SoulFragmentList = new List<SoulFragment>();
 
 #if DEVELOPMENT_BUILD || UNITY_EDITOR
-        for(int i = 0; i < 4; ++i) {
-            unitDataList.Add(new Unit.Data(UnitType.Garuda, -10 + i * 10));
-            unitDataList.Add(new Unit.Data(UnitType.HowlingWolf, -10 + i * 10));
-            unitDataList.Add(new Unit.Data(UnitType.InfectedMosquito, -10 + i * 10));
-        }
+        this.AddSoulFragment(new SoulFragment(UnitType.Garuda, 10));
 #endif
-
-        return unitDataList;
     }
-    private int[] GetDefaultPartyUnitIndices() {
-        int[] partyUnitIndices = new int[MaxPartyUnit];
-        Array.Fill(partyUnitIndices, -1);
-        return partyUnitIndices;
-    }
+    public void AddSoulFragment(SoulFragment soulFragment) {
+        SoulFragmentList.Add(soulFragment);
 
-    // 유닛 관련 함수
-    private Unit CreateUnitFrom(Unit.Data unitData) {
-        Unit prefab = Resources.Load<Unit>("Prefabs/Units/" + unitData.Type.ToString());
-        Unit unit = Instantiate<Unit>(prefab, this.transform);
-        unit.ApplyData(unitData);
-        unit.gameObject.SetActive(false);
-
-        return unit;
-    }
-    private List<Unit> CreateUnitListFrom(List<Unit.Data> unitDataList) {
-        List<Unit> unitList = new List<Unit>();
-        foreach (var unitData in unitDataList) {
-            Unit unit = CreateUnitFrom(unitData);
-            unitList.Add(unit);
+        // 새로운 정보일 경우 바로 저장한다.
+        if (soulFragment.SaveKey == -1) {
+            soulFragment.Save();
+            SaveSoulFragmentKeyList();
         }
-        return unitList;
+    }
+    public void RemoveSoulFragment(SoulFragment soulFragment) {
+        soulFragment.DeleteSaveData();
+        SoulFragmentList.Remove(soulFragment);
+        SaveSoulFragmentKeyList();
+    }
+    public void SaveSoulFragmentKeyList() {
+        List<long> keyList = SoulFragmentList.Select(data => data.SaveKey).ToList();
+        ES3.Save<List<long>>("SoulFragmentKeyList", keyList, Nickname);
+    }
+    private bool LoadSoulFragmentList() {
+        if (ES3.KeyExists("SoulFragmentKeyList", Nickname)) {
+            SoulFragmentList = new List<SoulFragment>();
+            List<long> dataKeyList = ES3.Load<List<long>>("SoulFragmentKeyList", Nickname);
+            foreach (long key in dataKeyList) {
+                SoulFragmentSaveFormat unitSaveFormat = ES3.Load<SoulFragmentSaveFormat>(key.ToString(), Nickname);
+                SoulFragment data = new SoulFragment().From(unitSaveFormat);
+                this.AddSoulFragment(data);
+            }
+            return true;
+        }
+        return false;
     }
 
-    public Unit AddUnitData(Unit.Data unitData) {
-        UnitDataList.Add(unitData);
-        Unit unit = CreateUnitFrom(unitData);
-        UnitList.Add(unit);
-        return unit;
+    // 소울 가루
+    public int SoulDust {
+        get { return soulDust; }
+        set {
+            soulDust = value;
+            SaveSoulDust();
+        }
+    }
+    private void SaveSoulDust() {
+        ES3.Save("SoulDust", SoulDust, Nickname);
+    }
+    private void LoadSouldust() {
+        SoulDust = ES3.Load<int>("SoulDust", Nickname, 0);
     }
 
-    public void RemoveUnitData(Unit.Data unitData) {
-        // 리스트에서 제거
-        UnitDataList.Remove(unitData);
-
-        Unit unit = UnitList.Find(unit => unit.MyData == unitData);
-        UnitList.Remove(unit);
-
-        // 유닛 삭제
-        Destroy(unit.gameObject);
+    // 파티 순서 정보
+    private void SetDefaultPartySequence() {
+        PartySequence = new Unit.Data[PartySequenceMax];
+        SavePartySequence();
     }
-    public void RemoveUnitData(Unit unit) {
-        // 리스트에서 제거
-        UnitDataList.Remove(unit.MyData);
-        UnitList.Remove(unit);
-
-        // 유닛 삭제
-        Destroy(unit.gameObject);
+    public void SavePartySequence() {
+        List<long> keyList = PartySequence.Select(data => data?.SaveKey ?? -1).ToList();
+        ES3.Save<List<long>>("PartySequence", keyList, Nickname);
+    }
+    private bool LoadPartySequence() {
+        if (ES3.KeyExists("PartySequence", Nickname)) {
+            PartySequence = new Unit.Data[PartySequenceMax];
+            List<long> keyList = ES3.Load<List<long>>("PartySequence", Nickname);
+            for(int i = 0; i < PartySequenceMax; ++i) {
+                long key = keyList[i];
+                if (key == -1)
+                    continue;
+                PartySequence[i] = UnitDataList.Find((unitData) => unitData.SaveKey == key);
+            }
+            return true;
+        }
+        return false;
     }
 
 }

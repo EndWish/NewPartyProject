@@ -6,13 +6,13 @@ using System.Text;
 using TMPro;
 using UnityEngine;
 
-public class UnitInventory : PageView<Unit>
+public class UnitInventory : PageView<Unit.Data>
 {
     [SerializeField] protected TextMeshProUGUI pageText;
     [SerializeField] protected GameObject sortList;
 
     protected override void Awake() {
-        Datas = UserData.Instance.UnitList;
+        Datas = UserData.Instance.UnitDataList;
         sortList.SetActive(false);
         base.Awake();
     }
@@ -32,15 +32,19 @@ public class UnitInventory : PageView<Unit>
     }
     public void SortByName() {
         Datas.Sort((unit1, unit2) => { return String.Compare(unit1.Name, unit2.Name); });
+        UserData.Instance.SaveUnitDataKeyList();
     }
     public void SortByNameInReverse() {
         Datas.Sort((unit1, unit2) => { return String.Compare(unit2.Name, unit1.Name); });
+        UserData.Instance.SaveUnitDataKeyList();
     }
     public void SortByHighestGrowthLevel() {
         Datas.Sort((unit1, unit2) => { return unit2.GrowthLevel - unit1.GrowthLevel; });
+        UserData.Instance.SaveUnitDataKeyList();
     }
     public void SortByLowestGrowthLevel() {
         Datas.Sort((unit1, unit2) => { return unit1.GrowthLevel - unit2.GrowthLevel; });
+        UserData.Instance.SaveUnitDataKeyList();
     }
 
 }

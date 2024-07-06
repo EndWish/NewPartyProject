@@ -1,63 +1,71 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
-public class SoulFragment
+public class SoulFragment : SaveData
 {
-    public class Data {
-        public UnitType UnitType = UnitType.None;
-        public int Num { get; set; } = 0;
-
-        public Data() { }
-        public Data(UnitType type) : this() {
-            UnitType = type;
-        }
-        public Data(UnitType type, int num) : this(type) {
-            Num = num;
-        }
-
-    }
-
-    // 연결 정보
-    public Unit Target { get; protected set; }
-
     // 개인 정보
-    private Data data;
+    protected UnitSharedData unitSharedData;
+    protected int num;
+    
 
     public SoulFragment() {
-        data = new Data();
+        unitSharedData = null;
+        num = 0;
     }
-    public SoulFragment(Data data) {
-        this.data = data ?? new Data();
-        SettingTarget();
+    public SoulFragment(UnitType type) : this() {
+        Type = type;
     }
-
-    public Data GetData() { 
-        return data;
-    }
-    public UnitType GetUnitType() {
-        return data.UnitType;
-    }
-    public void SetUnitType(UnitType type) {
-        data.UnitType = type;
-        SettingTarget();
-    }
-    public int GetNum() {
-        return data.Num;
-    }
-    public void SetNum(int num) {
-        data.Num = num;
-    }
-    public void AddNum(int num) {
-        data.Num += num;
+    public SoulFragment(UnitType type, int num) : this(type) {
+        Num = num;
     }
 
-    public void SettingTarget() {
-        if(data.UnitType == UnitType.None) {
-            Target = null;
-            return;
+    public UnitSharedData UnitSharedData {
+        get { return unitSharedData; }
+    }
+    public UnitType Type {
+        get { return unitSharedData?.Type ?? UnitType.None; }
+        set { 
+            unitSharedData = (value == UnitType.None) ? null : UnitSharedData.GetAsset(value);
+            SaveSynced();
         }
-        Target = Resources.Load<Unit>( GameManager.GetUnitPrefabPath(data.UnitType.ToString()));
+    }
+    public int Num {
+        get { return num; } 
+        set {  
+            num = value;
+            SaveSynced();
+        }
+    }
+    public Sprite UnitProfileSprite {
+        get { return UnitSharedData?.ProfileSprite; }
     }
 
+
+    protected SoulFragmentSaveFormat ToSaveFormat() {
+        SoulFragmentSaveFormat saveFormat = new SoulFragmentSaveFormat();
+        saveFormat.SaveKey = SaveKey;
+        saveFormat.Type = Type;
+        saveFormat.Num = Num;
+        return saveFormat;
+    }
+    public SoulFragment From(SoulFragmentSaveFormat saveFormat) {
+        SaveKey = saveFormat.SaveKey;
+        Type = saveFormat.Type;
+        Num = saveFormat.Num;
+        return this;
+    }
+    public override void Save() {
+        base.Save();
+        ES3.Save<SoulFragmentSaveFormat>(SaveKey.ToString(), this.ToSaveFormat(), UserData.Instance.Nickname);
+    }
+
+}
+
+public struct SoulFragmentSaveFormat
+{
+    public long SaveKey;
+    public UnitType Type;
+    public int Num;
 }

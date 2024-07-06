@@ -29,16 +29,20 @@ public class SoulInventory : PageView<SoulFragment>
         sortList.SetActive(!sortList.activeSelf);
     }
     public void SortByName() {
-        Datas.Sort((soulFragment1, soulFragment2) => { return String.Compare(soulFragment1.Target.Name, soulFragment2.Target.Name); });
+        Datas.Sort((soulFragment1, soulFragment2) => { return String.Compare(soulFragment1.UnitSharedData.Name, soulFragment2.UnitSharedData.Name); });
+        UserData.Instance.SaveSoulFragmentKeyList();
     }
     public void SortByNameInReverse() {
-        Datas.Sort((soulFragment1, soulFragment2) => { return String.Compare(soulFragment1.Target.Name, soulFragment1.Target.Name); });
+        Datas.Sort((soulFragment1, soulFragment2) => { return String.Compare(soulFragment1.UnitSharedData.Name, soulFragment1.UnitSharedData.Name); });
+        UserData.Instance.SaveSoulFragmentKeyList();
     }
-    public void SortByHighestGrowthLevel() {
-        Datas.Sort((soulFragment1, soulFragment2) => { return soulFragment2.Target.GrowthLevel - soulFragment1.Target.GrowthLevel; });
+    public void SortByHighestNum() {
+        Datas.Sort((soulFragment1, soulFragment2) => { return soulFragment2.Num - soulFragment1.Num; });
+        UserData.Instance.SaveSoulFragmentKeyList();
     }
-    public void SortByLowestGrowthLevel() {
-        Datas.Sort((soulFragment1, soulFragment2) => { return soulFragment1.Target.GrowthLevel - soulFragment2.Target.GrowthLevel; });
+    public void SortByLowestNum() {
+        Datas.Sort((soulFragment1, soulFragment2) => { return soulFragment1.Num - soulFragment2.Num; });
+        UserData.Instance.SaveSoulFragmentKeyList();
     }
 
 }

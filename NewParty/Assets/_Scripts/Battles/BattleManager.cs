@@ -105,11 +105,10 @@ public class BattleManager : MonoBehaviourPunCallbacksSingleton<BattleManager>
         #region 나의 파티 생성하기
         TestBattlePage = "나의 파티 생성중...";
         Party myParty = PhotonNetwork.Instantiate("Prefabs/Battles/Party", Vector3.zero, Quaternion.identity).GetComponent<Party>();
-        foreach (Unit partyUnit in UserData.Instance.PartyUnitList) {
-            if (partyUnit == null)
+        foreach (Unit.Data unitData in UserData.Instance.PartySequence) {
+            if (unitData == null)
                 continue;
 
-            Unit.Data unitData = partyUnit.MyData;
             Unit syncUnit = PhotonNetwork.Instantiate(GameManager.GetUnitPrefabPath() + unitData.Type.ToString(), Vector3.zero, Quaternion.identity).GetComponent<Unit>();
             syncUnit.ApplyData(unitData);
             myParty.AddUnit(syncUnit);

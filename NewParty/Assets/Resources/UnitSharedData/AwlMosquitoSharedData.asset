@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d45ed7cd76cff446b29a15633d67b09, type: 3}
+  m_Name: AwlMosquitoSharedData
+  m_EditorClassIdentifier: 
+  ProfileSprite: {fileID: 21300000, guid: c86e34a413aa628468b0a54b1210dc55, type: 3}
+  Name: "\uC1A1\uACF3 \uBAA8\uAE30"
+  Type: 7
+  InitStats:
+  - 20
+  - 10
+  - 10
+  - 0.2
+  - 1
+  - 10
+  - 0.1
+  - 1.5
+  - 10
+  - 5
+  - 0.2
+  - 10
+  - 10
+  - 1
+  - 40
+  - 30
+  - 30
+  InitTags: 099d0000
+  SoulFragmentValueAsDust: 100

@@ -97,10 +97,9 @@ MonoBehaviour:
   BasicAtkSkill: {fileID: 1467067061474094711}
   BasicBarrierSkill: {fileID: 6883371513050825008}
   skillsParent: {fileID: 8572338997569936211}
-  StaticData: {fileID: 11400000, guid: 11800c8b11b85c34db837f8f8ecdc812, type: 2}
   MyData:
-    Type: 5
-  Tokens: []
+    sharedData: {fileID: 11400000, guid: 11800c8b11b85c34db837f8f8ecdc812, type: 2}
+    growthLevel: 0
 --- !u!114 &1450987356555728983
 MonoBehaviour:
   m_ObjectHideFlags: 0

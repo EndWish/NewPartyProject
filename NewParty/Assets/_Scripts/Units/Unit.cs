@@ -13,55 +13,14 @@ public enum UnitType : int
     None, Garuda,GrayWolf, RedWolf, SilverManeWolf, BloodyWolf, HowlingWolf, AwlMosquito, DrillMosquito, TransfusionMosquito, InfectedMosquito,
 }
 
-public class Unit : MonoBehaviourPun
+public partial class Unit : MonoBehaviourPun
 {
-    // 서브 클래스 ////////////////////////////////////////////////////////////
-    [Serializable]
-    public class Data {
-        public UnitType Type = UnitType.None;
-        public int GrowthLevel { get; set; } = 0;
-
-        public Data() { }
-        public Data(UnitType type) : this() {
-            Type = type;
-        }
-        public Data(UnitType type, int growthLevel) : this(type) {
-            GrowthLevel = growthLevel;
-        }
-
-        // Photon 직렬화
-        public static byte[] Serialize(object customObject) {
-            Data data = (Data)customObject;
-
-            // 스트림에 필요한 메모리 사이즈(Byte)
-            MemoryStream ms = new MemoryStream(sizeof(UnitType) + sizeof(int));
-            // 각 변수들을 Byte 형식으로 변환, 마지막은 개별 사이즈
-            ms.Write(BitConverter.GetBytes((int)data.Type), 0, sizeof(UnitType));
-            ms.Write(BitConverter.GetBytes(data.GrowthLevel), 0, sizeof(int));
-
-            // 만들어진 스트림을 배열 형식으로 반환
-            return ms.ToArray();
-        }
-
-        // Photon 역직렬화
-        public static object Deserialize(byte[] bytes) {
-            Data data = new Data();
-            // 바이트 배열을 필요한 만큼 자르고, 원하는 자료형으로 변환
-            data.Type = (UnitType)BitConverter.ToInt32(bytes, 0);
-            data.GrowthLevel = BitConverter.ToInt32(bytes, sizeof(UnitType));
-            return data;
-        }
-
-    }
-
     // 공유 정보 //////////////////////////////////////////////////////////////
     static public float MaxActionGauge = 100f;
     static public int GrowthLevelWhenSummoned = -10;
     static public int NumSoulFragmentRequiredForSummon = 100;
 
     // 연결 정보 //////////////////////////////////////////////////////////////
-    public UnitStaticData StaticData;
-
     [SerializeField] protected DamageText damageTextPrefab;
     [SerializeField] protected GameObject HealingFxPrefab;
     [SerializeField] protected Token tokenPrefab;
@@ -78,7 +37,7 @@ public class Unit : MonoBehaviourPun
 
     // 개인 정보 //////////////////////////////////////////////////////////////
 
-    // 저장에 필요한 변수
+    // Unit.Data와 관련한 변수
     public Data MyData;
 
     // 상태를 나타내는 변수
@@ -100,7 +59,7 @@ public class Unit : MonoBehaviourPun
 
     // 토큰 관련 변수
     public int MaxTokens { get; set; } = 5;
-    public List<Token> Tokens = new List<Token>();
+    public List<Token> Tokens { get; set; } = new List<Token>();
     public UnityAction<Unit, Token> OnCreateToken;
     public UnityAction<Unit, Token> OnRemoveToken;
 
@@ -136,8 +95,8 @@ public class Unit : MonoBehaviourPun
 
     // 유니티 함수 ////////////////////////////////////////////////////////////
     protected void Awake() {
-        if (StaticData.InitTags != null)
-            Tags.AddTag(StaticData.InitTags);
+        if (SharedData.InitTags != null)
+            Tags.AddTag(SharedData.InitTags);
         UpdateAllStat();
         
         actionGauge = 0;
@@ -161,7 +120,7 @@ public class Unit : MonoBehaviourPun
 
     // 함수 ///////////////////////////////////////////////////////////////////
     public string Name {
-        get { return StaticData.Name; }
+        get { return SharedData.Name; }
     }
     public int GrowthLevel {
         get { return MyData.GrowthLevel; }
@@ -169,6 +128,9 @@ public class Unit : MonoBehaviourPun
             MyData.GrowthLevel = value;
             UpdateBaseStat(true);
         }
+    }
+    public UnitSharedData SharedData {
+        get { return MyData.SharedData; }
     }
 
     public float ActionGauge {
@@ -235,7 +197,7 @@ public class Unit : MonoBehaviourPun
     public void UpdateBaseStat(bool updateFinalStat) {
         // 기본 능력치 계산
         for (StatType type = 0; type < StatType.Num; ++type) {
-            Stats[(int)StatForm.Base, (int)type] = StaticData.InitStats[(int)type] * (1f + 0.01f * GrowthLevel);
+            Stats[(int)StatForm.Base, (int)type] = SharedData.InitStats[(int)type] * (1f + 0.01f * GrowthLevel);
         }
 
         // 최종 능력치에 적용

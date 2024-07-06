@@ -19,7 +19,7 @@ public class GameManager : MonoBehaviourPunCallbacksSingleton<GameManager>
         PhotonNetwork.SerializationRate = 30;
         PhotonNetwork.AutomaticallySyncScene = true;
 
-        PhotonPeer.RegisterType(typeof(Unit.Data), 0, Unit.Data.Serialize, Unit.Data.Deserialize);
+        PhotonPeer.RegisterType(typeof(Unit.Data), 0, Unit.Data.PhotonSerialize, Unit.Data.PhotonDeserialize);
     }
 
     static public string GetUnitPrefabPath() {

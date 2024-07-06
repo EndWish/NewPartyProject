@@ -10,7 +10,7 @@ public class UnitTorchSlot : UnitSlot, IPointerClickHandler
 
     public void OnPointerClick(PointerEventData eventData) {
         if (eventData.button == PointerEventData.InputButton.Right) {
-            SoulTorchUI.Unit = null;
+            SoulTorchUI.UnitData = null;
         }
     }
 }

@@ -20,12 +20,12 @@ public class SoulSlot : PageViewSlot<SoulFragment>
             profileImage.color = new Color(0, 0, 0, 0);
         } else {
             iconImage.color = Color.white;
-            profileImage.sprite = Data.Target.ProfileImage.sprite;
+            profileImage.sprite = Data.UnitProfileSprite;
             profileImage.color = Color.white;
         }
 
-        // 성장 레벨 텍스트
-        numText.text = Data?.GetNum().ToString();
+        // 개수 텍스트
+        numText.text = Data?.Num.ToString();
 
     }
 

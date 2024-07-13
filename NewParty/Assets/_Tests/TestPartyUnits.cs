@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class TestPartyUnits : MonoBehaviour
 {
-    [ArrayElementTitle("Type")]
     public Unit.Data[] unitDataList = new Unit.Data[UserData.PartySequenceMax];
 
     private void Start() {

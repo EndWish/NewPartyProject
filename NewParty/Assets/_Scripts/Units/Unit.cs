@@ -11,6 +11,7 @@ using UnityEngine.UI;
 public enum UnitType : int
 {
     None, Garuda,GrayWolf, RedWolf, SilverManeWolf, BloodyWolf, HowlingWolf, AwlMosquito, DrillMosquito, TransfusionMosquito, InfectedMosquito,
+    StoneTurtle, IronTurtle, SteelTurtle, EmeraldTurtle, RainbowTurtle,
 }
 
 public partial class Unit : MonoBehaviourPun

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using static UnityEngine.GraphicsBuffer;
 
-public class PierceShieldAttack : Attack
+public class PierceShieldAttack : DmgAttack
 {
     [SerializeField] protected GameObject fx;
     protected float defMul = 1f;
@@ -30,7 +30,7 @@ public class PierceShieldAttack : Attack
             Targets[0].AddStatusEffect(defDebuff);
         }
         else {
-            yield return StartCoroutine(GameManager.CoInvoke(Targets[0].CoOnAvoid));
+            yield return StartCoroutine(HitMiss(Targets[0]));
         }
         yield return new WaitUntil(() => fx == null);
 

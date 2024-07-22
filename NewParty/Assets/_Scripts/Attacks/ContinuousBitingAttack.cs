@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using static UnityEngine.GraphicsBuffer;
 
-public class ContinuousBitingAttack : Attack
+public class ContinuousBitingAttack : DmgAttack
 {
     [SerializeField] protected GameObject biteFxPrefab;
 
@@ -34,7 +34,7 @@ public class ContinuousBitingAttack : Attack
             if(hitResult)
                 yield return StartCoroutine(Hit(Targets[0]));
             else
-                yield return StartCoroutine(GameManager.CoInvoke(Targets[0].CoOnAvoid));
+                yield return StartCoroutine(HitMiss(Targets[0]));
         }
         yield return new WaitForSeconds(0.15f);
         this.Destroy();

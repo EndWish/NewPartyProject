@@ -15,7 +15,7 @@ public class PierceShieldSkill : ActiveSkill
     }
 
     public override IEnumerator CoUse() {
-        Owner.RemoveSelectedToken();
+        yield return StartCoroutine(Owner.UseSelectedTokens());
 
         // 공격을 생성한다
         Unit target = BattleSelectable.Units[0];

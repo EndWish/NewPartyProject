@@ -4,7 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TwoStepSlashAttack : Attack
+public class TwoStepSlashAttack : DmgAttack
 {
     [SerializeField] protected GameObject[] slashFx = new GameObject[2];
 

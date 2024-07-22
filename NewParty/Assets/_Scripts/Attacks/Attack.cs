@@ -9,7 +9,6 @@ public abstract class Attack : MonoBehaviourPun
 {
     public Unit Caster { get; set; }
     public List<Unit> Targets { get; set; } = new List<Unit>();
-    public float Dmg { get; set; }
 
     public List<Tag> InitTags;
     public Tags Tags { get; set; } = new Tags();
@@ -27,17 +26,20 @@ public abstract class Attack : MonoBehaviourPun
         HitCalculator hc = new GameObject("HitCalculator").AddComponent<HitCalculator>();
         return hc.Calculate(Caster, target, this);
     }
-    protected IEnumerator Hit(Unit target) {
-        DamageCalculator dc = new GameObject("DamageCalculator").AddComponent<DamageCalculator>();
-        yield return StartCoroutine(dc.Advance(Dmg, Caster, target, this));
+    protected virtual IEnumerator Hit(Unit target) {
         yield return StartCoroutine(GameManager.CoInvoke(Caster.CoOnHit, target, this));
     }
+    protected IEnumerator HitMiss(Unit target) {
+        yield return StartCoroutine(GameManager.CoInvoke(Caster.CoOnHitMiss, target, this));
+        yield return StartCoroutine(GameManager.CoInvoke(target.CoOnAvoid));
+    }
+
     protected IEnumerator CalculateAndHit(Unit target) {
         bool isHit = CalculateHit(target);
         if (isHit) {
             yield return StartCoroutine(Hit(target));
         } else {
-            yield return StartCoroutine(GameManager.CoInvoke(target.CoOnAvoid));
+            yield return StartCoroutine(HitMiss(target));
         }
     }
 
@@ -64,7 +66,7 @@ public abstract class Attack : MonoBehaviourPun
             .GetComponent<StatTurnStatusEffect>();
         statusEffect.StatForm = statForm;
         statusEffect.StatType = statType;
-        statusEffect.StatusEffectForm = statusEffectForm;
+        statusEffect.Form = statusEffectForm;
         statusEffect.Value = value;
         statusEffect.Turn = turn;
         statusEffect.Caster = Caster;

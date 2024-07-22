@@ -15,7 +15,7 @@ public class AntiSkillSkill : ActiveSkill
     }
 
     public override IEnumerator CoUse() {
-        Owner.RemoveSelectedToken();
+        yield return StartCoroutine(Owner.UseSelectedTokens());
 
         Party targetParty = BattleSelectable.Parties[0];
         foreach(Unit target in targetParty.Units) {
@@ -44,7 +44,7 @@ public class AntiSkillSkill : ActiveSkill
     }
 
     public override string GetDescription() {
-        return string.Format("선택한 파티에게 {0}턴간 (#스킬 공격)에 피격시 피해량을 {1:F2}%낮추는 버프를 부여한다.",
+        return string.Format("선택한 파티에게 {0}턴간 (#스킬 공격)에 피격시 피해량을 {1:F1}%낮추는 버프를 부여한다.",
             turn, (1f - dmgMul) * 100f);
     }
 }

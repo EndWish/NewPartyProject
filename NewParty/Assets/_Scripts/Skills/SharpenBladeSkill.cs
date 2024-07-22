@@ -17,7 +17,7 @@ public class SharpenBladeSkill : ActiveSkill
     }
 
     public override IEnumerator CoUse() {
-        Owner.RemoveSelectedToken();
+        yield return StartCoroutine(Owner.UseSelectedTokens());
         CreateReinforceFX();
 
         // 치확 버프

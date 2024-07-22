@@ -58,9 +58,11 @@ public class DamageCalculator : MonoBehaviour
         attacker.OnAfterCalculateDmg?.Invoke(this);
         defender.OnAfterCalculateDmg?.Invoke(this);
 
-        yield return StartCoroutine(defender.TakeDmg(FinalDmg, this));
-
-        StartCoroutine(GameManager.CoInvoke(attacker.CoOnHitDmg, defender, this));
+        // 데미지가 0 초과일 경우에만 데미지 적용
+        if(0 < FinalDmg) {
+            yield return StartCoroutine(defender.TakeDmg(FinalDmg, this));
+            StartCoroutine(GameManager.CoInvoke(attacker.CoOnHitDmg, defender, this));
+        }
 
         Destroy(this.gameObject);
     }

@@ -6,7 +6,7 @@ using static System.Collections.Specialized.BitVector32;
 
 public enum StatusEffectForm
 {
-    None, Passive, Buff, Debuff,
+    None, Special, Buff, Debuff,
 }
 
 public abstract class StatusEffect : MonoBehaviourPun
@@ -16,7 +16,7 @@ public abstract class StatusEffect : MonoBehaviourPun
 
     [SerializeField] public Sprite IconSp;
     public string Name;
-    public StatusEffectForm Form;
+    public StatusEffectForm form;
 
     public List<Tag> InitTags;
     public Tags Tags { get; set; } = new Tags();
@@ -28,6 +28,9 @@ public abstract class StatusEffect : MonoBehaviourPun
             Tags.AddTag(InitTags);
 
         seIcon = Instantiate(seIconPrefab);
+    }
+
+    protected virtual void Start() {
         InitIcon();
     }
 
@@ -60,6 +63,14 @@ public abstract class StatusEffect : MonoBehaviourPun
         set { photonView.RPC("TargetRPC", RpcTarget.All, value?.photonView.ViewID ?? -1); }
     }
 
+    [PunRPC]
+    protected virtual void FormRPC(StatusEffectForm form) {
+        this.form = form;
+    }
+    public StatusEffectForm Form {
+        get { return form; }
+        set { photonView.RPC("FormRPC", RpcTarget.All, value); }
+    }
 
     public virtual void InitIcon() {
         seIcon.IconImg.sprite = this.IconSp;
@@ -70,7 +81,7 @@ public abstract class StatusEffect : MonoBehaviourPun
                     return "버프";
                 case StatusEffectForm.Debuff:
                     return "디버프";
-                case StatusEffectForm.Passive:
+                case StatusEffectForm.Special:
                     return "패시브";
                 default:
                     return "형식 없음";
@@ -81,7 +92,7 @@ public abstract class StatusEffect : MonoBehaviourPun
                 seIcon.BgImg.color = Color.green; break;
             case StatusEffectForm.Debuff:
                 seIcon.BgImg.color = Color.red; break;
-            case StatusEffectForm.Passive:
+            case StatusEffectForm.Special:
                 seIcon.BgImg.color = Color.gray; break;
             default:
                 seIcon.BgImg.color = Color.black; break;

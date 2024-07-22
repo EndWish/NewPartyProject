@@ -1,3 +1,4 @@
+using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -9,30 +10,36 @@ public enum TokenType
     None, Atk, Skill, Barrier, Num,
 }
 
-public class Token : MonoBehaviour, IPointerClickHandler
+public enum TokenDeleteHistory
 {
+    None, Use, Discrad, Overflow,
+}
+
+public class Token : MonoBehaviourPun, IPointerClickHandler
+{
+    static public string GetTokenPrefabPath() {
+        return "Prefabs/Token/Token";
+    }
+
     // 연결 정보 //////////////////////////////////////////////////////////////
-    private RectTransform myRectTransform;
+    protected RectTransform myRectTransform;
+    [SerializeField] protected Transform imagesParent;
+    [SerializeField] protected Image iconImage;
+    [SerializeField] protected Image backgroundImage;
+    [SerializeField] private GameObject plusIcon;
 
-    [SerializeField] private Transform imagesParent;
-
-    [SerializeField] private Image iconImage;
-    [SerializeField, EnumNamedArray(typeof(TokenType))] private List<Sprite> tokenIconSprites;
-
-    [SerializeField] private Image backgroundImage;
-    [SerializeField, EnumNamedArray(typeof(TokenType))] private List<Sprite> tokenBackgroundSprites;
-
-    private Unit owner = null;
-    [SerializeField] private GameObject newAdditionIcon;
+    [SerializeField] protected TokenSharedData sharedData;
 
     // 개인 정보 //////////////////////////////////////////////////////////////
     private TokenType type = TokenType.None;
-    public bool IsSelected { get; set; } = false;
+    private Unit owner = null;
+    
+    private bool isSelected = false;
 
     // 유니티 함수 //////////////////////////////////////////////////////////////
     private void Awake() {
         myRectTransform = GetComponent<RectTransform>();
-        newAdditionIcon.SetActive(false);
+        plusIcon.SetActive(false);
     }
 
     private void Update() {
@@ -51,30 +58,56 @@ public class Token : MonoBehaviour, IPointerClickHandler
     }
 
     // 함수 /////////////////////////////////////////////////////////////////////
-
-    public TokenType Type {
-        get { return type; }
-        set { 
-            type = value;
-            iconImage.sprite = tokenIconSprites[(int)type];
-            backgroundImage.sprite = tokenBackgroundSprites[(int)type];
-        }
+    
+    public Sprite IconSp {
+        get { return sharedData.GetTokenIconSprite(Type); }
+    }
+    public Sprite BackgroundSp {
+        get { return sharedData.GetTokenBackgroundSprites(Type); }
     }
 
+    [PunRPC]
+    private void TypeRPC(TokenType type) {
+        this.type = type;
+        iconImage.sprite = IconSp;
+        backgroundImage.sprite = BackgroundSp;
+    }
+    public TokenType Type {
+        get { return type; }
+        set { photonView.RPC("TypeRPC", RpcTarget.All, value); }
+    }
+
+    [PunRPC]
+    private void IsSelectedRPC(bool isSelected) {
+        this.isSelected = isSelected;
+    }
+    public bool IsSelected {
+        get { return isSelected; }
+        set { photonView.RPC("IsSelectedRPC", RpcTarget.All, value); }
+    }
+
+    [PunRPC]
+    private void OwnerRPC(int viewId) {
+        Unit prevOwner = owner;
+        owner = PhotonView.Find(viewId).GetComponent<Unit>();
+
+        if (prevOwner != null) {
+            prevOwner.CoOnEndMyTurn -= OnEndOwnerTurn;
+        }
+
+        if (owner != null) {
+            plusIcon.SetActive(true);
+            owner.CoOnEndMyTurn += OnEndOwnerTurn;
+        }
+        else {
+            plusIcon.SetActive(false);
+        }
+
+    }
     public Unit Owner {
         get { return owner; }
-        set {
-            Unit prevOwner = owner;
-            owner = value;
-            if (owner != null) {
-                newAdditionIcon.SetActive(true);
-                owner.CoOnEndMyTurn += OnEndOwnerTurn;
-            } else {
-                newAdditionIcon.SetActive(false);
-                if(prevOwner != null) {
-                    prevOwner.CoOnEndMyTurn -= OnEndOwnerTurn;
-                }
-            }
+        set { 
+            photonView.RPC("OwnerRPC", RpcTarget.All, value?.photonView.ViewID ?? -1);
         }
     }
 
@@ -85,9 +118,26 @@ public class Token : MonoBehaviour, IPointerClickHandler
     }
 
     public IEnumerator OnEndOwnerTurn() {
-        newAdditionIcon.SetActive(false);
+        SetActivePlusIcon(false);
         IsSelected = false;
         yield break;
+    }
+
+    [PunRPC]
+    private void SetActivePlusIconRPC(bool active) {
+        plusIcon.SetActive(active);
+    }
+    public void SetActivePlusIcon(bool active) {
+        photonView.RPC("SetActivePlusIconRPC", RpcTarget.All, active);
+    }
+
+    // 삭제
+    [PunRPC]
+    private void DestroyRPC() {
+        Object.Destroy(gameObject);
+    }
+    public void Destroy() {
+        photonView.RPC("DestroyRPC", RpcTarget.AllBuffered);
     }
 
 }

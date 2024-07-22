@@ -57,7 +57,7 @@ public class AntiSkillBuff : StatusEffect, ITurnStatusEffect
     }
 
     public override string GetDescription() {
-        return string.Format("{0}턴간 (#스킬 공격)에 피격시 피해량을 {1:F2}%낮춘다.", Turn, (1f - dmgMul) * 100f);
+        return string.Format("{0}턴간 (#스킬 공격)에 피격시 피해량을 {1:F1}%낮춘다.", Turn, (1f - dmgMul) * 100f);
     }
 
     protected IEnumerator CoOnBeginTurn() {

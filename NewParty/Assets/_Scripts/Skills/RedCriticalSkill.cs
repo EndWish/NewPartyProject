@@ -18,10 +18,11 @@ public class RedCriticalSkill : PassiveSkill
         if (Owner != null) Owner.CoOnHitDmg -= this.CoOnHitDmg;
     }
 
-    protected override void OnSetOwner(Unit prev, Unit current) {
-        base.OnSetOwner(prev, current);
-        if(prev != null) prev.CoOnHitDmg -= this.CoOnHitDmg;
-        if(current != null) current.CoOnHitDmg += this.CoOnHitDmg;
+    [PunRPC]
+    protected override void OwnerRPC(int viewId) {
+        if (Owner != null) Owner.CoOnHitDmg -= this.CoOnHitDmg;
+        base.OwnerRPC(viewId);
+        if (Owner != null) Owner.CoOnHitDmg += this.CoOnHitDmg;
     }
 
     public override string GetDescription() {

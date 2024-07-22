@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 2943148007359231931}
   - component: {fileID: 6198710195564369913}
   m_Layer: 0
-  m_Name: NewAdditionIcon
+  m_Name: PlusIcon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -365,6 +365,7 @@ GameObject:
   - component: {fileID: 2404752776259242913}
   - component: {fileID: 5016775458996640106}
   - component: {fileID: 8702565092637999532}
+  - component: {fileID: 2187790049902603672}
   m_Layer: 0
   m_Name: Token
   m_TagString: Untagged
@@ -415,15 +416,28 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   imagesParent: {fileID: 4898800116545105524}
   iconImage: {fileID: 8110569958216587548}
-  tokenIconSprites:
-  - {fileID: 0}
-  - {fileID: 21300000, guid: 90aba99ac33cc440ca40335f848ab836, type: 3}
-  - {fileID: 21300000, guid: a43953830fbe74659896eefbea31fc31, type: 3}
-  - {fileID: 21300000, guid: 3af9684c2726a497ab1b436136e690d6, type: 3}
   backgroundImage: {fileID: 1246310920244364597}
-  tokenBackgroundSprites:
-  - {fileID: 0}
-  - {fileID: 21300000, guid: 9ebb6a7a6b3654bd78584cb6dd9d12b5, type: 3}
-  - {fileID: 21300000, guid: 2d734a17e89824d30b1f014a9c1f5f60, type: 3}
-  - {fileID: 21300000, guid: 9f1de124832454aaa89e2816cf5bd1e9, type: 3}
-  newAdditionIcon: {fileID: 915424487583365545}
+  plusIcon: {fileID: 915424487583365545}
+  sharedData: {fileID: 11400000, guid: 54f8545be833ea14493e1f52e0bb180f, type: 2}
+--- !u!114 &2187790049902603672
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8597763548141189648}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents: []
+  sceneViewId: 0
+  InstantiationId: 0
+  isRuntimeInstantiated: 0

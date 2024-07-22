@@ -48,7 +48,7 @@ MonoBehaviour:
   seIconPrefab: {fileID: 5764242889836973777, guid: 7706b26f50d567a4b8ddff8e05fb9af6, type: 3}
   IconSp: {fileID: 21300000, guid: ce2774cb3a4b05842b2fa9661e344e2e, type: 3}
   Name: "\uC548\uD2F0 \uC2A4\uD0AC"
-  Form: 2
+  form: 2
   InitTags: 
   FXPrefab: {fileID: 7249201279122866935, guid: f3e7e40e5e876714d9dde4a1163a599c, type: 3}
 --- !u!114 &-4144098133392723434

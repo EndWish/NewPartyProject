@@ -8241,19 +8241,19 @@ PrefabInstance:
     - target: {fileID: 7783237652193721230, guid: 3da842c263179914899df8f78fffbb9d, type: 3}
       propertyPath: unitDataList.Array.data[0].sharedData
       value: 
-      objectReference: {fileID: 11400000, guid: 0a4c2a94927ea8d47abdbd461918c7f0, type: 2}
+      objectReference: {fileID: 11400000, guid: 82d120c70e870c5439a5b72a325683c4, type: 2}
     - target: {fileID: 7783237652193721230, guid: 3da842c263179914899df8f78fffbb9d, type: 3}
       propertyPath: unitDataList.Array.data[1].sharedData
       value: 
-      objectReference: {fileID: 11400000, guid: 0a4c2a94927ea8d47abdbd461918c7f0, type: 2}
+      objectReference: {fileID: 11400000, guid: 82d120c70e870c5439a5b72a325683c4, type: 2}
     - target: {fileID: 7783237652193721230, guid: 3da842c263179914899df8f78fffbb9d, type: 3}
       propertyPath: unitDataList.Array.data[2].sharedData
       value: 
-      objectReference: {fileID: 11400000, guid: 0a4c2a94927ea8d47abdbd461918c7f0, type: 2}
+      objectReference: {fileID: 11400000, guid: 82d120c70e870c5439a5b72a325683c4, type: 2}
     - target: {fileID: 7783237652193721230, guid: 3da842c263179914899df8f78fffbb9d, type: 3}
       propertyPath: unitDataList.Array.data[3].sharedData
       value: 
-      objectReference: {fileID: 11400000, guid: 0a4c2a94927ea8d47abdbd461918c7f0, type: 2}
+      objectReference: {fileID: 11400000, guid: 82d120c70e870c5439a5b72a325683c4, type: 2}
     - target: {fileID: 7783237652193721230, guid: 3da842c263179914899df8f78fffbb9d, type: 3}
       propertyPath: unitDataList.Array.data[1].growthLevel
       value: 3

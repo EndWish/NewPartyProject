@@ -17,7 +17,7 @@ public class HowlingSkill : ActiveSkill
     }
 
     public override IEnumerator CoUse() {
-        Owner.RemoveSelectedToken();
+        yield return StartCoroutine(Owner.UseSelectedTokens());
         CreateReinforceFX();
 
         // 능력치 버프 걸기

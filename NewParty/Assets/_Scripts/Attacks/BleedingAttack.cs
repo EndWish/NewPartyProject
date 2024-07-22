@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BleedingAttack : Attack
+public class BleedingAttack : DmgAttack
 {
     [SerializeField] protected GameObject fx;
 

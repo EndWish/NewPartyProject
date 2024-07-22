@@ -61,8 +61,6 @@ public partial class Unit : MonoBehaviourPun
     // 토큰 관련 변수
     public int MaxTokens { get; set; } = 5;
     public List<Token> Tokens { get; set; } = new List<Token>();
-    public UnityAction<Unit, Token> OnCreateToken;
-    public UnityAction<Unit, Token> OnRemoveToken;
 
     // 파티 관련 변수
     public TeamType TeamType { get; set; } = TeamType.None;
@@ -87,21 +85,27 @@ public partial class Unit : MonoBehaviourPun
     // 전투 관련 코루틴 변수
     public Action<HitCalculator> OnBeforeCalculateHit;
     public Action<DamageCalculator> OnBeforeCalculateDmg, OnAfterCalculateDmg;
+
     public Func<IEnumerator> CoOnAvoid, CoOnDie;
     public Func<Unit, IEnumerator> CoOnKill; // 매개변수(죽인 대상)
-    public Func<Unit, Attack, IEnumerator> CoOnHit; // 매개변수(명중한 대상, 공격)
+    public Func<Unit, Attack, IEnumerator> CoOnHit, CoOnHitMiss; // 매개변수(대상, 공격)
     public Func<Unit, DamageCalculator, IEnumerator> CoOnHitDmg; // 매개변수(때린 대상, DamageCalculator)
     public Func<Unit, float, float, IEnumerator> CoOnHitHp; // 매개변수(때린 대상, hp에 준 피해, 초과 피해)
 
+    public Func<Token, IEnumerator> CoOnGetToken, CoOnUseToken, CoOnDiscardToken, CoOnOverflowToken;
+    public Action<Token> OnCreateToken;
 
     // 유니티 함수 ////////////////////////////////////////////////////////////
     protected void Awake() {
         if (SharedData.InitTags != null)
             Tags.AddTag(SharedData.InitTags);
         UpdateAllStat();
-        
-        actionGauge = 0;
 
+        tokensParent = unitCanvas.transform.Find("TokensParent").GetComponent<Transform>();
+        statusEffectIconParent = unitCanvas.transform.Find("StatusEffectIconParent").GetComponent<Transform>();
+    }
+
+    protected void Start() {
         BasicAtkSkill.Owner = this;
         BasicBarrierSkill.Owner = this;
 
@@ -110,12 +114,9 @@ public partial class Unit : MonoBehaviourPun
             Skills.Add(skill);
         }
 
-        tokensParent = unitCanvas.transform.Find("TokensParent").GetComponent<Transform>();
-        statusEffectIconParent = unitCanvas.transform.Find("StatusEffectIconParent").GetComponent<Transform>();
-    }
+        hp = GetFinalStat(StatType.Hpm);
+        actionGauge = 0;
 
-    protected void Start() {
-        hp = GetFinalStat(StatType.Hpm);    //  growthLevel가 Awake에서는 적용되지 않아 Start에서 초기화한다.
         CoOnAvoid += CoCreateAvoidText;
     }
 
@@ -274,78 +275,107 @@ public partial class Unit : MonoBehaviourPun
     }
 
     // 토큰 관련 함수
-    [PunRPC] protected void CreateTokenRPC(TokenType type) {
-        Token newToken = Instantiate(tokenPrefab, tokensParent);
-        Tokens.Add(newToken);
-        newToken.Owner = this;
-        newToken.Type = type;
-    }
-    public void CreateRandomToken() {
-        if (Tokens.Count >= MaxTokens)  // 최대개수를 넘어서 얻을 수 없다.
-            return;
+    public Token CreateRandomToken() {
+        // 토큰을 생성한다
+        Token newToken = PhotonNetwork.Instantiate(Token.GetTokenPrefabPath(), Vector3.zero, Quaternion.identity).GetComponent<Token>();
 
+        // 토큰의 타입을 설정한다
         float sum = GetFinalStat(StatType.AtkTokenWeight) + GetFinalStat(StatType.SkillTokenWeight) + GetFinalStat(StatType.ShieldTokenWeight);
         float random = UnityEngine.Random.Range(0f, sum);
 
-        TokenType type = TokenType.None;
+        TokenType tokenType = TokenType.None;
         if (random <= GetFinalStat(StatType.AtkTokenWeight))
-            type = TokenType.Atk;
+            tokenType = TokenType.Atk;
         else if (random <= GetFinalStat(StatType.AtkTokenWeight) + GetFinalStat(StatType.SkillTokenWeight))
-            type = TokenType.Skill;
+            tokenType = TokenType.Skill;
         else
-            type = TokenType.Barrier;
+            tokenType = TokenType.Barrier;
+        newToken.Type = tokenType;
 
-        photonView.RPC("CreateTokenRPC", RpcTarget.All, type);
+        // 토큰 이벤트 호출
+        OnCreateToken?.Invoke(newToken);
 
-        OnCreateToken?.Invoke(this, Tokens[Tokens.Count - 1]);
+        return newToken;
     }
-    public void CreateRandomToken(int num) {
-        for (int i = 0; i < num; ++i) {
-            CreateRandomToken();
+
+    [PunRPC]
+    private void AddTokenToListRPC(int viewId) {
+        Token token = PhotonView.Find(viewId).GetComponent<Token>();
+        Tokens.Add(token);
+    }
+    private void AddTokenToList(Token token) {
+        photonView.RPC("AddTokenToListRPC", RpcTarget.All, token?.photonView.ViewID ?? -1);
+    }
+
+    [PunRPC]
+    private void SetTokenParentRPC(int viewId) {
+        Transform token = PhotonView.Find(viewId).transform;
+        token.SetParent(tokensParent);
+        token.transform.localScale = Vector3.one;
+    }
+    private void SetTokenParent(Token token) {
+        photonView.RPC("SetTokenParentRPC", RpcTarget.All, token?.photonView.ViewID ?? -1);
+    }
+
+    public IEnumerator AddToken(Token token) {
+        token.Owner = this; // 소멸될지라도 이 토큰을 가질 주인을 알 수 있도록 미리 변수를 변경해준다.
+
+        // 만든 토큰을 얻을지 판단한다
+        if (Tokens.Count < MaxTokens) {
+            // 토큰을 토큰 리스트에 추가하고 토큰의 소유주를 해당 유닛으로 변경한다
+            AddTokenToList(token);
+            SetTokenParent(token);
+            yield return StartCoroutine(GameManager.CoInvoke(CoOnGetToken, token));
+        }
+        else {
+            // 최대 소지량을 초과하여 소멸시킨다.
+            yield return StartCoroutine(OverflowToken(token));
         }
     }
-    public void CreateToken(TokenType type) {
-        if (Tokens.Count >= MaxTokens)  // 최대개수를 넘어서 얻을 수 없다.
-            return;
 
-        photonView.RPC("CreateTokenRPC", RpcTarget.All, type);
-
-        OnCreateToken?.Invoke(this, Tokens[Tokens.Count - 1]);
+    [PunRPC]
+    private void RemoveTokeFromListRPC(int viewId) {
+        Token token = PhotonView.Find(viewId).GetComponent<Token>();
+        Tokens.Remove(token);
     }
-    public void CreateToken(TokenType type, int num) {
-        for (int i = 0; i < num; ++i) {
-            CreateToken(type);
-        }
+    private void RemoveTokeFromList(Token token) {
+        photonView.RPC("RemoveTokeFromListRPC", RpcTarget.All, token?.photonView.ViewID ?? -1);
     }
 
-    [PunRPC] protected void RemoveTokenRPC(int index) {
-        Token token = Tokens[index];
-        Tokens.RemoveAt(index);
-        Destroy(token.gameObject);
+    public IEnumerator UseToken(Token token) {
+        yield return StartCoroutine(GameManager.CoInvoke(CoOnUseToken, token));
+        RemoveTokeFromList(token);
+        token.Destroy();
     }
-    public void RemoveToken(Token token) {
-        OnRemoveToken?.Invoke(this, token);
-
-        int index = Tokens.IndexOf(token);
-        photonView.RPC("RemoveTokenRPC", RpcTarget.All, index);
+    public IEnumerator DiscardToken(Token token) {
+        yield return StartCoroutine(GameManager.CoInvoke(CoOnDiscardToken, token));
+        RemoveTokeFromList(token);
+        token.Destroy();
     }
-    public void RemoveSelectedToken() {
+    public IEnumerator OverflowToken(Token token) {
+        yield return StartCoroutine(GameManager.CoInvoke(CoOnOverflowToken, token));
+        RemoveTokeFromList(token);
+        token.Destroy();
+    }
+    public IEnumerator UseSelectedTokens() {
         List<Token> selectedTokens = Tokens.FindAll(token => token.IsSelected);
         foreach (Token token in selectedTokens)
-            RemoveToken(token);
+            yield return StartCoroutine(UseToken(token));
     }
-    public void RemoveRandomToken() {
-        if (Tokens.Count == 0) return;
-        RemoveToken(Tokens.PickRandom());
+    public IEnumerator DiscardRandomToken() {
+        if (Tokens.Count == 0)
+            yield break;
+        yield return StartCoroutine(DiscardToken(Tokens.PickRandom()));
     }
 
-    [PunRPC] protected void ClearAllTokenRPC() {
-        foreach(var token in Tokens)
-            Destroy(token.gameObject);
+    public void ClearAllToken() {
+        foreach (var token in Tokens)
+            token.Destroy();
         Tokens.Clear();
     }
-    public void ClearAllToken() {
-        photonView.RPC("ClearAllTokenRPC", RpcTarget.All);
+
+    public int GetSelectedTokensNum() {
+        return Tokens.FindAll(token => token.IsSelected).Count;
     }
 
     // 행동 관련 함수
@@ -353,7 +383,10 @@ public partial class Unit : MonoBehaviourPun
         yield return new WaitForSeconds(0.3f);
     }
     public IEnumerator CoDiscardAction() {
-        RemoveSelectedToken();
+        List<Token> selectedTokens = Tokens.FindAll(token => token.IsSelected);
+        foreach (Token token in selectedTokens)
+            yield return StartCoroutine(DiscardToken(token));
+
         yield return new WaitForSeconds(0.3f);
     }
 

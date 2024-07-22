@@ -20,7 +20,7 @@ public class MassTransfusionSkill : ActiveSkill
     }
 
     public override IEnumerator CoUse() {
-        Owner.RemoveSelectedToken();
+        yield return StartCoroutine(Owner.UseSelectedTokens());
         
         // 자신의 체력을 깎는다.
         float hpCost = Owner.Hp * hpConsumptionRate;

@@ -48,14 +48,6 @@ public class StatStatusEffect : StatusEffect
         }
     }
 
-    [PunRPC] protected virtual void StatusEffectFormRPC(StatusEffectForm statusEffectForm) {
-        this.statusEffectForm = statusEffectForm;
-    }
-    public StatusEffectForm StatusEffectForm {
-        get { return statusEffectForm; }
-        set { photonView.RPC("StatusEffectFormRPC", RpcTarget.All, value); }
-    }
-
     [PunRPC] protected virtual void ValueRPC(float value) {
         ReversApply();
         this.value = value;

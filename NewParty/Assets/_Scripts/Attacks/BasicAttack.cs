@@ -5,7 +5,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using static UnityEngine.GraphicsBuffer;
 
-public class BasicAttack : Attack
+public class BasicAttack : DmgAttack
 {
     [SerializeField] protected GameObject fx;
 

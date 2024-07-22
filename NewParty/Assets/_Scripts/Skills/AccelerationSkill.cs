@@ -16,7 +16,8 @@ public class AccelerationSkill : ActiveSkill
     }
 
     public override IEnumerator CoUse() {
-        Owner.RemoveSelectedToken();
+        yield return StartCoroutine(Owner.UseSelectedTokens());
+
         CreateReinforceFX();
         AccelerationBuff statusEffect = PhotonNetwork.Instantiate(GameManager.GetStatusEffectPrefabPath("AccelerationBuff"),
             transform.position, Quaternion.identity)

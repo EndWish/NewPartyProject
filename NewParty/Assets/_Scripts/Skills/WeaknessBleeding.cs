@@ -16,10 +16,11 @@ public class WeaknessBleeding : PassiveSkill
         if (Owner != null) Owner.OnBeforeCalculateDmg -= this.OnBeforeCalculateDmg;
     }
 
-    protected override void OnSetOwner(Unit prev, Unit current) {
-        base.OnSetOwner(prev, current);
-        if (prev != null) prev.OnBeforeCalculateDmg -= this.OnBeforeCalculateDmg;
-        if (current != null) current.OnBeforeCalculateDmg += this.OnBeforeCalculateDmg;
+    [PunRPC]
+    protected override void OwnerRPC(int viewId) {
+        if (Owner != null) Owner.OnBeforeCalculateDmg -= this.OnBeforeCalculateDmg;
+        base.OwnerRPC(viewId);
+        if (Owner != null) Owner.OnBeforeCalculateDmg += this.OnBeforeCalculateDmg;
     }
 
     public override string GetDescription() {

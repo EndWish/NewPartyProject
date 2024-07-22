@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using static System.Collections.Specialized.BitVector32;
 using static UnityEngine.GraphicsBuffer;
 
 public abstract class Skill : MonoBehaviourPun
@@ -15,18 +16,17 @@ public abstract class Skill : MonoBehaviourPun
     public string Name { get; protected set; }
     //public int Cost;
     public bool IsPassive { get; protected set; }
-    
+
+    [PunRPC]
+    protected virtual void OwnerRPC(int viewId) {
+        owner = viewId == -1 ? null : PhotonView.Find(viewId).GetComponent<Unit>();
+    }
     public Unit Owner {
         get { return owner; }
         set { 
             if (owner == value) return;
-            Unit prev = owner;
-            owner = value;
-            OnSetOwner(prev, owner);
+            photonView.RPC("OwnerRPC", RpcTarget.All, value?.photonView.ViewID ?? -1);
         }
-    }
-    protected virtual void OnSetOwner(Unit prev, Unit current) {
-
     }
 
     public abstract string GetDescription();
@@ -46,7 +46,7 @@ public abstract class Skill : MonoBehaviourPun
             .GetComponent<StatTurnStatusEffect>();
         statusEffect.StatForm = statForm;
         statusEffect.StatType = statType;
-        statusEffect.StatusEffectForm = statusEffectForm;
+        statusEffect.Form = statusEffectForm;
         statusEffect.Value = value;
         statusEffect.Turn = turn;
         statusEffect.Caster = Owner;

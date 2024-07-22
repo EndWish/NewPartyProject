@@ -13,7 +13,7 @@ public class BasicBarrierSkill : ActiveSkill
     public override IEnumerator CoUse() {
         // 토큰을 개수를 세고 삭제한다
         int tokenStack = Owner.Tokens.FindAll(token => token.IsSelected).Count;
-        Owner.RemoveSelectedToken();
+        yield return StartCoroutine(Owner.UseSelectedTokens());
 
         // 기본 배리어 생성 및 적용
         BasicBarrier barrier = PhotonNetwork.Instantiate(GameManager.GetBarrierPrefabPath("BasicBarrier"),

@@ -267,7 +267,9 @@ public class BattleManager : MonoBehaviourPunCallbacksSingleton<BattleManager>
 
                     // 토큰을 지급한다
                     yield return StartCoroutine(GameManager.CoInvoke(UnitOfTurn.CoOnBeginMyTurn));
-                    UnitOfTurn.CreateRandomToken(3);
+                    for(int i = 0; i < 3; ++i) {
+                        yield return StartCoroutine(UnitOfTurn.AddToken(UnitOfTurn.CreateRandomToken()));
+                    }
 
                     RaiseSyncCount();
                 }

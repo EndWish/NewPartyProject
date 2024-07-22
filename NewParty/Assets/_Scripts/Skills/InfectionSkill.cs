@@ -33,16 +33,16 @@ public class InfectionSkill : PassiveSkill
         }
     }
 
-    protected override void OnSetOwner(Unit prev, Unit current) {
-        base.OnSetOwner(prev, current);
-        if (prev != null) { 
-            prev.CoOnHit -= this.CoOnHit;
+    [PunRPC]
+    protected override void OwnerRPC(int viewId) {
+        if (Owner != null) {
+            Owner.CoOnHit -= this.CoOnHit;
             Owner.CoOnBeginMyTurn -= this.CoOnBeginMyTurn;
             Owner.CoOnEndMyTurn -= this.CoOnEndMyTurn;
         }
-
-        if (current != null) { 
-            current.CoOnHit += this.CoOnHit;
+        base.OwnerRPC(viewId);
+        if (Owner != null) {
+            Owner.CoOnHit += this.CoOnHit;
             Owner.CoOnBeginMyTurn += this.CoOnBeginMyTurn;
             Owner.CoOnEndMyTurn += this.CoOnEndMyTurn;
         }
@@ -58,7 +58,7 @@ public class InfectionSkill : PassiveSkill
     protected IEnumerator CoOnHit(Unit target, Attack attack) {
         if(attack.Tags.ContainsAtLeastOne(new Tags(Tag.기본공격, Tag.스킬공격 ))) {
             if(prevTarget != target && Random.Range(0f,1f) <= chance) {
-                target.RemoveRandomToken();
+                yield return StartCoroutine(Owner.DiscardRandomToken());
                 CreateFX(target);
             }
             prevTarget = target;

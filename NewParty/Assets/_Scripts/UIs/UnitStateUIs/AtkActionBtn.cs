@@ -4,30 +4,16 @@ using UnityEngine;
 
 public class AtkActionBtn : FixedActionBtn
 {
+
+
     protected override void UpdateBtn() {
-        BattleManager battleManager = BattleManager.Instance;
 
         if (!MeetActiveBasicCondition()) {
             Active = false;
             return;
         }
 
-        //atk 토큰만 활성화 되어 있을 경우 이 버튼이 활성화 된다.
-        bool result = false;
-        foreach(Token token in targetUnit.Tokens) {
-            if (!token.IsSelected)
-                continue;
-
-            if(token.Type == TokenType.Atk) {
-                result = true;
-            }
-            else {
-                result = false;
-                break;
-            }
-        }
-
-        Active = result;
+        Active = targetUnit.BasicAtkSkill.CanUse();
     }
 
     public override void OnClick() {

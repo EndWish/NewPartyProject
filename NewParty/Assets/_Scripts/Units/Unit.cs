@@ -380,7 +380,7 @@ public partial class Unit : MonoBehaviourPun
 
     // 행동 관련 함수
     public IEnumerator CoPassAction() {
-        yield return new WaitForSeconds(0.3f);
+        yield return new WaitForSeconds(0.1f);
     }
     public IEnumerator CoDiscardAction() {
         List<Token> selectedTokens = Tokens.FindAll(token => token.IsSelected);
@@ -388,6 +388,17 @@ public partial class Unit : MonoBehaviourPun
             yield return StartCoroutine(DiscardToken(token));
 
         yield return new WaitForSeconds(0.3f);
+    }
+    public bool CanUseDiscardAction() {
+        if (Tags.Contains(Tag.기절))
+            return false;
+
+        foreach (Token token in Tokens) {
+            if (token.IsSelected) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public bool HasTurn() {

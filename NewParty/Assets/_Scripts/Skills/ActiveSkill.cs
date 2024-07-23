@@ -34,7 +34,7 @@ public abstract class ActiveSkill : Skill
         return result;
     }
     public virtual bool MeetUniqueConditions() {
-        if (IsPassive)
+        if (Owner.Tags.Contains(Tag.±âÀý))
             return false;
         return true;
     }

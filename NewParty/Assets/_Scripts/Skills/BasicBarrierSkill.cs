@@ -44,24 +44,22 @@ public class BasicBarrierSkill : ActiveSkill
     }
 
     protected override bool MeetTokenCost() {
-        bool result = true;
         int count = 0;
         foreach (var token in Owner.Tokens) {
             if (!token.IsSelected)
                 continue;
 
             if (token.Type != TokenType.Barrier) {
-                result = false;
-                break;
+                return false;
             }
 
             ++count;
         }
 
         if (count == 0)
-            result = false;
+            return false;
 
-        return result;
+        return true;
     }
 
     protected float CalculateAmount(int tokenStack) {

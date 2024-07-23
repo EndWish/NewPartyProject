@@ -22,8 +22,6 @@ public class SkillActionBtn : ActionBtn
         iconImg.sprite = targetSkill.IconSp;
         CostText.text = targetSkill is ActiveSkill ? ((ActiveSkill)targetSkill).Cost.ToString() : "";
 
-        BattleManager battleManager = BattleManager.Instance;
-
         if (!MeetActiveBasicCondition()) {
             Active = false;
             return;

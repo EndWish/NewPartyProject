@@ -46,24 +46,22 @@ public class BasicAttackSkill : ActiveSkill
     }
 
     protected override bool MeetTokenCost() {
-        bool result = true;
         int count = 0;
         foreach (var token in Owner.Tokens) {
             if (!token.IsSelected)
                 continue;
 
             if (token.Type != TokenType.Atk) {
-                result = false;
-                break;
+                return false;
             }
 
             ++count;
         }
 
         if (count == 0)
-            result = false;
+            return false;
 
-        return result;
+        return true;
     }
 
     protected float CalculateDmg(int tokenStack) {

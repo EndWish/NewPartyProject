@@ -3,9 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AntiSkillBuff : StatusEffect, ITurnStatusEffect
+public class AntiSkillBuff : TurnStatusEffect
 {
-    protected int turn = 1;
     protected float dmgMul = 0f;
     [SerializeField] GameObject FXPrefab;
 
@@ -14,20 +13,6 @@ public class AntiSkillBuff : StatusEffect, ITurnStatusEffect
         if (Target != null) {
             Target.CoOnBeginTick -= CoOnBeginTurn;
             Target.OnAfterCalculateDmg -= OnAfterCalculateDmg;
-        }
-    }
-
-    [PunRPC]
-    protected virtual void TurnRPC(int turn) {
-        this.turn = turn;
-        seIcon.RightLowerText.text = turn.ToString();
-    }
-    public int Turn {
-        get { return turn; }
-        set {
-            photonView.RPC("TurnRPC", RpcTarget.All, value);
-            if (value <= 0)
-                this.Destroy();
         }
     }
 

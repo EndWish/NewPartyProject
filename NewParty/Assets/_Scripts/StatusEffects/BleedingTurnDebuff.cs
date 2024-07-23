@@ -3,30 +3,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BleedingDebuff : StatusEffect, ITurnStatusEffect
+public class BleedingTurnDebuff : TurnStatusEffect
 {
-    protected int turn = 1;
     protected float dmg = 0f;
 
     protected override void OnDestroy() {
         base.OnDestroy();
         if (Target != null) {
-            Target.CoOnBeginTick -= CoOnBeginTurn;
+            Target.CoOnBeginMyTurn -= CoOnBeginTurn;
             Target.Tags.SubTag(Tag.출혈);
-        }
-    }
-
-    [PunRPC]
-    protected virtual void TurnRPC(int turn) {
-        this.turn = turn;
-        seIcon.RightLowerText.text = turn.ToString();
-    }
-    public int Turn {
-        get { return turn; }
-        set {
-            photonView.RPC("TurnRPC", RpcTarget.All, value);
-            if (value <= 0)
-                this.Destroy();
         }
     }
 
@@ -55,7 +40,7 @@ public class BleedingDebuff : StatusEffect, ITurnStatusEffect
     }
 
     public override string GetDescription() {
-        return string.Format("출혈을 일으켜 {0:G}턴간 공격력의 {1}의 (#출혈)데미지를 준다.", Turn, FloatToNormalStr(dmg));
+        return string.Format("출혈을 일으켜 {0:G}턴간 턴이 시작할 때 {1} 의 (#출혈)데미지를 준다.", Turn, FloatToNormalStr(dmg));
     }
 
     protected IEnumerator CoOnBeginTurn() {

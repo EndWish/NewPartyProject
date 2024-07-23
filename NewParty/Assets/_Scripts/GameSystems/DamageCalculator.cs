@@ -67,7 +67,7 @@ public class DamageCalculator : MonoBehaviour
         Destroy(this.gameObject);
     }
 
-    public void CalculateFinalDmg() {
+    protected void CalculateFinalDmg() {
         FinalDmg = Dmg * (1f - DefRate);
         FinalDmg *= CriRate;
 
@@ -77,10 +77,13 @@ public class DamageCalculator : MonoBehaviour
         }
             
     }
-    public void CalculateDefRate() {
-        DefRate = Mathf.Min(1f, (DefPen + Def == 0) ? 0 : Def / (DefPen + Def));
+    protected void CalculateDefRate() {
+        DefRate = CalculateDefRate(Def, DefPen);
     }
-    public void CalculateCriRate() {
+    public float CalculateDefRate(float def, float defPen) {
+        return Mathf.Min(1f, (defPen + def == 0) ? 0 : def / (defPen + def));
+    }
+    protected void CalculateCriRate() {
         // 기본 공격 또는 치명타 적용이 될 경우 크리티컬 적용
         if (Attack.Tags.ContainsAtLeastOne(new Tags(Tag.기본공격, Tag.치명타적용))) {
             int integerPart = (int)CriCha;

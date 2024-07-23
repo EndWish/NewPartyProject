@@ -153,14 +153,16 @@ public class TokenSelector : MonoBehaviour
             && SelectRandomTarget(unit.BasicAtkSkill)) {
             unit.BasicAtkSkill.Use();
         }
-        else if (actionResult == ActionResult.Shield) {
-            BattleManager.Instance.ActionCoroutine = unit.BasicBarrierSkill.CoUse();
+        else if (actionResult == ActionResult.Shield 
+            && unit.BasicBarrierSkill.CanUse()) {
+            unit.BasicBarrierSkill.Use();
         }
         else if (actionResult == ActionResult.Skill
             && SelectRandomTarget(SelectRandomSkill(unit, out selectedSkill))) {
             selectedSkill.Use();
         }
-        else if (actionResult == ActionResult.Discard) {
+        else if (actionResult == ActionResult.Discard 
+            && unit.CanUseDiscardAction()) {
             BattleManager.Instance.ActionCoroutine = unit.CoDiscardAction();
         }
         else {

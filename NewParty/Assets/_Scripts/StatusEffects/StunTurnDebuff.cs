@@ -2,6 +2,7 @@ using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 public class StunTurnDebuff : TurnStatusEffect
 {
@@ -25,6 +26,12 @@ public class StunTurnDebuff : TurnStatusEffect
         if (Target != null) {
             Target.CoOnEndMyTurn += CoOnBeginTurn;
             Target.Tags.AddTag(Tag.±âÀý);
+        }
+    }
+    public override Unit Target {
+        set { 
+            base.Target = value;
+            Target.OnStun?.Invoke(this);
         }
     }
 

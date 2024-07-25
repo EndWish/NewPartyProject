@@ -25,17 +25,19 @@ public class ContinuousBitingAttack : DmgAttack
     }
 
     public override IEnumerator Animate() {
+        foreach (Unit Target in new AttackTargetsSetting(this, Targets)) {
+            bool hitResult = CalculateHit(Target);
 
-        bool hitResult = CalculateHit(Targets[0]);
-
-        for(int i =0; i <hitNum; ++i) {
-            CreateFxRPC();
-            yield return new WaitForSeconds(0.25f);
-            if(hitResult)
-                yield return StartCoroutine(Hit(Targets[0]));
-            else
-                yield return StartCoroutine(HitMiss(Targets[0]));
+            for (int i = 0; i < hitNum; ++i) {
+                CreateFxRPC();
+                yield return new WaitForSeconds(0.25f);
+                if (hitResult)
+                    yield return StartCoroutine(Hit(Target));
+                else
+                    yield return StartCoroutine(HitMiss(Target));
+            }
         }
+
         yield return new WaitForSeconds(0.15f);
         this.Destroy();
     }

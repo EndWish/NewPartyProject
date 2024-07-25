@@ -22,7 +22,10 @@ public class BasicAttack : DmgAttack
     }
 
     public override IEnumerator Animate() {
-        yield return StartCoroutine(CalculateAndHit(Targets[0]));
+        foreach(Unit Target in new AttackTargetsSetting(this, Targets)) {
+            yield return StartCoroutine(CalculateAndHit(Target));
+        }
+
         yield return new WaitUntil(() => fx == null);
 
         this.Destroy();

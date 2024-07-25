@@ -105,6 +105,8 @@ MonoBehaviour:
   - SetTokenParentRPC
   - RemoveTokeFromListRPC
   - FormRPC
+  - SetProtectSERPC
+  - SetPositionRPC
   DisableAutoOpenWizard: 1
   ShowSettings: 0
   DevRegionSetOnce: 1

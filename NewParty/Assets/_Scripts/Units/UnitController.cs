@@ -1,9 +1,10 @@
+using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class UnitController : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler
+public class UnitController : MonoBehaviourPun, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler
 {
     private Unit unit;
 
@@ -53,6 +54,14 @@ public class UnitController : MonoBehaviour, IPointerClickHandler, IPointerEnter
     public void OnPointerExit(PointerEventData eventData) {
         BattleManager battleManager = BattleManager.Instance;
         battleManager.UnitOnMouse = null;
+    }
+
+    [PunRPC]
+    protected void SetPositionRPC(Vector3 position) {
+        transform.position = position;
+    }
+    public void SetPosition(Vector3 position) {
+        photonView.RPC("SetPositionRPC", RpcTarget.All, position);
     }
 
 }

@@ -17,8 +17,10 @@ public class BleedingAttack : DmgAttack
     }
 
     public override IEnumerator Animate() {
-        yield return StartCoroutine(Hit(Targets[0]));
-        yield return new WaitUntil(() => fx == null);
+        foreach (Unit Target in new AttackTargetsSetting(this, Targets)) {
+            yield return StartCoroutine(Hit(Target));
+            yield return new WaitUntil(() => fx == null);
+        }
 
         this.Destroy();
     }

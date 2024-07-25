@@ -16,18 +16,25 @@ public class MassTransfusionAttack : Attack
     }
 
     public override IEnumerator Animate() {
-        Vector3 randomOffset = Random.insideUnitCircle;
-        Vector3 targetPos = Targets[0].transform.position;
-        float speed = 5f;
-        while (targetPos != transform.position) {
-            transform.position = Vector3.MoveTowards(transform.position, transform.position + randomOffset, 10f * Time.deltaTime);
-            transform.position = Vector3.MoveTowards(transform.position, targetPos, speed * Time.deltaTime);
-            speed +=10f * Time.deltaTime;
+        foreach (Unit Target in new AttackTargetsSetting(this, Targets)) {
+            Vector3 randomOffset = Random.insideUnitCircle;
+            
+            float speed = 5f;
+            while (true) {
+                Vector3 targetPos = Target.transform.position;
+                if (targetPos == transform.position)
+                    break;
 
-            yield return null;
+                transform.position = Vector3.MoveTowards(transform.position, transform.position + randomOffset, 10f * Time.deltaTime);
+                transform.position = Vector3.MoveTowards(transform.position, targetPos, speed * Time.deltaTime);
+                speed += 10f * Time.deltaTime;
+
+                yield return null;
+            }
+
+            Target.RecoverHp(healingAmount);
         }
 
-        Targets[0].RecoverHp(healingAmount);
         this.Destroy();
     }
 

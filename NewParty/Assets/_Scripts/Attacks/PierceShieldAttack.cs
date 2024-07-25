@@ -23,15 +23,18 @@ public class PierceShieldAttack : DmgAttack
     }
 
     public override IEnumerator Animate() {
-        bool isHit = CalculateHit(Targets[0]);
-        if (isHit) {
-            yield return StartCoroutine(Hit(Targets[0]));
-            StatTurnStatusEffect defDebuff = CreateStatTurnStatusEffect(StatForm.AbnormalMul, StatType.Def, StatusEffectForm.Debuff, defMul, turn);
-            Targets[0].AddStatusEffect(defDebuff);
+        foreach (Unit Target in new AttackTargetsSetting(this, Targets)) {
+            bool isHit = CalculateHit(Target);
+            if (isHit) {
+                yield return StartCoroutine(Hit(Target));
+                StatTurnStatusEffect defDebuff = CreateStatTurnStatusEffect(StatForm.AbnormalMul, StatType.Def, StatusEffectForm.Debuff, defMul, turn);
+                Target.AddStatusEffect(defDebuff);
+            }
+            else {
+                yield return StartCoroutine(HitMiss(Target));
+            }
         }
-        else {
-            yield return StartCoroutine(HitMiss(Targets[0]));
-        }
+
         yield return new WaitUntil(() => fx == null);
 
         this.Destroy();

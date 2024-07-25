@@ -81,10 +81,12 @@ public partial class Unit : MonoBehaviourPun
     public Func<IEnumerator> CoOnBeginMyTurn, CoOnEndMyTurn;
     public Func<IEnumerator> CoOnBeginTick;
     public Func<IEnumerator> CoOnBeginWave, CoOnEndWave;
+    public Action<StunTurnDebuff> OnStun;
 
     // 전투 관련 코루틴 변수
     public Action<HitCalculator> OnBeforeCalculateHit;
     public Action<DamageCalculator> OnBeforeCalculateDmg, OnAfterCalculateDmg;
+    public Action<Attack, AttackTargetsSetting> OnBecomeAttackTarget;
 
     public Func<IEnumerator> CoOnAvoid, CoOnDie;
     public Func<Unit, IEnumerator> CoOnKill; // 매개변수(죽인 대상)

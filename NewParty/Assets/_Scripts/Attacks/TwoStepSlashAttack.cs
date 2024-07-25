@@ -26,12 +26,16 @@ public class TwoStepSlashAttack : DmgAttack
     }
 
     public override IEnumerator Animate() {
-        ActiveSlashFx(0);
-        yield return StartCoroutine(CalculateAndHit(Targets[0]));
+        foreach (Unit Target in new AttackTargetsSetting(this, Targets)) {
+            ActiveSlashFx(0);
+            yield return StartCoroutine(CalculateAndHit(Target));
+        }
         yield return new WaitUntil(() => slashFx[0] == null);
 
-        ActiveSlashFx(1);
-        yield return StartCoroutine(CalculateAndHit(Targets[0]));
+        foreach (Unit Target in new AttackTargetsSetting(this, Targets)) {
+            ActiveSlashFx(1);
+            yield return StartCoroutine(CalculateAndHit(Target));
+        }
         yield return new WaitUntil(() => slashFx[1] == null);
 
         this.Destroy();

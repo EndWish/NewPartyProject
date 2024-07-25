@@ -18,9 +18,11 @@ public class VampireBiteAttack : DmgAttack
 
     public override IEnumerator Animate() {
         yield return new WaitForSeconds(0.25f);
-        if (!Caster.IsDie) Caster.CoOnHitHp += this.CoOnHitHp;
-        yield return StartCoroutine(CalculateAndHit(Targets[0]));
-        if (!Caster.IsDie) Caster.CoOnHitHp -= this.CoOnHitHp;
+        foreach (Unit Target in new AttackTargetsSetting(this, Targets)) {
+            if (!Caster.IsDie) Caster.CoOnHitHp += this.CoOnHitHp;
+            yield return StartCoroutine(CalculateAndHit(Target));
+            if (!Caster.IsDie) Caster.CoOnHitHp -= this.CoOnHitHp;
+        }
         yield return new WaitUntil(() => fx == null);
 
         this.Destroy();

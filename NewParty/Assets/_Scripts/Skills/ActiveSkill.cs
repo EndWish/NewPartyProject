@@ -44,6 +44,9 @@ public abstract class ActiveSkill : Skill
     public abstract int GetSelectionNum();
 
     public void Use() {
+        if(this is not BasicAttackSkill && this is not BasicBarrierSkill) {
+            Owner.OnUseActiveSkill?.Invoke(this);
+        }
         BattleManager.Instance.ActionCoroutine = CoUse();
     }
     public abstract IEnumerator CoUse();

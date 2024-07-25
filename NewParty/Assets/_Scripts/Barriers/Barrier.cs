@@ -6,8 +6,6 @@ using UnityEngine;
 
 public abstract class Barrier : MonoBehaviourPun
 {
-    [SerializeField] protected DamageText damageTextPrefab;
-
     private Unit caster;
     private Unit target;
 

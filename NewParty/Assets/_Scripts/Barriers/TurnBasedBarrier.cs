@@ -5,20 +5,12 @@ using UnityEngine;
 
 public class TurnBasedBarrier : Barrier
 {
-    private int remainTurn;
+    private int turn;
 
     protected void OnDestroy() {
         if (Target != null) {
             Target.CoOnBeginMyTurn -= OnBeginUnitTurn;
         }
-    }
-
-    [PunRPC] private void RemainTurnRPC(int turn) {
-        remainTurn = turn;
-    }
-    public int RemainTurn {
-        get { return remainTurn; }
-        set { photonView.RPC("RemainTurnRPC", RpcTarget.All, value); }
     }
 
     public override Unit Target {
@@ -33,14 +25,22 @@ public class TurnBasedBarrier : Barrier
         }
     }
 
+    [PunRPC] private void TurnRPC(int turn) {
+        this.turn = turn;
+    }
+    public int Turn {
+        get { return turn; }
+        set { photonView.RPC("TurnRPC", RpcTarget.All, value); }
+    }
+
     protected IEnumerator OnBeginUnitTurn() {
-        if(--RemainTurn == 0) {
+        if(--Turn == 0) {
             Destroy();
         }
         yield break;
     }
 
     public override float GetPriority() {
-        return RemainTurn;
+        return Turn;
     }
 }

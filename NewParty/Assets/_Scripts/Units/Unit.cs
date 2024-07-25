@@ -77,25 +77,27 @@ public partial class Unit : MonoBehaviourPun
 
     // 장비 관련 변수
 
-    // 배틀페이지와 관련한 이벤트 변수
-    public Func<IEnumerator> CoOnBeginMyTurn, CoOnEndMyTurn;
-    public Func<IEnumerator> CoOnBeginTick;
-    public Func<IEnumerator> CoOnBeginWave, CoOnEndWave;
-    public Action<StunTurnDebuff> OnStun;
+    // 이벤트 변수
 
-    // 전투 관련 코루틴 변수
+
+    
     public Action<HitCalculator> OnBeforeCalculateHit;
     public Action<DamageCalculator> OnBeforeCalculateDmg, OnAfterCalculateDmg;
     public Action<Attack, AttackTargetsSetting> OnBecomeAttackTarget;
+    public Action<StunTurnDebuff> OnStun;
+    public Action<Token> OnCreateToken;
+    public Action<ActiveSkill> OnUseActiveSkill;
 
+    public Func<IEnumerator> CoOnBeginMyTurn, CoOnEndMyTurn;
+    public Func<IEnumerator> CoOnBeginTick;
+    public Func<IEnumerator> CoOnBeginWave, CoOnEndWave;
     public Func<IEnumerator> CoOnAvoid, CoOnDie;
     public Func<Unit, IEnumerator> CoOnKill; // 매개변수(죽인 대상)
     public Func<Unit, Attack, IEnumerator> CoOnHit, CoOnHitMiss; // 매개변수(대상, 공격)
     public Func<Unit, DamageCalculator, IEnumerator> CoOnHitDmg; // 매개변수(때린 대상, DamageCalculator)
     public Func<Unit, float, float, IEnumerator> CoOnHitHp; // 매개변수(때린 대상, hp에 준 피해, 초과 피해)
-
     public Func<Token, IEnumerator> CoOnGetToken, CoOnUseToken, CoOnDiscardToken, CoOnOverflowToken;
-    public Action<Token> OnCreateToken;
+    
 
     // 유니티 함수 ////////////////////////////////////////////////////////////
     protected void Awake() {

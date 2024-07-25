@@ -5,6 +5,10 @@ using UnityEngine;
 
 public class DamageCalculator : MonoBehaviour
 {
+    static public float CalculateDefRate(float def, float defPen) {
+        return Mathf.Min(1f, (defPen + def == 0) ? 0 : def / (defPen + def));
+    }
+
     public Unit Attacker { get; set; }
     public Unit Defender { get; set; }
     public Attack Attack { get; set; }
@@ -79,9 +83,6 @@ public class DamageCalculator : MonoBehaviour
     }
     protected void CalculateDefRate() {
         DefRate = CalculateDefRate(Def, DefPen);
-    }
-    public float CalculateDefRate(float def, float defPen) {
-        return Mathf.Min(1f, (defPen + def == 0) ? 0 : def / (defPen + def));
     }
     protected void CalculateCriRate() {
         // 기본 공격 또는 치명타 적용이 될 경우 크리티컬 적용

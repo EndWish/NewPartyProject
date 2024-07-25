@@ -31,7 +31,7 @@ public class StunTurnDebuff : TurnStatusEffect
     public override Unit Target {
         set { 
             base.Target = value;
-            Target.OnStun?.Invoke(this);
+            Target?.OnStun?.Invoke(this);
         }
     }
 

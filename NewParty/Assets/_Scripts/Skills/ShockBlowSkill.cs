@@ -71,7 +71,7 @@ public class ShockBlowSkill : PassiveSkill
     }
 
     public override string GetDescription() {
-        return string.Format("공격 토큰을 {0}개 이상 사용할 경우 충전 상태가 된다. 다음 기본 공격 또는 스킬 공격 적중 시 {1}턴간 대상의 공격력을 {2:F1}% 감소시킨다.", maxStack, turn, strMul * 100f);
+        return string.Format("공격 토큰을 {0}개 이상 사용할 경우 충전 상태가 된다. 충전상태에서 기본 공격 적중 시 {1}턴간 대상의 공격력을 x{2:F2} 감소시킨다.", maxStack, turn, strMul);
     }
 
     protected IEnumerator CoOnUseToken(Token token) {
@@ -82,7 +82,7 @@ public class ShockBlowSkill : PassiveSkill
     }
     protected IEnumerator CoOnHitDmg(Unit damagedUnit, DamageCalculator dc) {
         Attack attack = dc.Attack;
-        if (maxStack <= Stack && attack is IDmgAttack && attack.Tags.ContainsAtLeastOne(new Tags(Tag.기본공격, Tag.스킬공격))) {
+        if (maxStack <= Stack && attack.Tags.Contains(Tag.기본공격)) {
             // 공격력 디버프
             StatTurnStatusEffect strDebuff = CreateStatTurnStatusEffect(StatForm.AbnormalMul, StatType.Str, StatusEffectForm.Debuff, strMul, turn);
             damagedUnit.AddStatusEffect(strDebuff);
@@ -95,7 +95,7 @@ public class ShockBlowSkill : PassiveSkill
         yield break;
     }
     protected IEnumerator CoOnHitMiss(Unit damagedUnit, Attack attack) {
-        if (maxStack <= Stack && attack is IDmgAttack && attack.Tags.ContainsAtLeastOne(new Tags(Tag.기본공격, Tag.스킬공격))) {
+        if (maxStack <= Stack && attack.Tags.Contains(Tag.기본공격)) {
             Stack = 0;
         }
         yield break;

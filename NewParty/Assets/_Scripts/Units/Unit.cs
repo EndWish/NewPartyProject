@@ -1,4 +1,5 @@
 using Photon.Pun;
+using Photon.Pun.Demo.Procedural;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -7,6 +8,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
+using static UnityEngine.Rendering.DebugUI;
 
 public enum UnitType : int
 {
@@ -122,6 +124,7 @@ public partial class Unit : MonoBehaviourPun
         actionGauge = 0;
 
         CoOnAvoid += CoCreateAvoidText;
+        OnStun += GainStunResistance;
     }
 
     // 함수 ///////////////////////////////////////////////////////////////////
@@ -554,7 +557,6 @@ public partial class Unit : MonoBehaviourPun
         photonView.RPC("RemoveBarrierRPC", RpcTarget.All, barrier.photonView.ViewID);
         barrier.Target = null;
     }
-
     public void ClearAllBarrier() {
         while (0 < Barriers.Count) {
             Barriers.Last().Destroy();
@@ -580,6 +582,21 @@ public partial class Unit : MonoBehaviourPun
     }
     public void Destroy() {
         photonView.RPC("DestroyRPC", RpcTarget.AllBuffered);
+    }
+
+    // 기본 능력을 이벤트에 등록
+    protected void GainStunResistance(StunTurnDebuff stun) {
+        StatTurnStatusEffect statusEffect = PhotonNetwork.Instantiate(GameManager.GetStatusEffectPrefabPath("StatTurnStatusEffect"),
+            transform.position, Quaternion.identity)
+            .GetComponent<StatTurnStatusEffect>();
+        statusEffect.StatForm = StatForm.AbnormalMul;
+        statusEffect.StatType = StatType.StunSen;
+        statusEffect.Form = StatusEffectForm.Buff;
+        statusEffect.Value = 0.5f;
+        statusEffect.Turn = stun.Turn + 3;
+        statusEffect.Caster = this;
+
+        AddStatusEffect(statusEffect);
     }
 
 }

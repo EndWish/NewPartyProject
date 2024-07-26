@@ -6,6 +6,8 @@ using static UnityEngine.GraphicsBuffer;
 
 public class StatStatusEffect : StatusEffect
 {
+    [SerializeField] protected SpritesSharedData statTypeIcons;
+
     protected StatType statType;
     protected StatForm statForm;
     protected StatusEffectForm statusEffectForm;
@@ -26,6 +28,7 @@ public class StatStatusEffect : StatusEffect
         ReversApply();
         this.statType = statType;
         Name = StatToKorean.Get(statType) + " 상태이상";
+        SetIconSp(statTypeIcons.Sprites[(int)statType]);
         Apply();
     }
     public StatType StatType {
@@ -75,7 +78,7 @@ public class StatStatusEffect : StatusEffect
         Target.UpdateFinalStat(statType);
     }
 
-    public void SetIconSp(Sprite sprite) {
+    protected void SetIconSp(Sprite sprite) {
         IconSp = sprite;
         seIcon.IconImg.sprite = sprite;
     }
@@ -85,12 +88,12 @@ public class StatStatusEffect : StatusEffect
 
         if (statForm == StatForm.AbnormalAdd) {
             if (StatToKorean.IsPercent(statType))
-                return string.Format("{0}이 {1:G}%p {2}한다.", StatToKorean.Get(statType), value * 100f, verb);
+                return string.Format("{0}이(가) {1:G}%p {2}한다.", StatToKorean.Get(statType), value * 100f, verb);
             else
-                return string.Format("{0}이 {1:G} {2}한다.", StatToKorean.Get(statType), value, verb);
+                return string.Format("{0}이(가) {1:G} {2}한다.", StatToKorean.Get(statType), value, verb);
         }
         else if(statForm == StatForm.AbnormalMul) {
-            return string.Format("{0}이 x{1:G} {2}한다.", StatToKorean.Get(statType), value, verb);
+            return string.Format("{0}이(가) x{1:G} {2}한다.", StatToKorean.Get(statType), value, verb);
         }
 
         return "StatForm ERROR";

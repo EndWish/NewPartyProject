@@ -34,15 +34,7 @@ public class QuakeAttack : DmgAttack, IStunAttack
             bool isHit = CalculateHit(Target);
             if (isHit) {
                 yield return StartCoroutine(Hit(Target));
-                StunCha = DamageCalculator.CalculateDefRate(Caster.GetFinalStat(StatType.Def), Target.GetFinalStat(StatType.DefPen));
-                if (UnityEngine.Random.Range(0f, 1f) <= StunCha) {
-                    StunTurnDebuff statusEffect = PhotonNetwork.Instantiate(GameManager.GetStatusEffectPrefabPath("StunTurnDebuff"),
-                    Target.transform.position, Quaternion.identity)
-                    .GetComponent<StunTurnDebuff>();
-                    statusEffect.Turn = turn;
-                    statusEffect.Caster = Caster;
-                    Target.AddStatusEffect(statusEffect);
-                }
+                HitStun(DamageCalculator.CalculateDefRate(Caster.GetFinalStat(StatType.Def), Target.GetFinalStat(StatType.DefPen)), Target, turn);
             }
             else {
                 yield return StartCoroutine(HitMiss(Target));

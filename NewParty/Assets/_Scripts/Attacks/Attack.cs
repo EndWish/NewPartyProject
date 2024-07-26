@@ -33,7 +33,6 @@ public abstract class Attack : MonoBehaviourPun
         yield return StartCoroutine(GameManager.CoInvoke(Caster.CoOnHitMiss, target, this));
         yield return StartCoroutine(GameManager.CoInvoke(target.CoOnAvoid));
     }
-
     protected IEnumerator CalculateAndHit(Unit target) {
         bool isHit = CalculateHit(target);
         if (isHit) {
@@ -43,21 +42,26 @@ public abstract class Attack : MonoBehaviourPun
         }
     }
 
+    protected void HitStun(float basicStunCha, Unit target, int turn) {
+        IStunAttack stunAttack = (IStunAttack)this;
+
+        stunAttack.StunCha = basicStunCha * target.GetFinalStat(StatType.StunSen);
+        if (UnityEngine.Random.Range(0f, 1f) <= stunAttack.StunCha) {
+            StunTurnDebuff statusEffect = PhotonNetwork.Instantiate(GameManager.GetStatusEffectPrefabPath("StunTurnDebuff"),
+            target.transform.position, Quaternion.identity)
+            .GetComponent<StunTurnDebuff>();
+            statusEffect.Turn = turn;
+            statusEffect.Caster = Caster;
+            target.AddStatusEffect(statusEffect);
+        }
+    }
+
     [PunRPC]
     protected void DestroyRPC() {
         Destroy(gameObject);
     }
     public void Destroy() {
         photonView.RPC("DestroyRPC", RpcTarget.AllBuffered);
-    }
-
-    [PunRPC] protected void SetStatStatusEffectIconRPC(int viewId) {
-        if (viewId == -1) return;
-        StatStatusEffect statStatusEffect = PhotonView.Find(viewId).GetComponent<StatStatusEffect>();
-        statStatusEffect.SetIconSp(IconSp);
-    }
-    protected void SetStatStatusEffectIcon(StatStatusEffect statStatusEffect) {
-        photonView.RPC("SetStatStatusEffectIconRPC", RpcTarget.All, statStatusEffect.photonView.ViewID);
     }
 
     protected StatTurnStatusEffect CreateStatTurnStatusEffect(StatForm statForm, StatType statType, StatusEffectForm statusEffectForm, float value, int turn) {
@@ -70,9 +74,10 @@ public abstract class Attack : MonoBehaviourPun
         statusEffect.Value = value;
         statusEffect.Turn = turn;
         statusEffect.Caster = Caster;
-        SetStatStatusEffectIcon(statusEffect);
 
         return statusEffect;
     }
+
+
 
 }

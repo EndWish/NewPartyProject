@@ -31,15 +31,6 @@ public abstract class Skill : MonoBehaviourPun
 
     public abstract string GetDescription();
 
-    [PunRPC] protected void SetStatStatusEffectIconRPC(int viewId) {
-        if(viewId == -1) return;
-        StatStatusEffect statStatusEffect = PhotonView.Find(viewId).GetComponent<StatStatusEffect>();
-        statStatusEffect.SetIconSp(IconSp);
-    }
-    protected void SetStatStatusEffectIcon(StatStatusEffect statStatusEffect) {
-        photonView.RPC("SetStatStatusEffectIconRPC", RpcTarget.All, statStatusEffect.photonView.ViewID);
-    }
-
     protected StatTurnStatusEffect CreateStatTurnStatusEffect(StatForm statForm, StatType statType, StatusEffectForm statusEffectForm, float value, int turn) {
         StatTurnStatusEffect statusEffect = PhotonNetwork.Instantiate(GameManager.GetStatusEffectPrefabPath("StatTurnStatusEffect"),
             transform.position, Quaternion.identity)
@@ -50,7 +41,6 @@ public abstract class Skill : MonoBehaviourPun
         statusEffect.Value = value;
         statusEffect.Turn = turn;
         statusEffect.Caster = Owner;
-        SetStatStatusEffectIcon(statusEffect);
         statusEffect.InitIcon();
 
         return statusEffect;

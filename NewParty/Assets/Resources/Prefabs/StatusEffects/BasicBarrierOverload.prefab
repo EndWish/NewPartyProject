@@ -50,6 +50,7 @@ MonoBehaviour:
   Name: "\uAE30\uBCF8 \uBC30\uB9AC\uC5B4 \uACFC\uBD80\uD558"
   form: 1
   InitTags: 
+  statTypeIcons: {fileID: 0}
 --- !u!114 &-4144098133392723434
 MonoBehaviour:
   m_ObjectHideFlags: 0

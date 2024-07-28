@@ -35,4 +35,8 @@ public class PassActionBtn : FixedActionBtn
     protected override string GetTooltipDescription() {
         return "아무런 행동을 하지 않고 턴을 종료한다.";
     }
+    protected override string GetTooltipDetailedDescription() {
+        return "아무런 행동을 하지 않고 턴을 종료한다.";
+    }
+
 }

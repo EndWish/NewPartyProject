@@ -59,7 +59,13 @@ public class ProtectSkill : ActiveSkill
         return string.Format("선택한 아군을 {0}턴간 보호한다. 보호를 받는 유닛은 자신이 자신이 공격의 타겟이 되었을 때 스킬 시전자가 대신 타겟이 되어준다." +
             "\n만약 보호 대상과 동시에 공격의 타겟이 된다면 보호스킬이 발동되지 않는다." +
             "\n보호 스킬이 끝나기전에 다시 사용할 경우 이전에 보호하던 대상은 취소된다. 또한 시전자가 기절할 경우 보호 스킬이 취소된다.",
-            turn);
+            TooltipText.SetCountFont(turn));
+    }
+    public override string GetDetailedDescription() {
+        return string.Format("선택한 아군을 {0}턴간 보호한다. 보호를 받는 유닛은 자신이 자신이 공격의 타겟이 되었을 때 스킬 시전자가 대신 타겟이 되어준다." +
+            "\n만약 보호 대상과 동시에 공격의 타겟이 된다면 보호스킬이 발동되지 않는다." +
+            "\n보호 스킬이 끝나기전에 다시 사용할 경우 이전에 보호하던 대상은 취소된다. 또한 시전자가 기절할 경우 보호 스킬이 취소된다.",
+            TooltipText.SetCountFont(turn));
     }
 
     [PunRPC]

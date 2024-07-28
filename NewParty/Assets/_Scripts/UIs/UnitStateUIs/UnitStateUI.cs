@@ -61,7 +61,7 @@ public class UnitStateUI : MonoBehaviour
         SpeedText.text = targetUnit == null ? "-" : FloatToNormalStr(speed) + string.Format(" ({0:F2}s)", (Unit.MaxActionGauge - targetUnit.ActionGauge) / speed);
 
         StrText.text = targetUnit == null ? "-" : FloatToNormalStr(targetUnit.GetFinalStat(StatType.Str));
-        StackStrText.text = targetUnit == null ? "-" : FloatToPercentStr(targetUnit.GetFinalStat(StatType.StackStr));
+        StackStrText.text = targetUnit == null ? "-" : "x" + FloatToNormalStr(targetUnit.GetFinalStat(StatType.StackStr));
         DefPenText.text = targetUnit == null ? "-" : FloatToNormalStr(targetUnit.GetFinalStat(StatType.DefPen));
         SkillStrText.text = targetUnit == null ? "-" : "x" + FloatToNormalStr(targetUnit.GetFinalStat(StatType.SkillStr));
 

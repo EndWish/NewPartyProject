@@ -46,7 +46,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   IconSp: {fileID: 21300000, guid: 10eff9169fdde4d4fac0f434573be0f0, type: 3}
-  dmgCoefficient: 0.2
+  dmgMul: 1.4
 --- !u!114 &378218534449263370
 MonoBehaviour:
   m_ObjectHideFlags: 0

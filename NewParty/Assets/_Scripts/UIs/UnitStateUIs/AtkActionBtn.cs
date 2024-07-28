@@ -60,4 +60,7 @@ public class AtkActionBtn : FixedActionBtn
     protected override string GetTooltipDescription() {
         return targetUnit?.BasicAtkSkill.GetDescription();
     }
+    protected override string GetTooltipDetailedDescription() {
+        return targetUnit?.BasicAtkSkill.GetDetailedDescription();
+    }
 }

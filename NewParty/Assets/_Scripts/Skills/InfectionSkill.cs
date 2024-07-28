@@ -52,7 +52,14 @@ public class InfectionSkill : PassiveSkill
     }
 
     public override string GetDescription() {
-        return string.Format("기본 공격 또는 스킬 공격을 최근에 공격하지 않은 적에게 맞추면 {0:G}% 확률로 랜덤한 토큰 {1}개를 감염시켜 제거한다.", chance * 100f, removeNum);
+        return string.Format("기본 공격 또는 스킬 공격을 최근에 공격하지 않은 적에게 맞추면 {0} 확률로 랜덤한 토큰 {1}개를 감염시켜 제거한다.",
+            TooltipText.SetPercentFont(chance),
+            TooltipText.SetCountFont(removeNum));
+    }
+    public override string GetDetailedDescription() {
+        return string.Format("기본 공격 또는 스킬 공격을 최근에 공격하지 않은 적에게 맞추면 {0} 확률로 랜덤한 토큰 {1}개를 감염시켜 제거한다.",
+            TooltipText.SetPercentFont(chance),
+            TooltipText.SetCountFont(removeNum));
     }
 
     protected IEnumerator CoOnHit(Unit target, Attack attack) {

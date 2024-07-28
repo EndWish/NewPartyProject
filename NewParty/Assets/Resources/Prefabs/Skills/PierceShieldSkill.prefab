@@ -50,6 +50,7 @@ MonoBehaviour:
   dmgCoefficient: 0.8
   defMul: 0.8
   turn: 2
+  attackPrefab: {fileID: -6910790946449366766, guid: 1b5c626b4b456a744b5b7572ea2debde, type: 3}
 --- !u!114 &378218534449263370
 MonoBehaviour:
   m_ObjectHideFlags: 0

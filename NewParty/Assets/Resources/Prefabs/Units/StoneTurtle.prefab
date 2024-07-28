@@ -236,7 +236,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 126391376726116692, guid: 3173c32698c226049a4f4eddf11dbca7, type: 3}
       propertyPath: m_Name
-      value: BasicAttackSkill
+      value: MeleeBasicAttackSkill
       objectReference: {fileID: 0}
     - target: {fileID: 466127027458091092, guid: 3173c32698c226049a4f4eddf11dbca7, type: 3}
       propertyPath: m_LocalPosition.x

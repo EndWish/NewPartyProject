@@ -61,6 +61,19 @@ public class HowlingSkill : ActiveSkill
     }
 
     public override string GetDescription() {
-        return string.Format("아군 파티에게 {0}턴간 치명타 확률을 x{1}, 명중을 x{2} 상승시키고, 각자 랜덤한 디버프 {3}개를 제거한다", turn, criChaMul, accMul, numDebuffsToRemove);
+        return string.Format("아군 파티에게 {0}턴간 치명타 확률을 {1}, 명중을 {2} 상승시키고, 각자 랜덤한 디버프 {3}개를 제거한다",
+            TooltipText.SetCountFont(turn),
+            TooltipText.SetMulFont(criChaMul),
+            TooltipText.SetMulFont(accMul),
+            TooltipText.SetCountFont(numDebuffsToRemove));
     }
+
+    public override string GetDetailedDescription() {
+        return string.Format("아군 파티에게 {0}턴간 치명타 확률을 {1}, 명중을 {2} 상승시키고, 각자 랜덤한 디버프 {3}개를 제거한다",
+            TooltipText.SetCountFont(turn),
+            TooltipText.SetMulFont(criChaMul),
+            TooltipText.SetMulFont(accMul),
+            TooltipText.SetCountFont(numDebuffsToRemove));
+    }
+
 }

@@ -26,7 +26,16 @@ public class ManaBarrierSkill : PassiveSkill
     }
 
     public override string GetDescription() {
-        return string.Format("스킬을 사용할 때 마다 {0} 만큼 {1}턴간 유지되는 배리어를 얻는다.", GetBarrierAmount(), turn);
+        return string.Format("스킬을 사용할 때 마다 {0}만큼 {1}턴간 유지되는 배리어를 얻는다.",
+            TooltipText.SetDamageFont(GetBarrierAmount()),
+            TooltipText.SetCountFont(turn));
+    }
+    public override string GetDetailedDescription() {
+        return string.Format("스킬을 사용할 때 마다 {0} = ({2}{3}%)만큼 {1}턴간 유지되는 배리어를 얻는다.",
+            TooltipText.SetDamageFont(GetBarrierAmount()),
+            TooltipText.SetCountFont(turn),
+            TooltipText.GetIcon(StatType.Def),
+            TooltipText.GetFlexibleFloat(barrierCoefficient * 100f));
     }
 
     protected void OnUseActiveSkill(ActiveSkill skill) {

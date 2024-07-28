@@ -79,4 +79,7 @@ public class SkillActionBtn : ActionBtn
     protected override string GetTooltipDescription() {
         return targetSkill.GetDescription();
     }
+    protected override string GetTooltipDetailedDescription() {
+        return targetSkill.GetDetailedDescription();
+    }
 }

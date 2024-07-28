@@ -44,7 +44,14 @@ public class AntiSkillSkill : ActiveSkill
     }
 
     public override string GetDescription() {
-        return string.Format("선택한 파티에게 {0}턴간 (#스킬 공격)에 피격시 피해량을 {1:F1}%낮추는 버프를 부여한다.",
-            turn, (1f - dmgMul) * 100f);
+        return string.Format("선택한 파티는 {0}턴간 (#스킬 공격)에 피격시 받는 피해량이 {1}감소한다.",
+            TooltipText.SetCountFont(turn),
+            TooltipText.SetMulFont(dmgMul));
     }
+    public override string GetDetailedDescription() {
+        return string.Format("선택한 파티는 {0}턴간 (#스킬 공격)에 피격시 받는 피해량이 {1}감소한다.",
+            TooltipText.SetCountFont(turn),
+            TooltipText.SetMulFont(dmgMul));
+    }
+
 }

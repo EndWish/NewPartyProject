@@ -14,7 +14,6 @@ public abstract class Skill : MonoBehaviourPun
     public Sprite IconSp;
 
     public string Name { get; protected set; }
-    //public int Cost;
     public bool IsPassive { get; protected set; }
 
     [PunRPC]
@@ -30,6 +29,7 @@ public abstract class Skill : MonoBehaviourPun
     }
 
     public abstract string GetDescription();
+    public abstract string GetDetailedDescription();
 
     protected StatTurnStatusEffect CreateStatTurnStatusEffect(StatForm statForm, StatType statType, StatusEffectForm statusEffectForm, float value, int turn) {
         StatTurnStatusEffect statusEffect = PhotonNetwork.Instantiate(GameManager.GetStatusEffectPrefabPath("StatTurnStatusEffect"),

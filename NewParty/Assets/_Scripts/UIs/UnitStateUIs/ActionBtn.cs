@@ -10,6 +10,8 @@ public abstract class ActionBtn : MonoBehaviour
     protected Color activedBgColor;
     protected Color disactivedBgColor;
 
+    protected Tooltip tooltip;
+
     protected Unit targetUnit;
 
     [SerializeField] protected Image outlineImg;
@@ -20,6 +22,22 @@ public abstract class ActionBtn : MonoBehaviour
     protected virtual void Awake() {
         activedBgColor = bgImg.color;
         disactivedBgColor = new Color(0.2f, 0.2f, 0.2f);
+    }
+    protected void Update() {
+        if(Input.GetKeyDown(KeyCode.LeftShift) && tooltip != null) {
+            tooltip.DescriptionText.text = GetTooltipDetailedDescription();
+
+            for (int i = 0; i < 2; ++i) {
+                LayoutRebuilder.ForceRebuildLayoutImmediate(tooltip.GetComponent<RectTransform>());
+            }
+        }
+        if (Input.GetKeyUp(KeyCode.LeftShift) && tooltip != null) {
+            tooltip.DescriptionText.text = GetTooltipDescription() + "\n\n[L Shift] 자세히 보기";
+
+            for (int i = 0; i < 2; ++i) {
+                LayoutRebuilder.ForceRebuildLayoutImmediate(tooltip.GetComponent<RectTransform>());
+            }
+        }
     }
 
     protected bool Active {
@@ -72,13 +90,14 @@ public abstract class ActionBtn : MonoBehaviour
     protected abstract string GetTooltipTitle();
     protected abstract string GetTooltipRightUpperText();
     protected abstract string GetTooltipDescription();
+    protected abstract string GetTooltipDetailedDescription();
 
     public void OnPointerEnter() {
-        Tooltip tooltip = Tooltip.Instance;
+        tooltip = Tooltip.Instance;
         tooltip.IconImg.sprite = iconImg.sprite;
         tooltip.TitleText.text = GetTooltipTitle();
         tooltip.RightUpperText.text = GetTooltipRightUpperText();
-        tooltip.DescriptionText.text = GetTooltipDescription();
+        tooltip.DescriptionText.text = GetTooltipDescription() + "\n\n[L Shift] 자세히 보기";
 
         tooltip.transform.position = Input.mousePosition;
         tooltip.gameObject.SetActive(true);
@@ -90,6 +109,7 @@ public abstract class ActionBtn : MonoBehaviour
     }
     public void OnPointerExit() {
         Tooltip.Instance.gameObject.SetActive(false);
+        tooltip = null;
     }
 
 }

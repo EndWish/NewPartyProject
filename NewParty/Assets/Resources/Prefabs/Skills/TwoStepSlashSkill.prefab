@@ -48,6 +48,7 @@ MonoBehaviour:
   IconSp: {fileID: 21300000, guid: 22bcc51c41ba34f4f9b686058b291764, type: 3}
   Cost: 3
   dmgCoefficient: 1
+  attackPrefab: {fileID: 5415425572724248537, guid: 620493900f360da45ac5788e8a3b1f09, type: 3}
 --- !u!114 &378218534449263370
 MonoBehaviour:
   m_ObjectHideFlags: 0

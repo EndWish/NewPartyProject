@@ -8,6 +8,8 @@ public class ContinuousBitingSkill : ActiveSkill
     [SerializeField] protected float dmgCoefficient;
     [SerializeField] protected int hitNum;
 
+    [SerializeField] protected ContinuousBitingAttack attackPrefab;
+
     protected override void Awake() {
         base.Awake();
         Name = "연속 물기";
@@ -22,7 +24,7 @@ public class ContinuousBitingSkill : ActiveSkill
             target.transform.position, Quaternion.identity)
         .GetComponent<ContinuousBitingAttack>();
 
-        float dmg = Owner.GetFinalStat(StatType.Str) * dmgCoefficient;
+        float dmg = CalculateDmg();
         attack.Init(Owner, target, dmg, hitNum);
 
         yield return StartCoroutine(attack.Animate());
@@ -41,7 +43,21 @@ public class ContinuousBitingSkill : ActiveSkill
     }
 
     public override string GetDescription() {
-        return string.Format("적에게 {0}회 연속으로 공격력의 {1} 데미지(#치명타 적용  #근거리 #관통)를 준다.",
-            hitNum, Owner.GetFinalStat(StatType.Str) * dmgCoefficient);
+        return string.Format("적에게 {0}회 연속으로 공격하여 각각 {1}의 데미지를 준다.",
+            TooltipText.SetCountFont(hitNum),
+            TooltipText.SetDamageFont(CalculateDmg()));
     }
+    public override string GetDetailedDescription() {
+        return string.Format("적에게 {0}회 연속으로 공격하여 각각 {1} = ({2}{3}%)의 데미지({4})를 준다.",
+            TooltipText.SetCountFont(hitNum),
+            TooltipText.SetDamageFont(CalculateDmg()),
+            TooltipText.GetIcon(StatType.Str),
+            TooltipText.GetFlexibleFloat(dmgCoefficient * 100f),
+            Tags.GetString(attackPrefab.InitTags));
+    }
+
+    protected float CalculateDmg() {
+        return Owner.GetFinalStat(StatType.Str) * dmgCoefficient;
+    }
+
 }

@@ -23,9 +23,9 @@ public class MassTransfusionSkill : ActiveSkill
         yield return StartCoroutine(Owner.UseSelectedTokens());
         
         // 자신의 체력을 깎는다.
-        float hpCost = Owner.Hp * hpConsumptionRate;
+        float hpCost = CalculateHpCost();
         Owner.Hp -= hpCost;
-        float recoverHp = hpCost + Owner.GetFinalStat(StatType.DefPen) * recoverDefPenCoefficient;
+        float recoverHp = CalculateRecoverHp(hpCost);
         CreateFX();
         yield return new WaitForSeconds(0.3f);
 
@@ -74,8 +74,29 @@ public class MassTransfusionSkill : ActiveSkill
     }
 
     public override string GetDescription() {
-        return string.Format("현재 체력의 {0:G}%를 소모하여 자신의 파티원들을 {1:G}만큼 체력을 회복시킨다. 그리고 자신에게 {2}턴간 회복력을 x{3:F2} 증가시킨다.",
-            hpConsumptionRate * 100f, Owner.Hp * hpConsumptionRate + Owner.GetFinalStat(StatType.DefPen) * recoverDefPenCoefficient, turn, healingMul);
+        return string.Format("체력을 {0}소모하여 자신의 파티원들을 {1}만큼 체력을 회복시킨다. 그리고 자신에게 {2}턴간 회복력을 {3}증가시킨다.",
+            TooltipText.SetDamageFont(CalculateHpCost()),
+            TooltipText.SetDamageFont(CalculateRecoverHp(CalculateHpCost())),
+            TooltipText.SetCountFont(turn),
+            TooltipText.SetMulFont(healingMul));
     }
-    
+    public override string GetDetailedDescription() {
+        return string.Format("체력을 {0} = (현재{4}{5}%)소모하여 자신의 파티원들을 {1} = (소모한 체력 + {6}{7}%)만큼 체력을 회복시킨다. 그리고 자신에게 {2}턴간 회복력을 {3}증가시킨다.",
+            TooltipText.SetDamageFont(CalculateHpCost()),
+            TooltipText.SetDamageFont(CalculateRecoverHp(CalculateHpCost())),
+            TooltipText.SetCountFont(turn),
+            TooltipText.SetMulFont(healingMul),
+            TooltipText.GetIcon(StatType.Hpm),
+            TooltipText.GetFlexibleFloat(hpConsumptionRate * 100f),
+            TooltipText.GetIcon(StatType.DefPen),
+            TooltipText.GetFlexibleFloat(recoverDefPenCoefficient * 100f));
+    }
+
+    protected float CalculateHpCost() {
+        return Owner.Hp * hpConsumptionRate;
+    }
+    protected float CalculateRecoverHp(float hpCost) {
+        return hpCost + Owner.GetFinalStat(StatType.DefPen) * recoverDefPenCoefficient;
+    }
+
 }

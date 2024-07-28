@@ -50,9 +50,15 @@ public class AccelerationSkill : ActiveSkill
     }
 
     public override string GetDescription() {
-        return string.Format("{0} 틱 동안 속도가 x{1:F1} 상승한다.", 
-            BattleManager.Instance == null ? new StringBuilder("(전투 중인 유닛의 수) x ").Append(tickCoefficient).ToString() : GetTickNum(), 
-            speedMul);
+        return string.Format("{0} 틱 동안 속도가 {1} 상승한다.",
+            BattleManager.Instance == null ? "-" : TooltipText.SetCountFont(GetTickNum()),
+            TooltipText.SetMulFont(speedMul));
+    }
+    public override string GetDetailedDescription() {
+        return string.Format("{0} = (전투 중인 유닛의 수 x {1})틱 동안 속도가 {2}상승한다.",
+            BattleManager.Instance == null ? "-" : TooltipText.SetCountFont(GetTickNum()),
+            tickCoefficient,
+            TooltipText.SetMulFont(speedMul));
     }
 
     protected int GetTickNum() {

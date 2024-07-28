@@ -34,4 +34,7 @@ public class BarrierActionBtn : FixedActionBtn
     protected override string GetTooltipDescription() {
         return targetUnit?.BasicBarrierSkill.GetDescription();
     }
+    protected override string GetTooltipDetailedDescription() {
+        return targetUnit?.BasicBarrierSkill.GetDetailedDescription();
+    }
 }

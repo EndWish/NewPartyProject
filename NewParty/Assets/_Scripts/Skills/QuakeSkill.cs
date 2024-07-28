@@ -7,6 +7,8 @@ public class QuakeSkill : ActiveSkill
 {
     [SerializeField] protected float dmgCoefficient;
 
+    [SerializeField] protected QuakeAttack attackPrefab;
+
     protected override void Awake() {
         base.Awake();
         Name = "지진";
@@ -21,8 +23,7 @@ public class QuakeSkill : ActiveSkill
             target.transform.position, Quaternion.identity)
         .GetComponent<QuakeAttack>();
 
-        float dmg = Owner.GetFinalStat(StatType.Str) * dmgCoefficient;
-        attack.Init(Owner, target, dmg);
+        attack.Init(Owner, target, CalculateDmg());
 
         yield return StartCoroutine(attack.Animate());
     }
@@ -40,8 +41,21 @@ public class QuakeSkill : ActiveSkill
     }
 
     public override string GetDescription() {
-        return string.Format("{0} 데미지를 주고, 방어율과 같은 확률로 적을 기절 시킨다. \n 방어율 = 방어력 / (방어력 + 상대의 방어 관통력)",
-            Owner.GetFinalStat(StatType.Str) * dmgCoefficient);
+        return string.Format("{0}를 주고, 방어율만큼의 확률로 적을 <b><i>기절</i></b> 시킨다.",
+            TooltipText.SetDamageFont(CalculateDmg()));
+    }
+    public override string GetDetailedDescription() {
+        return string.Format("{0} = ({1}{2}%)데미지({3})를 주고, 방어율 = ({4} / ({4} + 상대{5}))만큼의 확률로 적을 <b><i>기절</i></b> 시킨다.",
+            TooltipText.SetDamageFont(CalculateDmg()),
+            TooltipText.GetIcon(StatType.Str),
+            TooltipText.GetFlexibleFloat(dmgCoefficient * 100f),
+            Tags.GetString(attackPrefab.InitTags),
+            TooltipText.GetIcon(StatType.Def),
+            TooltipText.GetIcon(StatType.DefPen));
+    }
+
+    protected float CalculateDmg() {
+        return Owner.GetFinalStat(StatType.Str) * dmgCoefficient;
     }
 
 }

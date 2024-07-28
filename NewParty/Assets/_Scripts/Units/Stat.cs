@@ -25,7 +25,7 @@ public static class StatClamp
         1f, //Hpm
         1f, //Speed
         0f, //Str
-        1f, //StackStr
+        0f, //StackStr
         0f, //SkillStr
         0f, //DefPen
         0f, //CriCha

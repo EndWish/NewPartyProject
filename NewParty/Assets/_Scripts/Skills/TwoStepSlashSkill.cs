@@ -8,6 +8,8 @@ public class TwoStepSlashSkill : ActiveSkill
 {
     [SerializeField] protected float dmgCoefficient;
 
+    [SerializeField] protected TwoStepSlashAttack attackPrefab;
+
     protected override void Awake() {
         base.Awake();
         Name = "2단 베기";
@@ -22,8 +24,7 @@ public class TwoStepSlashSkill : ActiveSkill
             target.transform.position, Quaternion.identity)
         .GetComponent<TwoStepSlashAttack>();
 
-        float dmg = Owner.GetFinalStat(StatType.Str) * dmgCoefficient;
-        attack.Init(Owner, target, dmg);
+        attack.Init(Owner, target, CalculateDmg());
 
         yield return StartCoroutine(attack.Animate());
     }
@@ -41,8 +42,19 @@ public class TwoStepSlashSkill : ActiveSkill
     }
 
     public override string GetDescription() {
-        return string.Format("적을 두번 베어 공격한다. {0} 데미지를 두번 준다.",
-            Owner.GetFinalStat(StatType.Str) * dmgCoefficient);
+        return string.Format("적을 두번 베어 공격한다. {0}데미지를 두번 준다.",
+            TooltipText.SetDamageFont(CalculateDmg()));
+    }
+    public override string GetDetailedDescription() {
+        return string.Format("적을 두번 베어 공격한다. {0} = ({1}{2}%)데미지({3})를 두번 준다.",
+            TooltipText.SetDamageFont(CalculateDmg()),
+            TooltipText.GetIcon(StatType.Str),
+            TooltipText.GetFlexibleFloat(dmgCoefficient * 100f),
+            Tags.GetString(attackPrefab.InitTags));
+    }
+
+    protected float CalculateDmg() {
+        return Owner.GetFinalStat(StatType.Str) * dmgCoefficient;
     }
 
 }

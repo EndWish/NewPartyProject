@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class WoundClawSkill : PassiveSkill
 {
-    [SerializeField] protected float dmgCoefficient;
+    [SerializeField] protected float dmgMul;
 
     protected override void Awake() {
         base.Awake();
@@ -24,12 +24,17 @@ public class WoundClawSkill : PassiveSkill
     }
 
     public override string GetDescription() {
-        return string.Format("(#출혈)인 적에게 주는 모든 피해가 {0}% 증가한다.", dmgCoefficient * 100f);
+        return string.Format("(#출혈)인 적에게 주는 모든 피해가 {0}증가한다.",
+            TooltipText.SetMulFont(dmgMul));
+    }
+    public override string GetDetailedDescription() {
+        return string.Format("(#출혈)인 적에게 주는 모든 피해가 {0}증가한다.",
+            TooltipText.SetMulFont(dmgMul));
     }
 
     protected void OnBeforeCalculateDmg(DamageCalculator dc) {
         if (dc.Defender.Tags.Contains(Tag.출혈)) {
-            dc.Dmg *= (1f + dmgCoefficient);
+            dc.Dmg *= dmgMul;
         }
     }
 

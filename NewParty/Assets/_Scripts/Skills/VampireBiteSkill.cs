@@ -7,6 +7,8 @@ public class VampireBiteSkill : ActiveSkill
 {
     [SerializeField] protected float dmgCoefficient;
 
+    [SerializeField] protected VampireBiteAttack attackPrefab;
+
     protected override void Awake() {
         base.Awake();
         Name = "흡혈 물기";
@@ -21,8 +23,7 @@ public class VampireBiteSkill : ActiveSkill
             target.transform.position, Quaternion.identity)
         .GetComponent<VampireBiteAttack>();
 
-        float dmg = Owner.GetFinalStat(StatType.Str) * dmgCoefficient;
-        attack.Init(Owner, target, dmg);
+        attack.Init(Owner, target, CalculateDmg());
 
         yield return StartCoroutine(attack.Animate());
     }
@@ -40,7 +41,19 @@ public class VampireBiteSkill : ActiveSkill
     }
 
     public override string GetDescription() {
-        return string.Format("적에게 공격력의 {0}의 (#치명타적용 #스킬공격 #근거리 #관통)데미지를 주고, HP에 준 피해량 만큼 체력을 회복한다.",
-            Owner.GetFinalStat(StatType.Str) * dmgCoefficient);
+        return string.Format("적에게 {0}데미지를 주고, HP에 준 피해량 만큼 체력을 회복한다.",
+            TooltipText.SetDamageFont(CalculateDmg()));
     }
+    public override string GetDetailedDescription() {
+        return string.Format("적에게 {0} = ({1}{2}%)데미지({3})를 주고, HP에 준 피해량 만큼 체력을 회복한다.",
+            TooltipText.SetDamageFont(CalculateDmg()),
+            TooltipText.GetIcon(StatType.Str),
+            TooltipText.GetFlexibleFloat(dmgCoefficient * 100f),
+            Tags.GetString(attackPrefab.InitTags));
+    }
+
+    protected float CalculateDmg() {
+        return Owner.GetFinalStat(StatType.Str) * dmgCoefficient;
+    }
+
 }

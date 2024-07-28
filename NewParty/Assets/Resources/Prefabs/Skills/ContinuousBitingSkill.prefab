@@ -49,6 +49,7 @@ MonoBehaviour:
   Cost: 3
   dmgCoefficient: 0.35
   hitNum: 3
+  attackPrefab: {fileID: 6188793044131677521, guid: bf8136520d4fe04438c09b5a6f7be9c6, type: 3}
 --- !u!114 &378218534449263370
 MonoBehaviour:
   m_ObjectHideFlags: 0

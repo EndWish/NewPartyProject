@@ -68,6 +68,14 @@ public class BasicBarrierSkill : ActiveSkill
 
     public override string GetDescription() {
         return string.Format("{0}의 데미지를 막아주는 배리어를 생성한다. 기본 배리어는 중첩되지 않는다.",
-            CalculateAmount(Mathf.Max(1, Owner.Tokens.FindAll(token => token.IsSelected && token.Type == TokenType.Barrier).Count)));
+            TooltipText.SetDamageFont(CalculateAmount(Mathf.Max(1, Owner.Tokens.FindAll(token => token.IsSelected && token.Type == TokenType.Barrier).Count))));
     }
+
+    public override string GetDetailedDescription() {
+        return string.Format("{0} = ({1}100% + {1}100% x {2} x 추가토큰)의 데미지를 막아주는 배리어를 생성한다. 기본 배리어는 중첩되지 않는다.",
+            TooltipText.SetDamageFont(CalculateAmount(Mathf.Max(1, Owner.Tokens.FindAll(token => token.IsSelected && token.Type == TokenType.Barrier).Count))),
+            TooltipText.GetIcon(StatType.Shield),
+            TooltipText.GetIcon(StatType.StackShield));
+    }
+
 }

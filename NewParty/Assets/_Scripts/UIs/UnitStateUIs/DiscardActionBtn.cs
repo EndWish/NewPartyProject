@@ -34,4 +34,7 @@ public class DiscardActionBtn : FixedActionBtn
     protected override string GetTooltipDescription() {
         return "선택한 토큰을 전부 버리고 턴을 종료한다.";
     }
+    protected override string GetTooltipDetailedDescription() {
+        return "선택한 토큰을 전부 버리고 턴을 종료한다. (#기절)일 때 사용이 불가능 하다.";
+    }
 }

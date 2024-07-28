@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using UnityEngine;
 
@@ -31,7 +32,7 @@ public enum Tag
 public class Tags
 {
     static public string GetString(IEnumerable<Tag> tags) {
-        StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder(tags.Count() * 4);
         foreach (Tag tag in tags) {
             sb.Append("#").Append(tag.ToString()).Append(" ");
         }

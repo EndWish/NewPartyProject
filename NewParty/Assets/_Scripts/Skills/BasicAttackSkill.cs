@@ -6,6 +6,8 @@ using UnityEngine;
 
 public class BasicAttackSkill : ActiveSkill
 {
+    [SerializeField] protected BasicAttack attackPrefab;
+
     public enum BasicAttackType {
         Melee, Ranged,
     }
@@ -70,6 +72,14 @@ public class BasicAttackSkill : ActiveSkill
 
     public override string GetDescription() {
         return string.Format("적을 공격하여 {0}의 데미지를 준다.", 
-            CalculateDmg(Mathf.Max(1, Owner.Tokens.FindAll(token => token.IsSelected && token.Type == TokenType.Atk).Count)));
+            TooltipText.SetDamageFont(CalculateDmg(Mathf.Max(1, Owner.Tokens.FindAll(token => token.IsSelected && token.Type == TokenType.Atk).Count))));
     }
+    public override string GetDetailedDescription() {
+        return string.Format("적을 공격하여 {0} = ({1}100% + {1}100% x {2} x 추가토큰)의 데미지({3})를 준다.",
+            TooltipText.SetDamageFont(CalculateDmg(Mathf.Max(1, Owner.Tokens.FindAll(token => token.IsSelected && token.Type == TokenType.Atk).Count))),
+            TooltipText.GetIcon(StatType.Str),
+            TooltipText.GetIcon(StatType.StackStr),
+            Tags.GetString(attackPrefab.InitTags));
+    }
+
 }

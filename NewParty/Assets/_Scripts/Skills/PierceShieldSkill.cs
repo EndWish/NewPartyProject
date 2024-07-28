@@ -9,6 +9,8 @@ public class PierceShieldSkill : ActiveSkill
     [SerializeField] protected float defMul;
     [SerializeField] protected int turn;
 
+    [SerializeField] protected PierceShieldAttack attackPrefab;
+
     protected override void Awake() {
         base.Awake();
         Name = "방패 뚫기";
@@ -23,8 +25,7 @@ public class PierceShieldSkill : ActiveSkill
             target.transform.position, Quaternion.identity)
         .GetComponent<PierceShieldAttack>();
 
-        float dmg = Owner.GetFinalStat(StatType.Str) * dmgCoefficient;
-        attack.Init(Owner, target, defMul, turn, dmg);
+        attack.Init(Owner, target, defMul, turn, CalculateDmg());
 
         yield return StartCoroutine(attack.Animate());
     }
@@ -42,7 +43,23 @@ public class PierceShieldSkill : ActiveSkill
     }
 
     public override string GetDescription() {
-        return string.Format("적에게 공격력의 {0}의  (#스킬공격 #근거리 #관통)데미지를 주고 {1}턴간 방어력을 x{2:F2} 감소시킨다.",
-            Owner.GetFinalStat(StatType.Str) * dmgCoefficient, turn, defMul);
+        return string.Format("적에게 {0}데미지를 주고 {1}턴간 방어력을 {2}감소시킨다.",
+            TooltipText.SetDamageFont(CalculateDmg()),
+            TooltipText.SetCountFont(turn),
+            TooltipText.SetMulFont(defMul));
     }
+    public override string GetDetailedDescription() {
+        return string.Format("적에게 {0} = ({3}{4}%)데미지({5})를 주고 {1}턴간 방어력을 {2}감소시킨다.",
+            TooltipText.SetDamageFont(CalculateDmg()),
+            TooltipText.SetCountFont(turn),
+            TooltipText.SetMulFont(defMul),
+            TooltipText.GetIcon(StatType.Str),
+            TooltipText.GetFlexibleFloat(dmgCoefficient * 100f),
+            Tags.GetString(attackPrefab.InitTags));
+    }
+
+    protected float CalculateDmg() {
+        return Owner.GetFinalStat(StatType.Str) * dmgCoefficient;
+    }
+
 }

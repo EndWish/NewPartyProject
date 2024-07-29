@@ -21,8 +21,7 @@ public class SharpenBladeSkill : ActiveSkill
         CreateReinforceFX();
 
         // 치확 버프
-        StatTurnStatusEffect accBuff = CreateStatTurnStatusEffect(StatForm.AbnormalAdd, StatType.CriCha, StatusEffectForm.Buff, criChaAdd, turn);
-        Owner.AddStatusEffect(accBuff);
+        StatTurnStatusEffect.Create(Owner, Owner, StatForm.AbnormalAdd, StatType.CriCha, StatusEffectForm.Buff, criChaAdd, turn);
 
         yield return new WaitForSeconds(0.5f);
     }

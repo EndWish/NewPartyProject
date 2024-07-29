@@ -2,7 +2,6 @@ using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static System.Collections.Specialized.BitVector32;
 
 public enum StatusEffectForm
 {
@@ -11,6 +10,14 @@ public enum StatusEffectForm
 
 public abstract class StatusEffect : MonoBehaviourPun
 {
+    protected static T Instantiate<T>() where T : StatusEffect {
+        T statusEffect = PhotonNetwork.Instantiate(GameManager.GetStatusEffectPrefabPath(typeof(T).Name),
+            Vector3.zero, Quaternion.identity)
+            .GetComponent<T>();
+
+        return statusEffect;
+    }
+
     [SerializeField] protected StatusEffectIcon seIconPrefab;
     protected StatusEffectIcon seIcon = null;
 

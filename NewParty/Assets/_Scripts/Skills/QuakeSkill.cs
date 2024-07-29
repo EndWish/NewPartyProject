@@ -19,11 +19,7 @@ public class QuakeSkill : ActiveSkill
 
         // 공격을 생성한다
         Unit target = BattleSelectable.Units[0];
-        QuakeAttack attack = PhotonNetwork.Instantiate(GameManager.GetAttackPrefabPath("QuakeAttack"),
-            target.transform.position, Quaternion.identity)
-        .GetComponent<QuakeAttack>();
-
-        attack.Init(Owner, target, CalculateDmg());
+        QuakeAttack attack = QuakeAttack.Create(Owner, target, CalculateDmg());
 
         yield return StartCoroutine(attack.Animate());
     }

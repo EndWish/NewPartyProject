@@ -16,17 +16,10 @@ public class BasicBarrierSkill : ActiveSkill
         yield return StartCoroutine(Owner.UseSelectedTokens());
 
         // 기본 배리어 생성 및 적용
-        BasicBarrier barrier = PhotonNetwork.Instantiate(GameManager.GetBarrierPrefabPath("BasicBarrier"),
-            transform.position, Quaternion.identity)
-            .GetComponent<BasicBarrier>();
-        barrier.Init(Owner, CalculateAmount(tokenStack));
+        BasicBarrier.Create(Owner, CalculateAmount(tokenStack));
 
         // 기본 배리어 과부하 상태이상 생성 및 적용
-        BasicBarrierOverload statusEffect = PhotonNetwork.Instantiate(GameManager.GetStatusEffectPrefabPath("BasicBarrierOverload"),
-            transform.position, Quaternion.identity)
-            .GetComponent<BasicBarrierOverload>();
-        statusEffect.Caster = Owner;
-        Owner.AddStatusEffect(statusEffect);
+        BasicBarrierOverload.Create(Owner);
 
         yield return new WaitForSeconds(0.15f);
     }

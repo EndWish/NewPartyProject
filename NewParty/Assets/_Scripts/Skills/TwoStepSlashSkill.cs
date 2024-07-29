@@ -20,11 +20,7 @@ public class TwoStepSlashSkill : ActiveSkill
 
         // 공격을 생성한다
         Unit target = BattleSelectable.Units[0];
-        TwoStepSlashAttack attack = PhotonNetwork.Instantiate(GameManager.GetAttackPrefabPath("TwoStepSlashAttack"),
-            target.transform.position, Quaternion.identity)
-        .GetComponent<TwoStepSlashAttack>();
-
-        attack.Init(Owner, target, CalculateDmg());
+        TwoStepSlashAttack attack = TwoStepSlashAttack.Create(Owner, target, CalculateDmg());
 
         yield return StartCoroutine(attack.Animate());
     }

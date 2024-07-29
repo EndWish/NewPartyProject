@@ -6,6 +6,16 @@ using UnityEngine;
 
 public class TwoStepSlashAttack : DmgAttack
 {
+    public static TwoStepSlashAttack Create(Unit caster, Unit target, float dmg) {
+        TwoStepSlashAttack attack = Attack.Instantiate<TwoStepSlashAttack>(target.transform.position, Quaternion.identity);
+
+        attack.Caster = caster;
+        attack.Targets = new List<Unit> { target };
+        attack.Dmg = dmg;
+
+        return attack;
+    }
+
     [SerializeField] protected GameObject[] slashFx = new GameObject[2];
 
     protected int remainHitNum = 1;
@@ -14,15 +24,6 @@ public class TwoStepSlashAttack : DmgAttack
         base.Awake();
         slashFx[0].SetActive(false);
         slashFx[1].SetActive(false);
-    }
-
-    public void Init(Unit caster, Unit target, float dmg) {
-        Caster = caster;
-        if (Targets.Count == 0)
-            Targets.Add(target);
-        else
-            Targets[0] = target;
-        Dmg = dmg;
     }
 
     public override IEnumerator Animate() {

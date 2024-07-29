@@ -21,11 +21,7 @@ public class PierceShieldSkill : ActiveSkill
 
         // 공격을 생성한다
         Unit target = BattleSelectable.Units[0];
-        PierceShieldAttack attack = PhotonNetwork.Instantiate(GameManager.GetAttackPrefabPath("PierceShieldAttack"),
-            target.transform.position, Quaternion.identity)
-        .GetComponent<PierceShieldAttack>();
-
-        attack.Init(Owner, target, defMul, turn, CalculateDmg());
+        PierceShieldAttack attack = PierceShieldAttack.Create(Owner, target, defMul, turn, CalculateDmg());
 
         yield return StartCoroutine(attack.Animate());
     }

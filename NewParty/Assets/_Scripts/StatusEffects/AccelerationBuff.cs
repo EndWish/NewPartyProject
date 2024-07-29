@@ -1,13 +1,22 @@
 using Photon.Pun;
+using Photon.Pun.Demo.Procedural;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
-using Unity.VisualScripting;
-using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
 
 public class AccelerationBuff : StatStatusEffect, ITickStatusEffect
 {
+    public static AccelerationBuff Create(Unit caster, Unit target, int tick, float speedMul) {
+        AccelerationBuff statusEffect = StatusEffect.Instantiate<AccelerationBuff>();
+
+        statusEffect.Caster = caster;
+        statusEffect.Tick = tick;
+        statusEffect.SpeedMul = speedMul;
+        target.AddStatusEffect(statusEffect);
+
+        return statusEffect;
+    }
+
     protected int tick = 1;
     protected float speedMul = 1f;
 

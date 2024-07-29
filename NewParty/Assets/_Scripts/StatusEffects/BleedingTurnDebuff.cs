@@ -5,6 +5,17 @@ using UnityEngine;
 
 public class BleedingTurnDebuff : TurnStatusEffect
 {
+    public static BleedingTurnDebuff Create(Unit caster, Unit target, int turn, float dmg) {
+        BleedingTurnDebuff statusEffect = StatusEffect.Instantiate<BleedingTurnDebuff>();
+
+        statusEffect.dmg = dmg;
+        statusEffect.Turn = turn;
+        statusEffect.Caster = caster;
+        target.AddStatusEffect(statusEffect);
+
+        return statusEffect;
+    }
+
     protected float dmg = 0f;
 
     protected override void OnDestroy() {
@@ -45,11 +56,7 @@ public class BleedingTurnDebuff : TurnStatusEffect
 
     protected IEnumerator CoOnBeginTurn() {
         // 출혈 공격을 생성하여 데미지를 준다.
-        BleedingAttack attack = PhotonNetwork.Instantiate(GameManager.GetAttackPrefabPath("BleedingAttack"),
-            Target.transform.position, Quaternion.identity)
-        .GetComponent<BleedingAttack>();
-
-        attack.Init(Caster, Target, Dmg);
+        BleedingAttack attack = BleedingAttack.Create(Caster, Target, Dmg);
         yield return StartCoroutine(attack.Animate());
 
         Turn -= 1;

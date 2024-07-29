@@ -8,6 +8,15 @@ public class BasicBarrierOverload : StatStatusEffect
 {
     static protected float coefficient = 0.9f;
 
+    public static BasicBarrierOverload Create(Unit caster) {
+        BasicBarrierOverload statusEffect = StatusEffect.Instantiate<BasicBarrierOverload>();
+
+        statusEffect.Caster = caster;
+        caster.AddStatusEffect(statusEffect);
+
+        return statusEffect;
+    }
+
     int stack = 1;
     float shieldMul = 1f;
 

@@ -6,6 +6,19 @@ using static UnityEngine.GraphicsBuffer;
 
 public class StatStatusEffect : StatusEffect
 {
+    public static StatStatusEffect Create(Unit caster, Unit target, StatForm statForm, StatType statType, StatusEffectForm statusEffectForm, float value) {
+        StatStatusEffect statusEffect = StatusEffect.Instantiate<StatStatusEffect>();
+
+        statusEffect.StatForm = statForm;
+        statusEffect.StatType = statType;
+        statusEffect.Form = statusEffectForm;
+        statusEffect.Value = value;
+        statusEffect.Caster = caster;
+        target.AddStatusEffect(statusEffect);
+
+        return statusEffect;
+    }
+
     [SerializeField] protected SpritesSharedData statTypeIcons;
 
     protected StatType statType;

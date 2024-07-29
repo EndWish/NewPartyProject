@@ -5,6 +5,16 @@ using UnityEngine;
 
 public class ProtectStatusEffect : TurnStatusEffect
 {
+    public static ProtectStatusEffect Create(Unit caster, Unit target, int turn) {
+        ProtectStatusEffect statusEffect = StatusEffect.Instantiate<ProtectStatusEffect>();
+
+        statusEffect.Turn = turn;
+        statusEffect.Caster = caster;
+        target.AddStatusEffect(statusEffect);
+
+        return statusEffect;
+    }
+
     protected override void OnDestroy() {
         base.OnDestroy();
         if (Target != null) {

@@ -4,16 +4,17 @@ using UnityEngine;
 
 public class MassTransfusionAttack : Attack
 {
-    protected float healingAmount;
+    public static MassTransfusionAttack Create(Unit caster, Unit target, float healingAmount) {
+        MassTransfusionAttack attack = Attack.Instantiate<MassTransfusionAttack>(caster.transform.position, Quaternion.identity);
 
-    public void Init(Unit caster, Unit target, float healingAmount) {
-        Caster = caster;
-        if (Targets.Count == 0)
-            Targets.Add(target);
-        else
-            Targets[0] = target;
-        this.healingAmount = healingAmount;
+        attack.Caster = caster;
+        attack.Targets = new List<Unit> { target };
+        attack.healingAmount = healingAmount;
+
+        return attack;
     }
+
+    protected float healingAmount;
 
     public override IEnumerator Animate() {
         foreach (Unit Target in new AttackTargetsSetting(this, Targets)) {

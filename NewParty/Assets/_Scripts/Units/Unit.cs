@@ -586,17 +586,7 @@ public partial class Unit : MonoBehaviourPun
 
     // 기본 능력을 이벤트에 등록
     protected void GainStunResistance(StunTurnDebuff stun) {
-        StatTurnStatusEffect statusEffect = PhotonNetwork.Instantiate(GameManager.GetStatusEffectPrefabPath("StatTurnStatusEffect"),
-            transform.position, Quaternion.identity)
-            .GetComponent<StatTurnStatusEffect>();
-        statusEffect.StatForm = StatForm.AbnormalMul;
-        statusEffect.StatType = StatType.StunSen;
-        statusEffect.Form = StatusEffectForm.Buff;
-        statusEffect.Value = 0.5f;
-        statusEffect.Turn = stun.Turn + 3;
-        statusEffect.Caster = this;
-
-        AddStatusEffect(statusEffect);
+        StatTurnStatusEffect.Create(this, this, StatForm.AbnormalMul, StatType.StunSen, StatusEffectForm.Buff, 0.5f, stun.Turn + 3);
     }
 
 }

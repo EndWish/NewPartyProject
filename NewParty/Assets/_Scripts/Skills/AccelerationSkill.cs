@@ -19,13 +19,7 @@ public class AccelerationSkill : ActiveSkill
         yield return StartCoroutine(Owner.UseSelectedTokens());
 
         CreateReinforceFX();
-        AccelerationBuff statusEffect = PhotonNetwork.Instantiate(GameManager.GetStatusEffectPrefabPath("AccelerationBuff"),
-            transform.position, Quaternion.identity)
-            .GetComponent<AccelerationBuff>();
-        statusEffect.SpeedMul = speedMul;
-        statusEffect.Tick = GetTickNum();
-        statusEffect.Caster = Owner;
-        Owner.AddStatusEffect(statusEffect);
+        AccelerationBuff.Create(Owner, Owner, GetTickNum(), speedMul);
 
         yield return new WaitForSeconds(0.5f);
     }

@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 974814598435448137}
-  - component: {fileID: 8369892125802827566}
+  - component: {fileID: 8909484036978692463}
   - component: {fileID: 4758052794893937834}
   m_Layer: 0
   m_Name: RangedBasicAttack
@@ -34,7 +34,7 @@ Transform:
   - {fileID: 815064848775927574}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &8369892125802827566
+--- !u!114 &8909484036978692463
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -43,10 +43,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 780089374954531201}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bff06aa9988902a459e34b8435aaca78, type: 3}
+  m_Script: {fileID: 11500000, guid: a676fae7bcbd3d043b324b0e82df5bb0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   InitTags: 9575000098750000
+  IconSp: {fileID: 21300000, guid: 2fde58cb0f5914bf29ef086ea2f97348, type: 3}
   fx: {fileID: 4340515167073732975}
 --- !u!114 &4758052794893937834
 MonoBehaviour:
@@ -80,7 +81,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1720225192803561553, guid: d734b8a99538c6241ae16afd557d12cc, type: 3}
       propertyPath: m_SortingLayer
-      value: -2
+      value: -3
       objectReference: {fileID: 0}
     - target: {fileID: 1720225192803561553, guid: d734b8a99538c6241ae16afd557d12cc, type: 3}
       propertyPath: m_SortingLayerID
@@ -100,7 +101,7 @@ PrefabInstance:
       objectReference: {fileID: 974814598435448137}
     - target: {fileID: 4235508832461595647, guid: d734b8a99538c6241ae16afd557d12cc, type: 3}
       propertyPath: m_SortingLayer
-      value: -2
+      value: -3
       objectReference: {fileID: 0}
     - target: {fileID: 4235508832461595647, guid: d734b8a99538c6241ae16afd557d12cc, type: 3}
       propertyPath: m_SortingLayerID
@@ -108,7 +109,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4385628559556022763, guid: d734b8a99538c6241ae16afd557d12cc, type: 3}
       propertyPath: m_SortingLayer
-      value: -2
+      value: -3
       objectReference: {fileID: 0}
     - target: {fileID: 4385628559556022763, guid: d734b8a99538c6241ae16afd557d12cc, type: 3}
       propertyPath: m_SortingLayerID
@@ -120,7 +121,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6651783228651058932, guid: d734b8a99538c6241ae16afd557d12cc, type: 3}
       propertyPath: m_SortingLayer
-      value: -2
+      value: -3
       objectReference: {fileID: 0}
     - target: {fileID: 6651783228651058932, guid: d734b8a99538c6241ae16afd557d12cc, type: 3}
       propertyPath: m_SortingLayerID

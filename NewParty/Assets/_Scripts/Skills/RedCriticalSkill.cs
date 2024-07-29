@@ -43,14 +43,7 @@ public class RedCriticalSkill : PassiveSkill
 
     protected IEnumerator CoOnHitDmg(Unit damagedUnit, DamageCalculator dc) {
         if(0 < dc.CriStack) {
-            // 출혈 디버프를 생성하고 damagedUnit에게 부착한다
-            BleedingTurnDebuff statusEffect = PhotonNetwork.Instantiate(GameManager.GetStatusEffectPrefabPath("BleedingTurnDebuff"),
-            damagedUnit.transform.position, Quaternion.identity)
-            .GetComponent<BleedingTurnDebuff>();
-            statusEffect.Turn = turn;
-            statusEffect.Dmg = CalculateDmg();
-            statusEffect.Caster = Owner;
-            damagedUnit.AddStatusEffect(statusEffect);
+            BleedingTurnDebuff.Create(Owner, damagedUnit, turn, CalculateDmg());
         }
         yield break;
     }

@@ -3,10 +3,13 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
 
 public abstract class Attack : MonoBehaviourPun
 {
+    protected static T Instantiate<T>(Vector3 pos, Quaternion quaternion) where T : Attack {
+        return PhotonNetwork.Instantiate(GameManager.GetAttackPrefabPath(typeof(T).Name), pos, quaternion).GetComponent<T>();
+    }
+
     public Unit Caster { get; set; }
     public List<Unit> Targets { get; set; } = new List<Unit>();
 
@@ -47,12 +50,7 @@ public abstract class Attack : MonoBehaviourPun
 
         stunAttack.StunCha = basicStunCha * target.GetFinalStat(StatType.StunSen);
         if (UnityEngine.Random.Range(0f, 1f) <= stunAttack.StunCha) {
-            StunTurnDebuff statusEffect = PhotonNetwork.Instantiate(GameManager.GetStatusEffectPrefabPath("StunTurnDebuff"),
-            target.transform.position, Quaternion.identity)
-            .GetComponent<StunTurnDebuff>();
-            statusEffect.Turn = turn;
-            statusEffect.Caster = Caster;
-            target.AddStatusEffect(statusEffect);
+            StunTurnDebuff.Create(Caster, target, turn);
         }
     }
 
@@ -63,21 +61,5 @@ public abstract class Attack : MonoBehaviourPun
     public void Destroy() {
         photonView.RPC("DestroyRPC", RpcTarget.AllBuffered);
     }
-
-    protected StatTurnStatusEffect CreateStatTurnStatusEffect(StatForm statForm, StatType statType, StatusEffectForm statusEffectForm, float value, int turn) {
-        StatTurnStatusEffect statusEffect = PhotonNetwork.Instantiate(GameManager.GetStatusEffectPrefabPath("StatTurnStatusEffect"),
-            transform.position, Quaternion.identity)
-            .GetComponent<StatTurnStatusEffect>();
-        statusEffect.StatForm = statForm;
-        statusEffect.StatType = statType;
-        statusEffect.Form = statusEffectForm;
-        statusEffect.Value = value;
-        statusEffect.Turn = turn;
-        statusEffect.Caster = Caster;
-
-        return statusEffect;
-    }
-
-
 
 }

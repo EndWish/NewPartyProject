@@ -39,14 +39,7 @@ public class ManaBarrierSkill : PassiveSkill
     }
 
     protected void OnUseActiveSkill(ActiveSkill skill) {
-        // 기본 배리어 생성 및 적용
-        TurnBasedBarrier barrier = PhotonNetwork.Instantiate(GameManager.GetBarrierPrefabPath("TurnBasedBarrier"),
-            transform.position, Quaternion.identity)
-            .GetComponent<TurnBasedBarrier>();
-        barrier.Amount = GetBarrierAmount();
-        barrier.Turn = turn;
-        barrier.Caster = Owner;
-        Owner.AddBarrier(barrier);
+        TurnBasedBarrier.Create(Owner, Owner, turn, GetBarrierAmount());
     }
 
     protected float GetBarrierAmount() {

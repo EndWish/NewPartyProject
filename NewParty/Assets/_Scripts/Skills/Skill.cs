@@ -30,19 +30,4 @@ public abstract class Skill : MonoBehaviourPun
 
     public abstract string GetDescription();
     public abstract string GetDetailedDescription();
-
-    protected StatTurnStatusEffect CreateStatTurnStatusEffect(StatForm statForm, StatType statType, StatusEffectForm statusEffectForm, float value, int turn) {
-        StatTurnStatusEffect statusEffect = PhotonNetwork.Instantiate(GameManager.GetStatusEffectPrefabPath("StatTurnStatusEffect"),
-            transform.position, Quaternion.identity)
-            .GetComponent<StatTurnStatusEffect>();
-        statusEffect.StatForm = statForm;
-        statusEffect.StatType = statType;
-        statusEffect.Form = statusEffectForm;
-        statusEffect.Value = value;
-        statusEffect.Turn = turn;
-        statusEffect.Caster = Owner;
-        statusEffect.InitIcon();
-
-        return statusEffect;
-    }
 }

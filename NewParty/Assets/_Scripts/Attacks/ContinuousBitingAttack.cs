@@ -6,22 +6,23 @@ using static UnityEngine.GraphicsBuffer;
 
 public class ContinuousBitingAttack : DmgAttack
 {
+    public static ContinuousBitingAttack Create(Unit caster, Unit target, float dmg, int hitNum) {
+        ContinuousBitingAttack attack = Attack.Instantiate<ContinuousBitingAttack>(target.transform.position, Quaternion.identity);
+
+        attack.Caster = caster;
+        attack.Targets = new List<Unit> { target };
+        attack.Dmg = dmg;
+        attack.hitNum = hitNum;
+
+        return attack;
+    }
+
     [SerializeField] protected GameObject biteFxPrefab;
 
     protected int hitNum = 1;
 
     protected override void Awake() {
         base.Awake();
-    }
-
-    public void Init(Unit caster, Unit target, float dmg, int hitNum) {
-        Caster = caster;
-        if (Targets.Count == 0)
-            Targets.Add(target);
-        else
-            Targets[0] = target;
-        Dmg = dmg;
-        this.hitNum = hitNum;
     }
 
     public override IEnumerator Animate() {

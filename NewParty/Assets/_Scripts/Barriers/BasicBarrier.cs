@@ -6,6 +6,15 @@ using static UnityEngine.GraphicsBuffer;
 
 public class BasicBarrier : Barrier
 {
+    public static BasicBarrier Create(Unit caster, float amount) {
+
+        BasicBarrier barrier = Barrier.Instantiate<BasicBarrier>();
+        barrier.Amount = amount;
+        barrier.Caster = caster;
+        caster.AddBarrier(barrier);
+
+        return barrier;
+    }
 
     public override Unit Target {
         set {
@@ -19,12 +28,6 @@ public class BasicBarrier : Barrier
                 otherBarrier.Destroy();
             }
         }
-    }
-
-    public void Init(Unit caster, float amount) {
-        Amount = amount;
-        Caster = caster;
-        caster.AddBarrier(this);
     }
 
     public override float GetPriority() {

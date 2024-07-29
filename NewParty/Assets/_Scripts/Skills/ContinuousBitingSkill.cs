@@ -20,12 +20,7 @@ public class ContinuousBitingSkill : ActiveSkill
 
         // 공격을 생성한다
         Unit target = BattleSelectable.Units[0];
-        ContinuousBitingAttack attack = PhotonNetwork.Instantiate(GameManager.GetAttackPrefabPath("ContinuousBitingAttack"),
-            target.transform.position, Quaternion.identity)
-        .GetComponent<ContinuousBitingAttack>();
-
-        float dmg = CalculateDmg();
-        attack.Init(Owner, target, dmg, hitNum);
+        ContinuousBitingAttack attack = ContinuousBitingAttack.Create(Owner, target, CalculateDmg(), hitNum);
 
         yield return StartCoroutine(attack.Animate());
     }

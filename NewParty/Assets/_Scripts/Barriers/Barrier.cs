@@ -6,6 +6,14 @@ using UnityEngine;
 
 public abstract class Barrier : MonoBehaviourPun
 {
+    protected static T Instantiate<T>() where T : Barrier {
+        T barrier = PhotonNetwork.Instantiate(GameManager.GetBarrierPrefabPath(typeof(T).Name),
+            Vector3.zero, Quaternion.identity)
+            .GetComponent<T>();
+
+        return barrier;
+    }
+
     private Unit caster;
     private Unit target;
 

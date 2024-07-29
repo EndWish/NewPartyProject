@@ -93,8 +93,7 @@ public class ShockBlowSkill : PassiveSkill
         Attack attack = dc.Attack;
         if (maxStack <= Stack && attack.Tags.Contains(Tag.기본공격)) {
             // 공격력 디버프
-            StatTurnStatusEffect strDebuff = CreateStatTurnStatusEffect(StatForm.AbnormalMul, StatType.Str, StatusEffectForm.Debuff, strMul, turn);
-            damagedUnit.AddStatusEffect(strDebuff);
+            StatTurnStatusEffect.Create(Owner, damagedUnit, StatForm.AbnormalMul, StatType.Str, StatusEffectForm.Debuff, strMul, turn);
 
             // 이펙트 생성
             Instantiate(fx, damagedUnit.transform.position, Quaternion.identity);

@@ -7,31 +7,31 @@ using static UnityEngine.GraphicsBuffer;
 
 public class PierceShieldAttack : DmgAttack
 {
+    public static PierceShieldAttack Create(Unit caster, Unit target, float defMul, int turn, float dmg) {
+        PierceShieldAttack attack = Attack.Instantiate<PierceShieldAttack>(target.transform.position, Quaternion.identity);
+
+        attack.Caster = caster;
+        attack.Targets = new List<Unit> { target };
+        attack.defMul = defMul;
+        attack.turn = turn;
+        attack.Dmg = dmg;
+
+        return attack;
+    }
+
     [SerializeField] protected GameObject fx;
     protected float defMul = 1f;
     protected int turn = 1;
 
-    public void Init(Unit caster, Unit target, float defMul, int turn, float dmg) {
-        Caster = caster;
-        if (Targets.Count == 0)
-            Targets.Add(target);
-        else
-            Targets[0] = target;
-        this.defMul = defMul;
-        this.turn = turn;
-        Dmg = dmg;
-    }
-
     public override IEnumerator Animate() {
-        foreach (Unit Target in new AttackTargetsSetting(this, Targets)) {
-            bool isHit = CalculateHit(Target);
+        foreach (Unit target in new AttackTargetsSetting(this, Targets)) {
+            bool isHit = CalculateHit(target);
             if (isHit) {
-                yield return StartCoroutine(Hit(Target));
-                StatTurnStatusEffect defDebuff = CreateStatTurnStatusEffect(StatForm.AbnormalMul, StatType.Def, StatusEffectForm.Debuff, defMul, turn);
-                Target.AddStatusEffect(defDebuff);
+                yield return StartCoroutine(Hit(target));
+                StatTurnStatusEffect.Create(Caster, target, StatForm.AbnormalMul, StatType.Def, StatusEffectForm.Debuff, defMul, turn);
             }
             else {
-                yield return StartCoroutine(HitMiss(Target));
+                yield return StartCoroutine(HitMiss(target));
             }
         }
 

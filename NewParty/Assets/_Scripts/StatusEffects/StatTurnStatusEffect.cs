@@ -6,6 +6,20 @@ using UnityEngine;
 
 public class StatTurnStatusEffect : StatStatusEffect, ITurnStatusEffect
 {
+    public static StatTurnStatusEffect Create(Unit caster, Unit target, StatForm statForm, StatType statType, StatusEffectForm statusEffectForm, float value, int turn) {
+        StatTurnStatusEffect statusEffect = StatusEffect.Instantiate<StatTurnStatusEffect>();
+
+        statusEffect.StatForm = statForm;
+        statusEffect.StatType = statType;
+        statusEffect.Form = statusEffectForm;
+        statusEffect.Value = value;
+        statusEffect.Turn = turn;
+        statusEffect.Caster = caster;
+        target.AddStatusEffect(statusEffect);
+
+        return statusEffect;
+    }
+
     protected int turn = 1;
 
 

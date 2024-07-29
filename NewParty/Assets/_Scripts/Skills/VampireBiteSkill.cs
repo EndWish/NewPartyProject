@@ -19,11 +19,7 @@ public class VampireBiteSkill : ActiveSkill
 
         // 공격을 생성한다
         Unit target = BattleSelectable.Units[0];
-        VampireBiteAttack attack = PhotonNetwork.Instantiate(GameManager.GetAttackPrefabPath("VampireBiteAttack"),
-            target.transform.position, Quaternion.identity)
-        .GetComponent<VampireBiteAttack>();
-
-        attack.Init(Owner, target, CalculateDmg());
+        VampireBiteAttack attack = VampireBiteAttack.Create(Owner, target, CalculateDmg());
 
         yield return StartCoroutine(attack.Animate());
     }

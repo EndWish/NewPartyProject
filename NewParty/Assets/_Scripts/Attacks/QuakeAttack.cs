@@ -1,10 +1,21 @@
 using Photon.Pun;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class QuakeAttack : DmgAttack, IStunAttack
 {
+    public static QuakeAttack Create(Unit caster, Unit target, float dmg) {
+        QuakeAttack attack = Attack.Instantiate<QuakeAttack>(target.transform.position, Quaternion.identity);
+
+        attack.Caster = caster;
+        attack.Targets = new List<Unit> { target };
+        attack.Dmg = dmg;
+
+        return attack;
+    }
+
     [SerializeField] protected GameObject fx;
     protected float defMul = 1f;
     protected int turn = 1;
@@ -18,15 +29,6 @@ public class QuakeAttack : DmgAttack, IStunAttack
             stunCha.Value = value;
             OnSetStunCha?.Invoke(stunCha);
         }
-    }
-
-    public void Init(Unit caster, Unit target, float dmg) {
-        Caster = caster;
-        if (Targets.Count == 0)
-            Targets.Add(target);
-        else
-            Targets[0] = target;
-        Dmg = dmg;
     }
 
     public override IEnumerator Animate() {

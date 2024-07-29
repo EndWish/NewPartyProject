@@ -5,16 +5,17 @@ using UnityEngine;
 
 public class BleedingAttack : DmgAttack
 {
-    [SerializeField] protected GameObject fx;
+    public static BleedingAttack Create(Unit caster, Unit target, float dmg) {
+        BleedingAttack attack = Attack.Instantiate<BleedingAttack>(target.transform.position, Quaternion.identity);
 
-    public void Init(Unit caster, Unit target, float dmg) {
-        Caster = caster;
-        if (Targets.Count == 0)
-            Targets.Add(target);
-        else
-            Targets[0] = target;
-        Dmg = dmg;
+        attack.Caster = caster;
+        attack.Targets = new List<Unit> { target };
+        attack.Dmg = dmg;
+
+        return attack;
     }
+
+    [SerializeField] protected GameObject fx;
 
     public override IEnumerator Animate() {
         foreach (Unit Target in new AttackTargetsSetting(this, Targets)) {

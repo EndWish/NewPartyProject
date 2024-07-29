@@ -6,6 +6,16 @@ using static UnityEngine.GraphicsBuffer;
 
 public class StunTurnDebuff : TurnStatusEffect
 {
+    public static StunTurnDebuff Create(Unit caster, Unit target, int turn) {
+        StunTurnDebuff statusEffect = StatusEffect.Instantiate<StunTurnDebuff>();
+
+        statusEffect.Turn = turn;
+        statusEffect.Caster = caster;
+        target.AddStatusEffect(statusEffect);
+
+        return statusEffect;
+    }
+
     protected override void OnDestroy() {
         base.OnDestroy();
         if (Target != null) {

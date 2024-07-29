@@ -5,6 +5,17 @@ using UnityEngine;
 
 public class AntiSkillBuff : TurnStatusEffect
 {
+    public static AntiSkillBuff Create(Unit caster, Unit target, int turn, float dmgMul) {
+        AntiSkillBuff statusEffect = StatusEffect.Instantiate<AntiSkillBuff>();
+
+        statusEffect.DmgMul = dmgMul;
+        statusEffect.Turn = turn;
+        statusEffect.Caster = caster;
+        target.AddStatusEffect(statusEffect);
+
+        return statusEffect;
+    }
+
     protected float dmgMul = 0f;
     [SerializeField] GameObject FXPrefab;
 

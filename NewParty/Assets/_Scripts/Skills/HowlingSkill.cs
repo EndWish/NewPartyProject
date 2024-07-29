@@ -24,12 +24,10 @@ public class HowlingSkill : ActiveSkill
         Party targetParty = BattleSelectable.Parties[0];
         foreach (Unit target in targetParty.Units) {
             // 치확 버프
-            StatTurnStatusEffect criChaBuff = CreateStatTurnStatusEffect(StatForm.AbnormalMul, StatType.CriCha, StatusEffectForm.Buff, criChaMul, turn);
-            target.AddStatusEffect(criChaBuff);
+            StatTurnStatusEffect.Create(Owner, target, StatForm.AbnormalMul, StatType.CriCha, StatusEffectForm.Buff, criChaMul, turn);
 
             // 명중 버프
-            StatTurnStatusEffect accBuff = CreateStatTurnStatusEffect(StatForm.AbnormalMul, StatType.Acc, StatusEffectForm.Buff, accMul, turn);
-            target.AddStatusEffect(accBuff);
+            StatTurnStatusEffect.Create(Owner, target, StatForm.AbnormalMul, StatType.Acc, StatusEffectForm.Buff, accMul, turn);
 
             // 랜덤한 디버프 제거
             for(int i = 0; i < numDebuffsToRemove; i++) {

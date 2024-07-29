@@ -5,16 +5,17 @@ using UnityEngine;
 
 public class VampireBiteAttack : DmgAttack
 {
-    [SerializeField] protected GameObject fx;
+    public static VampireBiteAttack Create(Unit caster, Unit target, float dmg) {
+        VampireBiteAttack attack = Attack.Instantiate<VampireBiteAttack>(target.transform.position, Quaternion.identity);
 
-    public void Init(Unit caster, Unit target, float dmg) {
-        Caster = caster;
-        if (Targets.Count == 0)
-            Targets.Add(target);
-        else
-            Targets[0] = target;
-        Dmg = dmg;
+        attack.Caster = caster;
+        attack.Targets = new List<Unit> { target };
+        attack.Dmg = dmg;
+
+        return attack;
     }
+
+    [SerializeField] protected GameObject fx;
 
     public override IEnumerator Animate() {
         yield return new WaitForSeconds(0.25f);

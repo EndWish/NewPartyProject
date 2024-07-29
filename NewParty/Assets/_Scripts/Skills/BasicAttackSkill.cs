@@ -4,35 +4,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BasicAttackSkill : ActiveSkill
+public abstract class BasicAttackSkill : ActiveSkill
 {
     [SerializeField] protected BasicAttack attackPrefab;
-
-    public enum BasicAttackType {
-        Melee, Ranged,
-    }
-
-    public BasicAttackType Type;
 
     protected override void Awake() {
         base.Awake();
         Name = "기본 공격";
-    }
-
-    public override IEnumerator CoUse() {
-        // 토큰을 개수를 세고 삭제한다
-        int tokenStack = Owner.GetSelectedTokensNum();
-        yield return StartCoroutine(Owner.UseSelectedTokens());
-
-        // 공격을 생성한다
-        Unit target = BattleSelectable.Units[0];
-        BasicAttack attack = PhotonNetwork.Instantiate(GameManager.GetAttackPrefabPath(Type.ToString() + "BasicAttack"),
-            target.transform.position, Quaternion.identity)
-        .GetComponent<BasicAttack>();
-        float dmg = CalculateDmg(tokenStack);
-        attack.Init(Owner, target, tokenStack, dmg);
-
-        yield return StartCoroutine(attack.Animate());
     }
 
     public override BattleSelectionType GetSelectionType() {

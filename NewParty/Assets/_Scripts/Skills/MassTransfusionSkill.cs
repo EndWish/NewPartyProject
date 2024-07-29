@@ -35,18 +35,15 @@ public class MassTransfusionSkill : ActiveSkill
             if (target == Owner)
                 continue;
 
-            MassTransfusionAttack attack = PhotonNetwork.Instantiate(GameManager.GetAttackPrefabPath("MassTransfusionAttack"),
-                Owner.transform.position, Quaternion.identity)
-                .GetComponent<MassTransfusionAttack>();
-            attack.Init(Owner, target, recoverHp);
+            
+            MassTransfusionAttack attack = MassTransfusionAttack.Create(Owner, target, recoverHp);
             attackList.Add(attack);
             StartCoroutine(attack.Animate());
             yield return new WaitForSeconds(0.2f);
         }
 
         // 자신에게 회복력 버프를 건다.
-        StatTurnStatusEffect healingBuff = CreateStatTurnStatusEffect(StatForm.AbnormalMul, StatType.Healing, StatusEffectForm.Buff, healingMul, turn);
-        Owner.AddStatusEffect(healingBuff);
+        StatTurnStatusEffect.Create(Owner, Owner, StatForm.AbnormalMul, StatType.Healing, StatusEffectForm.Buff, healingMul, turn);
 
         while(0 < attackList.Count) {
             attackList.RemoveAll((x) => x == null);

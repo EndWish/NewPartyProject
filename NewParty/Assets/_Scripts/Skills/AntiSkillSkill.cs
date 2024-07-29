@@ -19,13 +19,7 @@ public class AntiSkillSkill : ActiveSkill
 
         Party targetParty = BattleSelectable.Parties[0];
         foreach(Unit target in targetParty.Units) {
-            AntiSkillBuff statusEffect = PhotonNetwork.Instantiate(GameManager.GetStatusEffectPrefabPath("AntiSkillBuff"),
-                transform.position, Quaternion.identity)
-                .GetComponent<AntiSkillBuff>();
-            statusEffect.DmgMul = dmgMul;
-            statusEffect.Turn = turn;
-            statusEffect.Caster = Owner;
-            target.AddStatusEffect(statusEffect);
+            AntiSkillBuff.Create(Owner, target, turn, dmgMul);
         }
 
         yield return new WaitForSeconds(0.5f);

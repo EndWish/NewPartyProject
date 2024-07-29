@@ -95,7 +95,7 @@ MonoBehaviour:
   HealingFxPrefab: {fileID: 5097042485739383194, guid: a72f858eaab9f75438787a63abbea6ab, type: 3}
   tokenPrefab: {fileID: 8702565092637999532, guid: 882856b875f2a3c4ebca75c3d9971f36, type: 3}
   unitCanvas: {fileID: 2158454240472143330}
-  BasicAtkSkill: {fileID: 1467067061474094711}
+  BasicAtkSkill: {fileID: 5408948621895512673}
   BasicBarrierSkill: {fileID: 488534701126370168}
   skillsParent: {fileID: 8572338997569936211}
   MyData:
@@ -539,22 +539,22 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3173c32698c226049a4f4eddf11dbca7, type: 3}
---- !u!114 &1467067061474094711 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: -5586483465949782403, guid: 3173c32698c226049a4f4eddf11dbca7, type: 3}
-  m_PrefabInstance: {fileID: 2748536467821080586}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7877b90c82116774a8b81c70e59ee5ae, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!4 &2331957875954915422 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 466127027458091092, guid: 3173c32698c226049a4f4eddf11dbca7, type: 3}
   m_PrefabInstance: {fileID: 2748536467821080586}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &5408948621895512673 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7869109370792247915, guid: 3173c32698c226049a4f4eddf11dbca7, type: 3}
+  m_PrefabInstance: {fileID: 2748536467821080586}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a625dfa6dab76be44abcba306beb6347, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &3641071530126990212
 PrefabInstance:
   m_ObjectHideFlags: 0

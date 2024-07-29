@@ -5,6 +5,17 @@ using UnityEngine;
 
 public class TurnBasedBarrier : Barrier
 {
+    public static TurnBasedBarrier Create(Unit caster, Unit target, int turn, float amount) {
+
+        TurnBasedBarrier barrier = Barrier.Instantiate<TurnBasedBarrier>();
+        barrier.Amount = amount;
+        barrier.Turn = turn;
+        barrier.Caster = caster;
+        target.AddBarrier(barrier);
+
+        return barrier;
+    }
+
     private int turn;
 
     protected void OnDestroy() {

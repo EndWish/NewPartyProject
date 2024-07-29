@@ -29,12 +29,7 @@ public class ProtectSkill : ActiveSkill
         yield return StartCoroutine(Owner.UseSelectedTokens());
 
         Unit target = BattleSelectable.Units[0];
-        ProtectStatusEffect statusEffect = PhotonNetwork.Instantiate(GameManager.GetStatusEffectPrefabPath("ProtectStatusEffect"),
-            transform.position, Quaternion.identity)
-            .GetComponent<ProtectStatusEffect>();
-        statusEffect.Turn = turn;
-        statusEffect.Caster = Owner;
-        target.AddStatusEffect(statusEffect);
+        ProtectStatusEffect statusEffect = ProtectStatusEffect.Create(Owner, target, turn);
 
         if(protectSE != null)
             protectSE.Destroy();

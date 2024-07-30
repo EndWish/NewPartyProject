@@ -1,10 +1,5 @@
-using Photon.Pun;
 using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
-using static BasicAttackSkill;
-using static UnityEngine.GraphicsBuffer;
 
 public abstract class BasicAttack : DmgAttack
 {

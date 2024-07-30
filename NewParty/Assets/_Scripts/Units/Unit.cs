@@ -20,7 +20,6 @@ public partial class Unit : MonoBehaviourPun
 {
     // 공유 정보 //////////////////////////////////////////////////////////////
     static public float MaxActionGauge = 100f;
-    static public int GrowthLevelWhenSummoned = -10;
     static public int NumSoulFragmentRequiredForSummon = 100;
 
     // 연결 정보 //////////////////////////////////////////////////////////////
@@ -183,7 +182,7 @@ public partial class Unit : MonoBehaviourPun
 
     // 능력치 관련 함수
     public float GetFinalStat(StatType type) {
-        return Mathf.Max(StatClamp.MinStats[(int)type], Stats[(int)StatForm.Final, (int)type]);
+        return Mathf.Max(StatFeatures.GetMin(type), Stats[(int)StatForm.Final, (int)type]);
     }
 
     public void UpdateFinalStat(StatType type) {
@@ -206,7 +205,10 @@ public partial class Unit : MonoBehaviourPun
     public void UpdateBaseStat(bool updateFinalStat) {
         // 기본 능력치 계산
         for (StatType type = 0; type < StatType.Num; ++type) {
-            Stats[(int)StatForm.Base, (int)type] = SharedData.InitStats[(int)type] * (1f + 0.01f * GrowthLevel);
+            Stats[(int)StatForm.Base, (int)type] = SharedData.InitStats[(int)type];
+
+            if(StatFeatures.GetOperation(type) == StatOperation.Figure)
+                Stats[(int)StatForm.Base, (int)type] *= SharedData.SpeciesMul * (1f + 0.01f * GrowthLevel);
         }
 
         // 최종 능력치에 적용

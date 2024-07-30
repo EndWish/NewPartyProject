@@ -97,7 +97,7 @@ public class SoulTorchUI : MonoBehaviour
                 SoulFragment = null;
             }
 
-            Unit.Data unitData = new Unit.Data(SoulFragment.Type, Unit.GrowthLevelWhenSummoned);
+            Unit.Data unitData = new Unit.Data(SoulFragment.Type, 0);
             UserData.Instance.AddUnitData(unitData);
         }
     }
@@ -242,7 +242,7 @@ public class SoulTorchUI : MonoBehaviour
     }
 
     private int GetCostSoulFragmentForGrowth(int level) {
-        return Mathf.Max(0, 10 + (level - Unit.GrowthLevelWhenSummoned));
+        return Mathf.Max(0, 10 + level);
     }
     private float GetSuccessProbabilityForGrowth(int level) {
         if (level < 0)

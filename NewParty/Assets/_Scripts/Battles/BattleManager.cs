@@ -17,11 +17,11 @@ public class BattleManager : MonoBehaviourPunCallbacksSingleton<BattleManager>
     // 연결 정보 //////////////////////////////////////////////////////////////
     #region ForTest
 #if DEVELOPMENT_BUILD || UNITY_EDITOR
-    [SerializeField] private DungeonNodeInfo testDungeonInfo;
+    public DungeonNodeInfo TestDungeonInfo { get; set; }
 #endif
     #endregion
 
-    public string TestBattlePage = "";
+    public string TestBattlePage { get; set; }
 
     [SerializeField] private Transform playerPartyPos;
     [SerializeField] private Transform enemyPartyPos;
@@ -57,16 +57,18 @@ public class BattleManager : MonoBehaviourPunCallbacksSingleton<BattleManager>
         dungeonNodeInfo = GameManager.Instance.DungeonInfo;
         backgroundRenderer.sprite = dungeonNodeInfo?.BackgroundImg;
 
-        restSkillManager.gameObject.SetActive(false);
-
         #region ForTest
 #if DEVELOPMENT_BUILD || UNITY_EDITOR
-        if (testDungeonInfo != null) {
-            dungeonNodeInfo = testDungeonInfo;
+        if (TestDungeonInfo != null) {
+            dungeonNodeInfo = TestDungeonInfo;
             backgroundRenderer.sprite = dungeonNodeInfo.BackgroundImg;
         }
 #endif
         #endregion
+
+        restSkillManager.gameObject.SetActive(false);
+
+
 
         StartCoroutine(CoRun());
     }
@@ -452,7 +454,7 @@ public class BattleManager : MonoBehaviourPunCallbacksSingleton<BattleManager>
 
     private int GetRandomEnemyNum() {
         int num = 0;
-        float[] percentageOfNum = new float[4] { 15f, 20f, 40f, 25f };
+        float[] percentageOfNum = new float[4] { 0f, 35f, 40f, 25f };
         float random = UnityEngine.Random.Range(0f, 100f);
 
         float stack = 0f;

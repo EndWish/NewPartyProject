@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
@@ -45,9 +46,11 @@ public class DamageText : MonoBehaviour
     public void SetFormat(float dmg, Vector3 color, int criStack) {
         StringBuilder sb = new StringBuilder();
 
+
         sb.Append(100 <= dmg ? (int)dmg : (Mathf.Round(dmg * 10) / 10f));
-        if (0 < criStack)
-            sb.AppendFormat("<color=#F11414><size=2>(Ä¡¸íÅ¸x{0})</size></color>", criStack);
+        for(int i = 0; i < criStack; i++) {
+            sb.AppendFormat("<color=#FF{0:X2}00>!</color>", (byte)(255 - Mathf.Min(3, i + 1) * 85));
+        }
 
         text.text = sb.ToString();
         text.color = new Color(color.x, color.y, color.z, text.color.a);

@@ -6,7 +6,7 @@ using UnityEngine;
 public class DamageCalculator : MonoBehaviour
 {
     static public float CalculateDefRate(float def, float defPen) {
-        return Mathf.Min(1f, (defPen + def == 0) ? 0 : def / (defPen + def));
+        return Mathf.Min(1f, (defPen + def == 0) ? 0 : def * def / (defPen * defPen + def * def));
     }
 
     public Unit Attacker { get; set; }

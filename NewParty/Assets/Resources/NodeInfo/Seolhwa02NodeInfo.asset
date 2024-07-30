@@ -13,19 +13,19 @@ MonoBehaviour:
   m_Name: Seolhwa02NodeInfo
   m_EditorClassIdentifier: 
   Name: 102
-  Icon: {fileID: 21300000, guid: 823f6834948ee43938566a8aeae598e1, type: 3}
+  Icon: {fileID: 21300000, guid: 7f24f0dcee6e7044e9ab53318f6e54df, type: 3}
   BackgroundImg: {fileID: 21300000, guid: f0c7d1197b837b74db65096b6c0a46ac, type: 3}
   RandomUnitInfoList:
   - UnitInfo:
-      UnitType: 1
+      UnitType: 2
       GrowthLevelRange:
-        x: 1
-        y: 3
-    Importance: 50
+        x: 3
+        y: 4
+    Importance: 100
   - UnitInfo:
-      UnitType: 1
+      UnitType: 2
       GrowthLevelRange:
-        x: 0
-        y: 1
-    Importance: 50
+        x: 5
+        y: 6
+    Importance: 25
   WaveInfoList: []

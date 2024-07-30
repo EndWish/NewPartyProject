@@ -18,9 +18,9 @@ public class UnitStateUI : MonoBehaviour
 
     [SerializeField] private Image profileImg;
     [SerializeField] private TextMeshProUGUI growthLevelText;
-    [SerializeField] private TextMeshProUGUI HpmText, SpeedText, StrText, StackStrText, DefPenText, SkillStrText;
-    [SerializeField] private TextMeshProUGUI DefText, ShieldText, StackShieldText, CriChaText, CriMulText, HealingText;
-    [SerializeField] private TextMeshProUGUI AccText, AvoidText, AtkTokenWeightText, SkillTokenWeightText, ShiledTokenWeightText;
+
+    [SerializeField, EnumNamedArrayAttribute(typeof(StatType))] 
+    private TextMeshProUGUI[] statTexts;
 
     private void Awake() {
         skillActionBtns.InsertRange(0, skillActionsParent.GetComponentsInChildren<SkillActionBtn>());
@@ -55,33 +55,52 @@ public class UnitStateUI : MonoBehaviour
         growthLevelText.text = targetUnit == null ? "" : GrowthLevelToStr(targetUnit.GrowthLevel);
 
         // 능력치 텍스트 표시
-        HpmText.text = targetUnit == null ? "-" : FloatToNormalStr(targetUnit.Hp) + "/" + FloatToNormalStr(targetUnit.GetFinalStat(StatType.Hpm));
-
-        float speed = targetUnit?.GetFinalStat(StatType.Speed) ?? 0;
-        SpeedText.text = targetUnit == null ? "-" : FloatToNormalStr(speed) + string.Format(" ({0:F2}s)", (Unit.MaxActionGauge - targetUnit.ActionGauge) / speed);
-
-        StrText.text = targetUnit == null ? "-" : FloatToNormalStr(targetUnit.GetFinalStat(StatType.Str));
-        StackStrText.text = targetUnit == null ? "-" : "x" + FloatToNormalStr(targetUnit.GetFinalStat(StatType.StackStr));
-        DefPenText.text = targetUnit == null ? "-" : FloatToNormalStr(targetUnit.GetFinalStat(StatType.DefPen));
-        SkillStrText.text = targetUnit == null ? "-" : "x" + FloatToNormalStr(targetUnit.GetFinalStat(StatType.SkillStr));
-
-        DefText.text = targetUnit == null ? "-" : FloatToNormalStr(targetUnit.GetFinalStat(StatType.Def));
-        ShieldText.text = targetUnit == null ? "-" : FloatToNormalStr(targetUnit.GetFinalStat(StatType.Shield));
-        StackShieldText.text = targetUnit == null ? "-" : FloatToPercentStr(targetUnit.GetFinalStat(StatType.StackShield));
-        CriChaText.text = targetUnit == null ? "-" : FloatToPercentStr(targetUnit.GetFinalStat(StatType.CriCha));
-        CriMulText.text = targetUnit == null ? "-" : "x" + FloatToNormalStr(targetUnit.GetFinalStat(StatType.CriMul));
-        HealingText.text = targetUnit == null ? "-" : "x" + FloatToNormalStr(targetUnit.GetFinalStat(StatType.Healing));
-
-        AccText.text = targetUnit == null ? "-" : FloatToNormalStr(targetUnit.GetFinalStat(StatType.Acc));
-        AvoidText.text = targetUnit == null ? "-" : FloatToNormalStr(targetUnit.GetFinalStat(StatType.Avoid));
-
-        float[] tokenWeight = new float[3] { targetUnit?.GetFinalStat(StatType.AtkTokenWeight) ?? 0, 
-            targetUnit?.GetFinalStat(StatType.SkillTokenWeight) ?? 0, 
+        float[] tokenWeight = new float[3] { targetUnit?.GetFinalStat(StatType.AtkTokenWeight) ?? 0,
+            targetUnit?.GetFinalStat(StatType.SkillTokenWeight) ?? 0,
             targetUnit ?.GetFinalStat(StatType.ShieldTokenWeight) ?? 0 };
         float sumTokenWeight = tokenWeight[0] + tokenWeight[1] + tokenWeight[2];
-        AtkTokenWeightText.text = targetUnit == null ? "-" : string.Format("{0:F1} ({1:F1}%)", tokenWeight[0], tokenWeight[0] / sumTokenWeight * 100f);
-        SkillTokenWeightText.text = targetUnit == null ? "-" : string.Format("{0:F1} ({1:F1}%)", tokenWeight[1], tokenWeight[1] / sumTokenWeight * 100f);
-        ShiledTokenWeightText.text = targetUnit == null ? "-" : string.Format("{0:F1} ({1:F1}%)", tokenWeight[2], tokenWeight[2] /sumTokenWeight * 100f);
+
+        for (StatType statType = 0; statType < StatType.Num; ++statType) {
+            int index = (int)statType;
+            if (statTexts[index] == null)
+                continue;
+
+            if (targetUnit == null) {
+                statTexts[index].text = "-";
+                continue;
+            }
+
+            // 예외 처리
+            switch (statType) {
+                case StatType.Hpm:
+                    statTexts[index].text = TooltipText.GetFlexibleFloat(targetUnit.Hp) + "/"
+                        + TooltipText.GetFlexibleFloat(targetUnit.GetFinalStat(statType));
+                    continue;
+                case StatType.AtkTokenWeight:
+                case StatType.SkillTokenWeight:
+                case StatType.ShieldTokenWeight:
+                    statTexts[index].text = string.Format("{0}% ({1})",
+                        TooltipText.GetFlexibleFloat(targetUnit.GetFinalStat(statType) / sumTokenWeight * 100f),
+                        TooltipText.GetFlexibleFloat(targetUnit.GetFinalStat(statType))); 
+                    continue;
+            }
+
+            // 일괄 처리
+            switch (StatFeatures.GetOperation(statType)) {
+                case StatOperation.Figure:
+                    statTexts[index].text = TooltipText.GetFlexibleFloat(targetUnit.GetFinalStat(statType));
+                    break;
+                case StatOperation.Mul:
+                    statTexts[index].text = "x" + TooltipText.GetFlexibleFloat(targetUnit.GetFinalStat(statType));
+                    break;
+                case StatOperation.PercentPoint:
+                    statTexts[index].text = TooltipText.GetFlexibleFloat(targetUnit.GetFinalStat(statType) * 100f) + "%<size=20>p</size>";
+                    break;
+                case StatOperation.Percent:
+                    statTexts[index].text = TooltipText.GetFlexibleFloat(targetUnit.GetFinalStat(statType) * 100f) + "%";
+                    break;
+            }
+        }
 
         // 키보드 입력
         List<KeyCode> keyCodes = new List<KeyCode> { KeyCode.Q, KeyCode.W, KeyCode.E, KeyCode.R, KeyCode.T, KeyCode.Y, KeyCode.U };

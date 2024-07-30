@@ -23,7 +23,6 @@ public class StatStatusEffect : StatusEffect
 
     protected StatType statType;
     protected StatForm statForm;
-    protected StatusEffectForm statusEffectForm;
     protected float value = 1f;
 
     protected override void OnDestroy() {
@@ -40,7 +39,7 @@ public class StatStatusEffect : StatusEffect
     [PunRPC] protected virtual void StatTypeRPC(StatType statType) {
         ReversApply();
         this.statType = statType;
-        Name = StatToKorean.Get(statType) + " 상태이상";
+        Name = StatFeatures.GetKorean(statType) + " 상태이상";
         SetIconSp(statTypeIcons.Sprites[(int)statType]);
         Apply();
     }
@@ -97,16 +96,16 @@ public class StatStatusEffect : StatusEffect
     }
 
     public override string GetDescription() {
-        string verb = statusEffectForm == StatusEffectForm.Buff ? "상승" : "감소";
+        string verb = Form == StatusEffectForm.Buff ? "상승" : "감소";
 
         if (statForm == StatForm.AbnormalAdd) {
-            if (StatToKorean.IsPercent(statType))
-                return string.Format("{0}이(가) {1:G}%p {2}한다.", StatToKorean.Get(statType), value * 100f, verb);
+            if (StatFeatures.GetOperation(statType) == StatOperation.Figure)
+                return string.Format("{0}이(가) {1:G} {2}한다.", StatFeatures.GetKorean(statType), value, verb);
             else
-                return string.Format("{0}이(가) {1:G} {2}한다.", StatToKorean.Get(statType), value, verb);
+                return string.Format("{0}이(가) {1:G}%p {2}한다.", StatFeatures.GetKorean(statType), value * 100f, verb);
         }
         else if(statForm == StatForm.AbnormalMul) {
-            return string.Format("{0}이(가) x{1:G} {2}한다.", StatToKorean.Get(statType), value, verb);
+            return string.Format("{0}이(가) x{1:G} {2}한다.", StatFeatures.GetKorean(statType), value, verb);
         }
 
         return "StatForm ERROR";

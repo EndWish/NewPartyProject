@@ -15,6 +15,7 @@ MonoBehaviour:
   ProfileSprite: {fileID: 21300000, guid: aaeebd6b55c2b3844b5e7a6cc956327a, type: 3}
   Name: "\uD68C\uC0C9 \uB291\uB300"
   Type: 2
+  SpeciesMul: 1
   InitStats:
   - 20
   - 10
@@ -22,13 +23,13 @@ MonoBehaviour:
   - 0.2
   - 1
   - 10
-  - 0.1
+  - 0.15
   - 1.5
   - 10
-  - 5
+  - 4
   - 0.2
   - 10
-  - 10
+  - 11
   - 1
   - 40
   - 30

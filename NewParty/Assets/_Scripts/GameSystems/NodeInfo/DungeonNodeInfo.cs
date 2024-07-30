@@ -52,9 +52,12 @@ public class DungeonNodeInfo : NodeInfo
         for(int i = 0; i < num; ++i) {
             float random = UnityEngine.Random.Range(0f, importanceSum);
             int index = 0;
-            while (index < RandomUnitInfoList.Count && random <= RandomUnitInfoList[index].Importance)
+            while (true) {
+                if (random <= RandomUnitInfoList[index].Importance)
+                    break;
+                random -= RandomUnitInfoList[index].Importance;
                 ++index;
-            --index;
+            }
 
             unitInfoList.Add(RandomUnitInfoList[index].UnitInfo);
         }

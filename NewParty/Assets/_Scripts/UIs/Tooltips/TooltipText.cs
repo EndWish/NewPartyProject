@@ -6,6 +6,8 @@ using UnityEngine;
 public static class TooltipText
 {
     public static string GetFlexibleFloat(float num) {
+        if (num < 10f)
+            return num.ToString("F2");
         if (num < 100f)
             return num.ToString("F1");
         return num.ToString("G");

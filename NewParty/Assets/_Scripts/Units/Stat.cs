@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static StatFeatures;
+using static UnityEngine.Rendering.HDROutputUtils;
 
 public enum StatType
 {
@@ -19,52 +21,55 @@ public enum StatForm
     Num
 }
 
-public static class StatClamp
+public enum StatOperation
 {
-    public static float[] MinStats { get; set; } = new float[(int)StatType.Num] {
-        1f, //Hpm
-        1f, //Speed
-        0f, //Str
-        0f, //StackStr
-        0f, //SkillStr
-        0f, //DefPen
-        0f, //CriCha
-        1f, //CriMul
-        0f, //Def
-        0f, //Shield
-        1f, //StackShield
-        0f, //Acc
-        0f, //Avoid
-        0f, //Healing
-        0f, //AtkTokenWeight
-        0f, //SkillTokenWeight
-        0f, //ShieldTokenWeight
-        0f, //StunSensitivity
-        //Num
-    };
+    Figure, Mul, PercentPoint, Percent, 
 }
 
-public class StatToKorean
+public static class StatFeatures
 {
-    static private string[] mapping = { 
-        "최대 체력", "속도", "공격력", "스택 공격력", "스킬 공격력", "방어 관통력", "치명타 확률", "치명타 배율", "방어력", "실드", "스택 실드", "명중", "회피", "치유력",
-        "공격 토큰 비중", "스킬 토큰 비중", "실드 토큰 비중", "기절 감도",
-        
-        "ERROR"
+    private struct StatFeature {
+        public string Korean;
+        public float Min;
+        public StatOperation Operation;
+
+        public StatFeature(string korean, float min, StatOperation statOperation) {
+            Korean = korean;
+            Min = min;
+            Operation = statOperation;
+        }
+    }  
+
+    private static StatFeature[] statFeature = new StatFeature[(int)StatType.Num] {
+        new StatFeature("최대 체력", 1f, StatOperation.Figure), //Hpm
+        new StatFeature("속도", 1f, StatOperation.Figure), //Speed
+        new StatFeature("공격력", 0f, StatOperation.Figure), //Str
+        new StatFeature("스택 공격력", 0f, StatOperation.PercentPoint), //StackStr
+        new StatFeature("스킬 공격력", 1f, StatOperation.Mul ), //SkillStr
+        new StatFeature("방어 관통력", 0f, StatOperation.Figure ), //DefPen
+        new StatFeature("치명타 확률", 0f, StatOperation.Percent ), //CriCha
+        new StatFeature("치명타 배율", 1f, StatOperation.Mul ), //CriMul
+        new StatFeature("방어력", 0f, StatOperation.Figure ), //Def
+        new StatFeature("실드", 0f, StatOperation.Figure ), //Shield
+        new StatFeature("스택 실드", 0f, StatOperation.PercentPoint  ), //StackShield
+        new StatFeature("명중", 0f, StatOperation.Figure ), //Acc
+        new StatFeature("회피", 0f, StatOperation.Figure ), //Avoid
+        new StatFeature("치유력", 0f, StatOperation.Mul), //Healing
+        new StatFeature("공격 토큰 비중", 0f, StatOperation.Figure ), //AtkTokenWeight
+        new StatFeature("스킬 토큰 비중", 0f, StatOperation.Figure ), //SkillTokenWeight
+        new StatFeature("실드 토큰 비중", 0f, StatOperation.Figure ), //ShieldTokenWeight
+        new StatFeature("기절 감도", 0f, StatOperation.Mul), //StunSensitivity
+        //Num
     };
 
-    static private bool[] isPercent = {
-        false, false, false, true, true, false, true, true, false, false, true, false, false, true, false, false, false, true, 
-
-        false
-    };
-
-    static public string Get(StatType statType) {
-        return mapping[(int)statType];
+    public static string GetKorean(StatType statType) {
+        return statFeature[(int)statType].Korean;
     }
-
-    static public bool IsPercent(StatType statType) {
-        return isPercent[(int)statType];
+    public static float GetMin(StatType statType) {
+        return statFeature[(int)statType].Min;
+    }
+    public static StatOperation GetOperation(StatType statType) {
+        return statFeature[(int)statType].Operation;
     }
 
 }

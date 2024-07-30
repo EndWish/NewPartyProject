@@ -16,6 +16,7 @@ public class UnitSharedData : ScriptableObject
     public string Name;
     public UnitType Type;
 
+    public float SpeciesMul;
     [SerializeField, EnumNamedArrayAttribute(typeof(StatType))]
     public float[] InitStats = new float[(int)StatType.Num];
 

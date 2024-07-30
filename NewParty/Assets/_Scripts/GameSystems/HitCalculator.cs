@@ -30,8 +30,8 @@ public class HitCalculator : MonoBehaviour
         defender.OnBeforeCalculateHit?.Invoke(this);
 
         // 최종 확률 계산
-        float accChance = (Acc + Avoid == 0) ? 0 : (Acc * 4f) / (Acc * 4f + Avoid);
-
+        float accChance = (Acc + Avoid == 0) ? 0 : (Acc * Acc * 4f) / (Acc * Acc * 4f + Avoid * Avoid);
+        
         Destroy(this.gameObject);
         return Random.Range(0f, 1f) < accChance;
     }

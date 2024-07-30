@@ -1,7 +1,3 @@
-using Photon.Pun;
-using Photon.Pun.Demo.Procedural;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public abstract class BasicAttackSkill : ActiveSkill

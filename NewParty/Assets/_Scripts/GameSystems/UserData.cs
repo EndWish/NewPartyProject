@@ -67,11 +67,18 @@ public class UserData : MonoBehaviourSingleton<UserData>
         this.AddUnitData(new Unit.Data(UnitType.Garuda, 0));
 
 #if DEVELOPMENT_BUILD || UNITY_EDITOR
-        for (int i = 0; i < 4; ++i) {
-            this.AddUnitData(new Unit.Data(UnitType.Garuda, -10 + i * 10));
-            this.AddUnitData(new Unit.Data(UnitType.HowlingWolf, -10 + i * 10));
-            this.AddUnitData(new Unit.Data(UnitType.InfectedMosquito, -10 + i * 10));
+        for (int i = 0; i < 5; ++i) {
+            this.AddUnitData(new Unit.Data(UnitType.Garuda, i * 10));
+            this.AddUnitData(new Unit.Data(UnitType.GrayWolf, i * 10));
+            this.AddUnitData(new Unit.Data(UnitType.RedWolf, i * 10));
+            this.AddUnitData(new Unit.Data(UnitType.AwlMosquito, i * 10));
+            this.AddUnitData(new Unit.Data(UnitType.DrillMosquito, i * 10));
+            this.AddUnitData(new Unit.Data(UnitType.StoneTurtle, i * 10));
+            this.AddUnitData(new Unit.Data(UnitType.IronTurtle, i * 10));
         }
+
+        this.AddUnitData(new Unit.Data(UnitType.Garuda, 0));
+        this.AddUnitData(new Unit.Data(UnitType.Garuda, 0));
 #endif
     }
     public void AddUnitData(Unit.Data unitData) {
@@ -120,6 +127,13 @@ public class UserData : MonoBehaviourSingleton<UserData>
     private void SetDefaultClearNodes() {
         ClearNodes = new HashSet<NodeName>();
         ClearNodes.Add(NodeName.Village);
+#if DEVELOPMENT_BUILD || UNITY_EDITOR
+        ClearNodes.Add(NodeName.Seolhwa01);
+        ClearNodes.Add(NodeName.Seolhwa02);
+        ClearNodes.Add(NodeName.Seolhwa03);
+        ClearNodes.Add(NodeName.Seolhwa04);
+        ClearNodes.Add(NodeName.Seolhwa05);
+#endif
         SaveClearNodes();
     }
     public void AddClearNode(NodeName node) {

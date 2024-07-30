@@ -9,16 +9,17 @@ using UnityEngine;
 public class TokenSelector : MonoBehaviour
 {
     public enum ActionResult {
-        None, Pass, Discard, Atk, Shield, Skill,
+        None, Pass, Discard, Atk, Barrier, Skill,
     }
     public enum SelectMode
     {
-        None, BasicAtkMode, 
+        None, BasicAtkMode, SkillMode,
     }
 
     static private Dictionary<SelectMode, Func<Unit, ActionResult>> modeMapping = new Dictionary<SelectMode, Func<Unit, ActionResult>> {
         {SelectMode.None,  BasicAtkMode},
-        {SelectMode.BasicAtkMode,  BasicAtkMode}
+        {SelectMode.BasicAtkMode,  BasicAtkMode},
+        {SelectMode.SkillMode,  SkillMode}
     };
 
     static public ActionResult BasicAtkMode(Unit unit) {
@@ -37,7 +38,7 @@ public class TokenSelector : MonoBehaviour
         // 배리어를 사용하면 효과가 있을 때 사용한다
         if (4 <= nShield && IsEffectiveBarrier(unit, nShield)) {
             SelectAllTokens(unit, TokenType.Barrier);
-            return ActionResult.Shield;
+            return ActionResult.Barrier;
         }
 
         // 공격 토큰이 하나라도 있으면 사용
@@ -49,7 +50,7 @@ public class TokenSelector : MonoBehaviour
         // 배리어를 사용하면 효과가 있을 때 사용한다
         if(0 < nShield && IsEffectiveBarrier(unit, nShield)) {
             SelectAllTokens(unit, TokenType.Barrier);
-            return ActionResult.Shield;
+            return ActionResult.Barrier;
         }
 
         // 스킬을 사용할 수 있으면 스킬을 사용한다
@@ -63,6 +64,59 @@ public class TokenSelector : MonoBehaviour
         int nBlank = unit.MaxTokens - nTokens;
         int nDiscard = 3 - nBlank;
         if(0 < nDiscard) {
+            SelectTokens(unit, nDiscard);
+            return ActionResult.Discard;
+        }
+
+        return ActionResult.Pass;
+    }
+    static public ActionResult SkillMode(Unit unit) {
+        ActiveSkill useSkill;
+        int nAtk, nSkill, nShield;
+        ResetTokenSelection(unit, out nAtk, out nSkill, out nShield);
+
+        // 스킬 토큰이 많을 경우 사용한다
+        useSkill = FindHighCostUseableSkill(unit, nSkill);
+        if (4 <= nSkill && useSkill != null) {
+            SelectTokens(unit, TokenType.Skill, useSkill.Cost);
+            return ActionResult.Skill;
+        }
+
+        // 방어 토큰이 많을 경우
+        // 배리어를 사용하면 효과가 있을 때 사용한다
+        if (4 <= nShield && IsEffectiveBarrier(unit, nShield)) {
+            SelectAllTokens(unit, TokenType.Barrier);
+            return ActionResult.Barrier;
+        }
+
+        // 공격 토큰이 많을 경우 사용
+        if (4 <= nAtk) {
+            SelectAllTokens(unit, TokenType.Atk);
+            return ActionResult.Atk;
+        }
+
+        // 스킬을 사용할 수 있으면 스킬을 사용한다
+        if (useSkill != null) {
+            SelectTokens(unit, TokenType.Skill, useSkill.Cost);
+            return ActionResult.Skill;
+        }
+
+        // 배리어를 사용하면 효과가 있을 때 사용한다
+        if (0 < nShield && IsEffectiveBarrier(unit, nShield)) {
+            SelectAllTokens(unit, TokenType.Barrier);
+            return ActionResult.Barrier;
+        }
+
+        if(0 < nAtk) {
+            SelectAllTokens(unit, TokenType.Atk);
+            return ActionResult.Atk;
+        }
+
+        // 토큰 3개가 비도록 버린다.
+        int nTokens = nAtk + nSkill + nShield;
+        int nBlank = unit.MaxTokens - nTokens;
+        int nDiscard = 3 - nBlank;
+        if (0 < nDiscard) {
             SelectTokens(unit, nDiscard);
             return ActionResult.Discard;
         }
@@ -153,7 +207,7 @@ public class TokenSelector : MonoBehaviour
             && SelectRandomTarget(unit.BasicAtkSkill)) {
             unit.BasicAtkSkill.Use();
         }
-        else if (actionResult == ActionResult.Shield 
+        else if (actionResult == ActionResult.Barrier 
             && unit.BasicBarrierSkill.CanUse()) {
             unit.BasicBarrierSkill.Use();
         }

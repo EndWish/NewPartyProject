@@ -8130,9 +8130,9 @@ PrefabInstance:
       propertyPath: m_Name
       value: TestSetting
       objectReference: {fileID: 0}
-    - target: {fileID: 285852505442747526, guid: 3da842c263179914899df8f78fffbb9d, type: 3}
-      propertyPath: m_IsActive
-      value: 0
+    - target: {fileID: 1523471153476400274, guid: 3da842c263179914899df8f78fffbb9d, type: 3}
+      propertyPath: speed
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 1529279320003276137, guid: 3da842c263179914899df8f78fffbb9d, type: 3}
       propertyPath: m_AnchorMax.y
@@ -8230,6 +8230,26 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7783237652193721230, guid: 3da842c263179914899df8f78fffbb9d, type: 3}
+      propertyPath: unitDataList.Array.size
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 7783237652193721230, guid: 3da842c263179914899df8f78fffbb9d, type: 3}
+      propertyPath: unitDataList.Array.data[0].sharedData
+      value: 
+      objectReference: {fileID: 11400000, guid: 797a9696db78cf744b6aa01b6bbfb05d, type: 2}
+    - target: {fileID: 7783237652193721230, guid: 3da842c263179914899df8f78fffbb9d, type: 3}
+      propertyPath: unitDataList.Array.data[1].sharedData
+      value: 
+      objectReference: {fileID: 11400000, guid: 797a9696db78cf744b6aa01b6bbfb05d, type: 2}
+    - target: {fileID: 7783237652193721230, guid: 3da842c263179914899df8f78fffbb9d, type: 3}
+      propertyPath: unitDataList.Array.data[2].sharedData
+      value: 
+      objectReference: {fileID: 11400000, guid: 797a9696db78cf744b6aa01b6bbfb05d, type: 2}
+    - target: {fileID: 7783237652193721230, guid: 3da842c263179914899df8f78fffbb9d, type: 3}
+      propertyPath: unitDataList.Array.data[3].sharedData
+      value: 
+      objectReference: {fileID: 11400000, guid: 797a9696db78cf744b6aa01b6bbfb05d, type: 2}
     - target: {fileID: 8522426089353564874, guid: 3da842c263179914899df8f78fffbb9d, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0

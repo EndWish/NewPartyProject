@@ -120,7 +120,6 @@ public partial class Unit : MonoBehaviourPun
         }
 
         hp = GetFinalStat(StatType.Hpm);
-        actionGauge = 0;
 
         CoOnAvoid += CoCreateAvoidText;
         OnStun += GainStunResistance;
@@ -143,9 +142,7 @@ public partial class Unit : MonoBehaviourPun
 
     public float ActionGauge {
         get { return actionGauge; }
-        set {
-            photonView.RPC("ActionGaugeRPC", RpcTarget.All, value);
-        }
+        set { photonView.RPC("ActionGaugeRPC", RpcTarget.All, value); }
     }
     [PunRPC] protected void ActionGaugeRPC(float value) {
         actionGauge = value;

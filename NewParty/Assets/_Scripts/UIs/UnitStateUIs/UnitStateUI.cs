@@ -4,6 +4,7 @@ using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using static System.Runtime.CompilerServices.RuntimeHelpers;
 
 public class UnitStateUI : MonoBehaviour
 {
@@ -112,6 +113,11 @@ public class UnitStateUI : MonoBehaviour
                 else
                     skillActionBtns[i - fixedActionBtns.Count].OnClick();
             }
+        }
+
+        if ((Input.GetKeyUp(KeyCode.A) || Input.GetKeyUp(KeyCode.S))
+            && (UnitOfTurn?.IsMine() ?? false) && battleManager.ActionCoroutine == null) {
+            StartCoroutine(UnitOfTurn.GetComponent<TokenSelector>().AutoSelect());
         }
 
     }

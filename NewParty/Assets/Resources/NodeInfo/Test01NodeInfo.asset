@@ -25,19 +25,19 @@ MonoBehaviour:
   WaveInfoList:
   - Wave: 1
     UnitInfoList:
-    - UnitType: 13
+    - UnitType: 12
       GrowthLevelRange:
         x: 0
-        y: 2
-    - UnitType: 13
+        y: 0
+    - UnitType: 12
       GrowthLevelRange:
         x: 0
-        y: 2
-    - UnitType: 13
+        y: 0
+    - UnitType: 12
       GrowthLevelRange:
         x: 0
-        y: 2
-    - UnitType: 13
+        y: 0
+    - UnitType: 12
       GrowthLevelRange:
         x: 0
-        y: 2
+        y: 0

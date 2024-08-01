@@ -6,6 +6,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 using static Photon.Pun.UtilityScripts.TabViewManager;
+using static System.Runtime.CompilerServices.RuntimeHelpers;
 
 public enum TeamType : int
 {
@@ -87,6 +88,9 @@ public class BattleManager : MonoBehaviourPunCallbacksSingleton<BattleManager>
             }
         }
 
+        if (Input.GetKeyUp(KeyCode.S)) {
+            TokenSelector.isAuto = !TokenSelector.isAuto;
+        }
 
     }
 
@@ -223,6 +227,7 @@ public class BattleManager : MonoBehaviourPunCallbacksSingleton<BattleManager>
                     enemyParty.IsSyncIndex(true);
                 }
             }
+            yield return null;  // Unit 생성 후 Start() 함수가 발동 되도록 한 프레임 쉬어준다.
             #endregion
 
             // (방장) 행동 게이지 랜덤으로 세팅
@@ -283,7 +288,7 @@ public class BattleManager : MonoBehaviourPunCallbacksSingleton<BattleManager>
 
                 // 내 유닛의 턴일 경우 액션 선택하기
                 if (UnitOfTurn.IsMine() || (UnitOfTurn.IsEnemy() && PhotonNetwork.IsMasterClient)) {
-                    if (UnitOfTurn.IsMine()) {
+                    if (UnitOfTurn.IsMine() && !TokenSelector.isAuto) {
                         TestBattlePage = "내 유닛의 턴...";
                         ActionCoroutine = null;
                         TestBattlePage = "액션 코루틴이 설정되기를 기다리는 중...";
@@ -291,7 +296,7 @@ public class BattleManager : MonoBehaviourPunCallbacksSingleton<BattleManager>
                             yield return null;
                         }
                     } 
-                    else if(UnitOfTurn.IsEnemy()) {
+                    else if(UnitOfTurn.IsEnemy() || TokenSelector.isAuto) {
                         yield return StartCoroutine(UnitOfTurn.GetComponent<TokenSelector>().AutoSelect());
                     }
 

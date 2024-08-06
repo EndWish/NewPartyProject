@@ -60,15 +60,28 @@ public class BasicBarrierSkill : ActiveSkill
     }
 
     public override string GetDescription() {
-        return string.Format("{0}의 데미지를 막아주는 배리어를 생성한다. 기본 배리어는 중첩되지 않는다.",
-            TooltipText.SetDamageFont(CalculateAmount(Mathf.Max(1, Owner.Tokens.FindAll(token => token.IsSelected && token.Type == TokenType.Barrier).Count))));
+        float basicAmount = CalculateAmount(Mathf.Max(1, Owner.Tokens.FindAll(token => token.IsSelected && token.Type == TokenType.Barrier).Count));
+        float amountOverloadApplied = basicAmount * GetBasicBarrierOverloadCoefficient();
+
+        return string.Format("{0}의 데미지를 막아주는 배리어를 생성한다. 기본 배리어는 중첩되지 않는다. \n[기본 배리어 과부하] 상태이상을 적용할 경우 {1}의 데미지를 막아준다.",
+            TooltipText.SetDamageFont(basicAmount), 
+            TooltipText.SetDamageFont(amountOverloadApplied));
     }
 
     public override string GetDetailedDescription() {
-        return string.Format("{0} = ({1}100% + {1}100% x {2} x 추가토큰)의 데미지를 막아주는 배리어를 생성한다. 기본 배리어는 중첩되지 않는다.",
-            TooltipText.SetDamageFont(CalculateAmount(Mathf.Max(1, Owner.Tokens.FindAll(token => token.IsSelected && token.Type == TokenType.Barrier).Count))),
+        float basicAmount = CalculateAmount(Mathf.Max(1, Owner.Tokens.FindAll(token => token.IsSelected && token.Type == TokenType.Barrier).Count));
+        float amountOverloadApplied = basicAmount * GetBasicBarrierOverloadCoefficient();
+
+        return string.Format("{0} = ({2}100% + {2}100% x {3} x 추가토큰)의 데미지를 막아주는 배리어를 생성한다. 기본 배리어는 중첩되지 않는다. \n[기본 배리어 과부하] 상태이상을 적용할 경우 {1}의 데미지를 막아준다.",
+            TooltipText.SetDamageFont(basicAmount),
+            TooltipText.SetDamageFont(amountOverloadApplied),
             TooltipText.GetIcon(StatType.Shield),
             TooltipText.GetIcon(StatType.StackShield));
+    }
+
+    protected float GetBasicBarrierOverloadCoefficient() {
+        BasicBarrierOverload basicBarrierOverload = (BasicBarrierOverload)Owner.StatusEffects.Find((statusEffect) => (statusEffect is BasicBarrierOverload));
+        return basicBarrierOverload?.ShieldMul ?? 1f;
     }
 
 }

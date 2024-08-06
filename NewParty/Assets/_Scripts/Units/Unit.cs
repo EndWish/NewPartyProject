@@ -114,6 +114,7 @@ public partial class Unit : MonoBehaviourPun, IIcon1x1, IIcon1x2
     public Action<StunTurnDebuff> OnStun;
     public Action<Token> OnCreateToken;
     public Action<ActiveSkill> OnUseActiveSkill;
+    public Action<Barrier> OnAddBarrier;
 
     public Func<IEnumerator> CoOnBeginMyTurn, CoOnEndMyTurn;
     public Func<IEnumerator> CoOnBeginTick;
@@ -570,6 +571,7 @@ public partial class Unit : MonoBehaviourPun, IIcon1x1, IIcon1x2
     public void AddBarrier(Barrier barrier) {
         barrier.Target = this;
         photonView.RPC("AddBarrierRPC", RpcTarget.All, barrier.photonView.ViewID);
+        OnAddBarrier?.Invoke(barrier);
     }
     [PunRPC] protected void RemoveBarrierRPC(int viewId) {
         if (viewId == -1)

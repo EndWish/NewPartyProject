@@ -7,7 +7,7 @@ using UnityEngine.UI;
 public class SoulInventorySlot : SoulSlot, IBeginDragHandler, IEndDragHandler, IDragHandler
 {
     static private Transform dragTransform = null;
-    static private Image dragProfileImg = null;
+    static private MultiLayerImageController dragImages = null;
     
     static private int nSlot = 0;
 
@@ -20,7 +20,7 @@ public class SoulInventorySlot : SoulSlot, IBeginDragHandler, IEndDragHandler, I
     protected void Start() {
         if (dragTransform == null) {
             dragTransform = Instantiate(dragPrefab, StaticOverlayCanvas.Instance.transform);
-            dragProfileImg = dragTransform.Find("Profile").GetComponent<Image>();
+            dragImages = dragTransform.GetComponent<MultiLayerImageController>();
             dragTransform.gameObject.SetActive(false);
         }
     }
@@ -33,7 +33,7 @@ public class SoulInventorySlot : SoulSlot, IBeginDragHandler, IEndDragHandler, I
     }
 
     public void OnBeginDrag(PointerEventData eventData) {
-        dragProfileImg.sprite = Data?.UnitProfileSprite;
+        dragImages.Sprites = Data.GetIcons1x1();
         dragTransform.gameObject.SetActive(true);
     }
 

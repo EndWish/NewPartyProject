@@ -13,19 +13,12 @@ public class UnitSlot : PageViewSlot<Unit.Data>
         base.SlotUpdate(unitData, index);
 
         // 유닛 이미지 적용
-        if(unitData == null) {
-            profileImage.sprite = null;
-            profileImage.color = new Color(0, 0, 0, 0);
-        }
-        else {
-            profileImage.sprite = unitData.ProfileSprite;
-            profileImage.color = Color.white;
-        }
+        profileImage.sprite = Data?.GetIcon1x2() ?? Unit.NullIcon1x2;
 
         // 성장 레벨 텍스트
-        if (unitData == null)
+        if (Data == null)
             growthLevelText.text = string.Empty;
         else
-            growthLevelText.text = 0 <= unitData.GrowthLevel ? ("+" + unitData.GrowthLevel.ToString()) : unitData.GrowthLevel.ToString();
+            growthLevelText.text = (0 <= Data.GrowthLevel) ? ("+" + Data.GrowthLevel.ToString()) : Data.GrowthLevel.ToString(); ;
     }
 }

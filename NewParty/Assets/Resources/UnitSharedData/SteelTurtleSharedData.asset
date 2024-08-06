@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: SteelTurtleSharedData
   m_EditorClassIdentifier: 
   ProfileSprite: {fileID: 21300000, guid: 2bfd0cba735fa2843b4f9325f5d06fb9, type: 3}
+  IconSprite: {fileID: 21300000, guid: 56d99ef0950d2804bb076a78d74aba98, type: 3}
   Name: "\uAC15\uCCA0\uAC70\uBD81"
   Type: 13
   SpeciesMul: 1

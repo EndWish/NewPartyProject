@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: EmeraldTurtleSharedData
   m_EditorClassIdentifier: 
   ProfileSprite: {fileID: 21300000, guid: 18390e4418dd4ca43849d0e108522f46, type: 3}
+  IconSprite: {fileID: 21300000, guid: 8b30e64635b67b247abf10934c6a77f8, type: 3}
   Name: "\uC5D0\uBA54\uB784\uB4DC\uAC70\uBD81"
   Type: 14
   SpeciesMul: 1

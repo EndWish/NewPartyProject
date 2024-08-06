@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: GarudaSharedData
   m_EditorClassIdentifier: 
   ProfileSprite: {fileID: 21300000, guid: 131035ae3af7841499adcef1290db2fd, type: 3}
+  IconSprite: {fileID: 21300000, guid: 55c6df04169897f4aa952e275cb7381a, type: 3}
   Name: "\uAC00\uB8E8\uB2E4"
   Type: 1
   SpeciesMul: 1.05

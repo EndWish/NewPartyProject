@@ -6,30 +6,18 @@ using UnityEngine.UI;
 
 public class SoulSlot : PageViewSlot<SoulFragment>
 {
-    [SerializeField] protected Image iconImage;
-    [SerializeField] protected Image profileImage;
+    [SerializeField] protected MultiLayerImageController Images;
     [SerializeField] protected TextMeshProUGUI numText;
 
     public override void SlotUpdate(SoulFragment soulFragment, int index) {
         base.SlotUpdate(soulFragment, index);
 
         // 유닛 이미지 적용
-        if (Data == null) {
-            iconImage.color = new Color(0, 0, 0, 0);
-            profileImage.sprite = null;
-            profileImage.color = new Color(0, 0, 0, 0);
-        } else {
-            iconImage.color = Color.white;
-            profileImage.sprite = Data.UnitProfileSprite;
-            profileImage.color = Color.white;
-        }
+        Images.Sprites = Data?.GetIcons1x1() ?? new List<Sprite> { SoulFragment.NullIcon1x1 };
 
-        // 개수 텍스트
+        // 텍스트 적용
         numText.text = Data?.Num.ToString();
 
     }
-
-
-
 
 }

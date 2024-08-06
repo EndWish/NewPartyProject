@@ -34,6 +34,7 @@ public class DungeonNodeInfo : NodeInfo
 
     // 개인 정보 //////////////////////////////////////////////////////////////
     public Sprite BackgroundImg;
+    public int LastWave;
 
     // 랜덤 출현 정보
     [ArrayElementTitle("UnitInfo.UnitType")]

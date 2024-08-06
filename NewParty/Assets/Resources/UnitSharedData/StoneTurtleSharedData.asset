@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: StoneTurtleSharedData
   m_EditorClassIdentifier: 
   ProfileSprite: {fileID: 21300000, guid: 5235cee0bc5515a4cbc52b3cb5752799, type: 3}
+  IconSprite: {fileID: 21300000, guid: 137655eab4e1b3348b4f03bd334d71ef, type: 3}
   Name: "\uB3CC\uAC70\uBD81"
   Type: 11
   SpeciesMul: 1.02

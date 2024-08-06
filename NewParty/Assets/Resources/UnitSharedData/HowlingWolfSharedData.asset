@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: HowlingWolfSharedData
   m_EditorClassIdentifier: 
   ProfileSprite: {fileID: 21300000, guid: 24654af452895f242ba6cb14c345adef, type: 3}
+  IconSprite: {fileID: 21300000, guid: 20bfaa6f46032594da7fbd59b044580c, type: 3}
   Name: "\uC6B8\uBD80\uC9D6\uB294 \uB291\uB300"
   Type: 6
   SpeciesMul: 1

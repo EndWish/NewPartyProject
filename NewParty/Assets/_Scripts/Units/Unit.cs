@@ -16,11 +16,37 @@ public enum UnitType : int
     StoneTurtle, IronTurtle, SteelTurtle, EmeraldTurtle, RainbowTurtle,
 }
 
-public partial class Unit : MonoBehaviourPun
+public partial class Unit : MonoBehaviourPun, IIcon1x1, IIcon1x2
 {
     // 공유 정보 //////////////////////////////////////////////////////////////
     static public float MaxActionGauge = 100f;
     static public int NumSoulFragmentRequiredForSummon = 100;
+
+
+    private static Sprite nullIcon1x1;
+    public static Sprite NullIcon1x1 {
+        get {
+            if (nullIcon1x1 == null)
+                nullIcon1x1 = Resources.Load<Sprite>("Image/img_ic_unit_null");
+            return nullIcon1x1;
+        }
+    }
+
+    private static Sprite nullIcon1x2;
+    public static Sprite NullIcon1x2 {
+        get {
+            if (nullIcon1x2 == null)
+                nullIcon1x2 = Resources.Load<Sprite>("Image/img_profile_unit_null");
+            return nullIcon1x2;
+        }
+    }
+
+    static public string GetPrefabPath() {
+        return "Prefabs/Units/";
+    }
+    static public string GetPrefabPath(string prefabName) {
+        return GetPrefabPath() + prefabName;
+    }
 
     // 연결 정보 //////////////////////////////////////////////////////////////
     [SerializeField] protected DamageText damageTextPrefab;
@@ -588,4 +614,18 @@ public partial class Unit : MonoBehaviourPun
         StatTurnStatusEffect.Create(this, this, StatForm.AbnormalMul, StatType.StunSen, StatusEffectForm.Buff, 0.5f, stun.Turn + 3);
     }
 
+    // IIcon 함수
+    public Sprite GetIcon1x1() {
+        return SharedData?.GetIcon1x1() ?? Unit.NullIcon1x1;
+    }
+    public List<Sprite> GetIcons1x1() {
+        return new List<Sprite> { GetIcon1x1() };
+    }
+
+    public Sprite GetIcon1x2() {
+        return SharedData?.GetIcon1x2() ?? Unit.NullIcon1x2;
+    }
+    public List<Sprite> GetIcons1x2() {
+        return new List<Sprite> { GetIcon1x2() };
+    }
 }

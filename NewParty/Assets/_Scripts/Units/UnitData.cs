@@ -10,7 +10,7 @@ public partial class Unit : MonoBehaviourPun
 {
     // 서브 클래스 ////////////////////////////////////////////////////////////
     [Serializable]
-    public class Data : SaveData
+    public class Data : SaveData, IIcon1x1, IIcon1x2
     {
         // 포톤 직렬화/역직렬화
         static public byte[] PhotonSerialize(object customObject) {
@@ -71,9 +71,6 @@ public partial class Unit : MonoBehaviourPun
         public string Name {
             get { return SharedData?.Name ?? ""; }
         }
-        public Sprite ProfileSprite {
-            get { return SharedData?.ProfileSprite; }
-        }
 
         // 저장/불러오기 관련 함수
         protected UnitSaveFormat ToSaveFormat() {
@@ -92,6 +89,21 @@ public partial class Unit : MonoBehaviourPun
         public override void Save() {
             base.Save();
             ES3.Save<UnitSaveFormat>(SaveKey.ToString(), this.ToSaveFormat(),  UserData.Instance.Nickname);
+        }
+
+        // IIcon 함수
+        public Sprite GetIcon1x1() {
+            return SharedData?.GetIcon1x1() ?? Unit.NullIcon1x1;
+        }
+        public List<Sprite> GetIcons1x1() {
+            return new List<Sprite> { GetIcon1x1() };
+        }
+
+        public Sprite GetIcon1x2() {
+            return SharedData?.GetIcon1x2() ?? Unit.NullIcon1x2;
+        }
+        public List<Sprite> GetIcons1x2() {
+            return new List<Sprite> { GetIcon1x2() };
         }
 
     }

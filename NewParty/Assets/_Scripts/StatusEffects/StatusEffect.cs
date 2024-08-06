@@ -10,8 +10,15 @@ public enum StatusEffectForm
 
 public abstract class StatusEffect : MonoBehaviourPun
 {
+    static public string GetPrefabPath() {
+        return "Prefabs/StatusEffects/";
+    }
+    static public string GetPrefabPath(string prefabName) {
+        return GetPrefabPath() + prefabName;
+    }
+
     protected static T Instantiate<T>() where T : StatusEffect {
-        T statusEffect = PhotonNetwork.Instantiate(GameManager.GetStatusEffectPrefabPath(typeof(T).Name),
+        T statusEffect = PhotonNetwork.Instantiate(StatusEffect.GetPrefabPath(typeof(T).Name),
             Vector3.zero, Quaternion.identity)
             .GetComponent<T>();
 

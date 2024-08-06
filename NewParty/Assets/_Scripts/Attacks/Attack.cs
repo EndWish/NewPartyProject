@@ -6,8 +6,15 @@ using UnityEngine;
 
 public abstract class Attack : MonoBehaviourPun
 {
+    static public string GetPrefabPath() {
+        return "Prefabs/Attacks/";
+    }
+    static public string GetPrefabPath(string prefabName) {
+        return GetPrefabPath() + prefabName;
+    }
+
     protected static T Instantiate<T>(Vector3 pos, Quaternion quaternion) where T : Attack {
-        return PhotonNetwork.Instantiate(GameManager.GetAttackPrefabPath(typeof(T).Name), pos, quaternion).GetComponent<T>();
+        return PhotonNetwork.Instantiate(Attack.GetPrefabPath(typeof(T).Name), pos, quaternion).GetComponent<T>();
     }
 
     public Unit Caster { get; set; }

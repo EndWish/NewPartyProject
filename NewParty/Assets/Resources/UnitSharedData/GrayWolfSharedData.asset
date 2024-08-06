@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: GrayWolfSharedData
   m_EditorClassIdentifier: 
   ProfileSprite: {fileID: 21300000, guid: aaeebd6b55c2b3844b5e7a6cc956327a, type: 3}
+  IconSprite: {fileID: 21300000, guid: cc49c96036aac26478b66ab0fc6a2faa, type: 3}
   Name: "\uD68C\uC0C9 \uB291\uB300"
   Type: 2
   SpeciesMul: 1

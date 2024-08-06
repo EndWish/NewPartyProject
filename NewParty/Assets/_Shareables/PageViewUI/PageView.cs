@@ -30,8 +30,8 @@ public class PageView<TData> : MonoBehaviour
     public int MaxPage {
         get { 
             if(0 < PageViewSlots?.Count && Datas != null)
-                return (Datas.Count + PageViewSlots.Count - 1) / PageViewSlots.Count;
-            return 0;
+                return Mathf.Max((Datas.Count + PageViewSlots.Count - 1) / PageViewSlots.Count, 1);
+            return 1;
         }
     }
 
@@ -47,8 +47,14 @@ public class PageView<TData> : MonoBehaviour
         for(int i = 0; i < PageViewSlots.Count; ++i) {
             int index = startIndex + i;
 
+            
+
             if (0 <= index && index < endIndex) {  // 매칭되는 데이터가 있을 경우
                 PageViewSlots[i].gameObject.SetActive(true);
+                if(Datas[index] == null) {
+                    Debug.Log("Datas[index]가 null 이다.");
+                }
+
                 PageViewSlots[i].SlotUpdate(Datas[index], index);
             } else {    // 더이상 데이터가 없는 경우
                 PageViewSlots[i].gameObject.SetActive(false);

@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
 using static Photon.Pun.UtilityScripts.TabViewManager;
@@ -30,6 +31,9 @@ public class BattleManager : MonoBehaviourPunCallbacksSingleton<BattleManager>
 
     [SerializeField] private RestSkillManager restSkillManager;
     [SerializeField] private GameObject nextWaveBtn;
+
+    [SerializeField] private RewardUI rewardUI;
+    [SerializeField] private CountDownUI countDownUI;
 
     public List<Party>[] Parties { get; private set; } = new List<Party>[(int)TeamType.Num];
 
@@ -68,8 +72,7 @@ public class BattleManager : MonoBehaviourPunCallbacksSingleton<BattleManager>
         #endregion
 
         restSkillManager.gameObject.SetActive(false);
-
-
+        countDownUI.gameObject.SetActive(false);
 
         StartCoroutine(CoRun());
     }
@@ -97,6 +100,7 @@ public class BattleManager : MonoBehaviourPunCallbacksSingleton<BattleManager>
     // 함수 ///////////////////////////////////////////////////////////////////
     
     IEnumerator CoRun() {
+        RewardManager.Instance.ClearReward();
 
         #region ForTest
 #if DEVELOPMENT_BUILD || UNITY_EDITOR
@@ -115,7 +119,7 @@ public class BattleManager : MonoBehaviourPunCallbacksSingleton<BattleManager>
             if (unitData == null)
                 continue;
 
-            Unit syncUnit = PhotonNetwork.Instantiate(GameManager.GetUnitPrefabPath() + unitData.Type.ToString(), Vector3.zero, Quaternion.identity).GetComponent<Unit>();
+            Unit syncUnit = PhotonNetwork.Instantiate(Unit.GetPrefabPath(unitData.Type.ToString()), Vector3.zero, Quaternion.identity).GetComponent<Unit>();
             syncUnit.ApplyData(unitData);
             myParty.AddUnit(syncUnit);
         }
@@ -219,15 +223,28 @@ public class BattleManager : MonoBehaviourPunCallbacksSingleton<BattleManager>
 
                     foreach (var unitInfo in unitInfoList) {
                         Unit.Data unitData = unitInfo.ToUnitData();
-                        Unit syncUnit = PhotonNetwork.Instantiate(GameManager.GetUnitPrefabPath() + unitData.Type.ToString(), Vector3.zero, Quaternion.identity).GetComponent<Unit>();
+                        Unit syncUnit = PhotonNetwork.Instantiate(Unit.GetPrefabPath(unitData.Type.ToString()), Vector3.zero, Quaternion.identity).GetComponent<Unit>();
                         syncUnit.ApplyData(unitData);
                         enemyParty.AddUnit(syncUnit);
                     }
                     AddParty(enemyParty, TeamType.Enemy);
                     enemyParty.IsSyncIndex(true);
                 }
+                RaiseSyncCount();
             }
+            #endregion
+
+            #region (전부)적 파티가 생성될때까지 기다렸다가 드랍 아이템 적용하기
+            // (전부) 대기하기
+            TestBattlePage = "적 파티 생성 동기화중...";
+            yield return new WaitUntil(() => { return 0 < SyncCount; });
+            DownSyncCount();
             yield return null;  // Unit 생성 후 Start() 함수가 발동 되도록 한 프레임 쉬어준다.
+
+            ActionTeamUnit((unit) => { unit.AddComponent<BasicUnitDropItems>(); }, TeamType.Enemy);
+            TestBattlePage = "적 파티 생성 동기화 완료";
+
+            
             #endregion
 
             // (방장) 행동 게이지 랜덤으로 세팅
@@ -355,6 +372,7 @@ public class BattleManager : MonoBehaviourPunCallbacksSingleton<BattleManager>
                 // (전부) 웨이브 결과 확인
                 if (Parties[(int)TeamType.Player].Count == 0) {
                     // 패배
+                    RewardManager.Instance.ClearReward();
                     yield return new WaitForSeconds(1f);
                     if(PhotonNetwork.IsMasterClient) {
                         PhotonNetwork.LoadLevel("VillageScene");
@@ -362,6 +380,8 @@ public class BattleManager : MonoBehaviourPunCallbacksSingleton<BattleManager>
                     yield break;
                 }
                 else if(Parties[(int)TeamType.Enemy].Count == 0) {
+                    // 웨이브 승리
+
                     // (방장) 토큰과 상태이상 제거하기
                     if (PhotonNetwork.IsMasterClient) {
                         ActionAllUnit((unit) => {
@@ -384,6 +404,21 @@ public class BattleManager : MonoBehaviourPunCallbacksSingleton<BattleManager>
 
                     yield return new WaitUntil(() => { return 0 < SyncCount; });
                     DownSyncCount();
+
+                    
+                    if(Wave == dungeonNodeInfo.LastWave) {
+                        // 전투 승리
+                        // 마지막 웨이브일 경우 결과창을 보여주고 5초후 마을로 돌아가도록 한다.
+                        RewardManager.Instance.ReceiveReward();
+                        rewardUI.gameObject.SetActive(true);
+                        countDownUI.gameObject.SetActive(true);
+                        countDownUI.StartCount(5f);
+                        yield return new WaitForSeconds(5f);
+                        if (PhotonNetwork.IsMasterClient) {
+                            PhotonNetwork.LoadLevel("VillageScene");
+                        }
+                        yield break;
+                    }
 
                     break;
                 } 
@@ -476,16 +511,19 @@ public class BattleManager : MonoBehaviourPunCallbacksSingleton<BattleManager>
         GameManager.Instance.MyClientData.ToggleReady();
     }
 
+    public void ActionTeamUnit(UnityAction<Unit> action, TeamType type) {
+        if (Parties[(int)type] == null)
+            return;
+
+        foreach (Party party in Parties[(int)type]) {
+            foreach (Unit unit in party.Units) {
+                action(unit);
+            }
+        }
+    }
     public void ActionAllUnit(UnityAction<Unit> action) {
         for (TeamType type = TeamType.None; type < TeamType.Num; ++type) {
-            if (Parties[(int)type] == null)
-                continue;
-
-            foreach (Party party in Parties[(int)type]) {
-                foreach (Unit unit in party.Units) {
-                    action(unit);
-                }
-            }
+            ActionTeamUnit(action, type);
         }
     }
     public void ActionAllParty(UnityAction<Party> action) {

@@ -22,35 +22,6 @@ public class GameManager : MonoBehaviourPunCallbacksSingleton<GameManager>
         PhotonPeer.RegisterType(typeof(Unit.Data), 0, Unit.Data.PhotonSerialize, Unit.Data.PhotonDeserialize);
     }
 
-    static public string GetUnitPrefabPath() {
-        return "Prefabs/Units/";
-    }
-    static public string GetUnitPrefabPath(string prefabName) {
-        return GetUnitPrefabPath() + prefabName;
-    }
-
-    static public string GetAttackPrefabPath() {
-        return "Prefabs/Attacks/";
-    }
-    static public string GetAttackPrefabPath(string prefabName) {
-        return GetAttackPrefabPath() + prefabName;
-    }
-
-    static public string GetBarrierPrefabPath() {
-        return "Prefabs/Barriers/";
-    }
-    static public string GetBarrierPrefabPath(string prefabName) {
-        return GetBarrierPrefabPath() + prefabName;
-    }
-
-    static public string GetStatusEffectPrefabPath() {
-        return "Prefabs/StatusEffects/";
-    }
-    static public string GetStatusEffectPrefabPath(string prefabName) {
-        return GetStatusEffectPrefabPath() + prefabName;
-    }
-
-
     static public IEnumerator CoInvoke(Func<IEnumerator> coFunc) {
         if (coFunc != null) {
             foreach (Func<IEnumerator> func in coFunc.GetInvocationList())

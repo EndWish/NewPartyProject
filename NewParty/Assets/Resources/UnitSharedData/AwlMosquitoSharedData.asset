@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: AwlMosquitoSharedData
   m_EditorClassIdentifier: 
   ProfileSprite: {fileID: 21300000, guid: c86e34a413aa628468b0a54b1210dc55, type: 3}
+  IconSprite: {fileID: 21300000, guid: fa551cbbcec3fd547b520917d2317755, type: 3}
   Name: "\uC1A1\uACF3 \uBAA8\uAE30"
   Type: 7
   SpeciesMul: 1.01

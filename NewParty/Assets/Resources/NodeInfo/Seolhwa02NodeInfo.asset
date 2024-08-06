@@ -15,6 +15,7 @@ MonoBehaviour:
   Name: 102
   Icon: {fileID: 21300000, guid: 7f24f0dcee6e7044e9ab53318f6e54df, type: 3}
   BackgroundImg: {fileID: 21300000, guid: f0c7d1197b837b74db65096b6c0a46ac, type: 3}
+  LastWave: 5
   RandomUnitInfoList:
   - UnitInfo:
       UnitType: 2

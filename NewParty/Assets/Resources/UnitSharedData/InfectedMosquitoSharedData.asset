@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: InfectedMosquitoSharedData
   m_EditorClassIdentifier: 
   ProfileSprite: {fileID: 21300000, guid: 5b611cf179fbde44a9584aea81001b50, type: 3}
+  IconSprite: {fileID: 21300000, guid: 0de0b511c8d9ef446aaca166b9a1f738, type: 3}
   Name: "\uAC10\uC5FC\uB41C \uBAA8\uAE30"
   Type: 10
   SpeciesMul: 1

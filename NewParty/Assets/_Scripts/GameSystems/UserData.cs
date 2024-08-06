@@ -18,12 +18,16 @@ public class UserData : MonoBehaviourSingleton<UserData>
     
     public HashSet<NodeName> ClearNodes { get; private set; }   // 저장 정보
 
+    private NodeName targetDungeon = NodeName.None;
+
     public List<Unit.Data> UnitDataList { get; private set; }   // 저장 정보
 
-    public Unit.Data[] PartySequence { get; private set; }
+    public Unit.Data[] PartySequence { get; private set; }      // 저장 정보
 
-    private int soulDust;
+    private int soulDust = 0;
     public List<SoulFragment> SoulFragmentList { get; private set; }    // Data로 변환해서 저장
+
+    
 
     // 유니티 함수 ////////////////////////////////////////////////////////////
 
@@ -57,6 +61,7 @@ public class UserData : MonoBehaviourSingleton<UserData>
         if (!LoadSoulFragmentList()) SetDefaultSoulFragment();
         LoadSouldust();
         if (!LoadPartySequence()) SetDefaultPartySequence();
+        if (!LoadTargetDungeon()) SetDefaultTargetDungeon();
         return true;
     }
     
@@ -228,6 +233,28 @@ public class UserData : MonoBehaviourSingleton<UserData>
             return true;
         }
         return false;
+    }
+
+    // 목표 던전 정보
+    public NodeName TargetDungeon {
+        get { return targetDungeon; }
+        set {
+            targetDungeon = value;
+            SaveTargetDungeon();
+        }
+    }
+    public void SaveTargetDungeon() {
+        ES3.Save<NodeName>("TargetDungeon", TargetDungeon, Nickname);
+    }
+    private bool LoadTargetDungeon() {
+        if (ES3.KeyExists("TargetDungeon", Nickname)) {
+            targetDungeon = ES3.Load<NodeName>("TargetDungeon", Nickname);
+            return true;
+        }
+        return false;
+    }
+    private void SetDefaultTargetDungeon() {
+        TargetDungeon = NodeName.None;
     }
 
 }

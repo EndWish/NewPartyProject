@@ -12,6 +12,10 @@ public enum NodeName : int
 [CreateAssetMenu(fileName = "Node Info", menuName = "Scriptable Object/Node Info")]
 public class NodeInfo : ScriptableObject
 {
+    static public NodeInfo Get(NodeName nodeName) {
+        return Resources.Load<NodeInfo>("NodeInfo/" + nodeName.ToString() + "Nodeinfo");
+    }
+
     public NodeName Name;
     public Sprite Icon;
 }

@@ -32,6 +32,11 @@ public class DungeonNodeInfo : NodeInfo
         public List<UnitInfo> UnitInfoList;
     }
 
+    // 전역 변수 & 함수 //////////////////////////////////////////////////////////////
+    static new public DungeonNodeInfo Get(NodeName nodeName) {
+        return Resources.Load<DungeonNodeInfo>("NodeInfo/" + nodeName.ToString() + "Nodeinfo");
+    }
+
     // 개인 정보 //////////////////////////////////////////////////////////////
     public Sprite BackgroundImg;
     public int LastWave;

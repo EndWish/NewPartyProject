@@ -65,11 +65,22 @@ public class GameManager : MonoBehaviourPunCallbacksSingleton<GameManager>
     // 포톤 함수 //////////////////////////////////////////////////////////////
 
     public override void OnJoinedRoom() {
+        base.OnJoinedRoom();
         MyClientData = PhotonNetwork.Instantiate("Prefabs/Network/ClientData", Vector3.zero, Quaternion.identity).GetComponent<ClientData>();
     }
 
     public override void OnLeftRoom() {
+        base.OnLeftRoom();
         PhotonNetwork.Destroy(MyClientData.gameObject);
+    }
+
+    public override void OnCreatedRoom() {
+        base.OnCreatedRoom();
+
+        NodeName targetDungeonName = UserData.Instance.TargetDungeon;
+        if(targetDungeonName != NodeName.None) {
+            SetDungeonInfo(DungeonNodeInfo.Get(targetDungeonName));
+        }
     }
 
     // 함수 ///////////////////////////////////////////////////////////////////
@@ -89,6 +100,7 @@ public class GameManager : MonoBehaviourPunCallbacksSingleton<GameManager>
         photonView.RPC("SetDungeonInfoRPC", RpcTarget.AllBufferedViaServer, dungeonNodeInfo.Name.ToString());
         foreach (var clientData in ClientDataList)
             clientData.IsReady = false;
+        UserData.Instance.TargetDungeon = dungeonNodeInfo.Name;
     }
 
     public bool IsReadyAllClient() {

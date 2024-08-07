@@ -7,36 +7,14 @@ using UnityEngine.UI;
 
 public class UnitInventorySlot : UnitSlot, IBeginDragHandler, IEndDragHandler, IDragHandler
 {
-    static private Image dragImg = null;
-    static private int nUnitSlot = 0;
-
-    [SerializeField] private Image dragImgPrefab;
-
-    protected void Awake() {
-        ++nUnitSlot;
-    }
-
-    protected void Start() {
-        if(dragImg == null) {
-            dragImg = Instantiate(dragImgPrefab, StaticOverlayCanvas.Instance.transform);
-            dragImg.gameObject.SetActive(false);
-        }
-    }
-
-    protected void OnDestroy() {
-        --nUnitSlot;
-        if (nUnitSlot == 0 && dragImg != null) {
-            Destroy(dragImg.gameObject);
-        }
-    }
+    private UnitSlot dragUnitSlot = null;
 
     public void OnBeginDrag(PointerEventData eventData) {
-        dragImg.sprite = Data?.GetIcon1x2() ?? Unit.NullIcon1x2;
-        dragImg.gameObject.SetActive(true);
+        dragUnitSlot = UseDragUnitSlot(this);
     }
 
     public void OnDrag(PointerEventData eventData) {
-        dragImg.transform.position = eventData.position;
+        dragUnitSlot.transform.position = eventData.position;
     }
 
     public void OnEndDrag(PointerEventData eventData) {
@@ -52,21 +30,22 @@ public class UnitInventorySlot : UnitSlot, IBeginDragHandler, IEndDragHandler, I
             }
 
             // 파티의 몇번째에 넣을지 알아낸다.
-            int index = partySequenceSlot.dataIndex;
+            int index = partySequenceSlot.DataIndex;
 
             // 파티 유닛 리스트의 해당 인덱스에 유닛을 넣는다.
             partySequence[index] = Data;
 
             UserData.Instance.SavePartySequence();
+
+            // 성화에 드래한 경우
+            UnitTorchSlot unitTorchSlot = eventData.pointerEnter?.GetComponent<UnitTorchSlot>();
+            if (unitTorchSlot != null) {
+                unitTorchSlot.SoulTorchUI.UnitData = Data;
+            }
+
         }
 
-        // 성화에 드래한 경우
-        UnitTorchSlot unitTorchSlot = eventData.pointerEnter?.GetComponent<UnitTorchSlot>();
-        if (unitTorchSlot != null) {
-            unitTorchSlot.SoulTorchUI.UnitData = Data;
-        }
-
-        dragImg.gameObject.SetActive(false);
+        EndUseDragUnitSlot();
     }
 
 }

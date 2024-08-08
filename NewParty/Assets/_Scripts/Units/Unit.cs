@@ -13,7 +13,7 @@ using static UnityEngine.Rendering.DebugUI;
 public enum UnitType : int
 {
     None, Garuda,GrayWolf, RedWolf, SilverManeWolf, BloodyWolf, HowlingWolf, AwlMosquito, DrillMosquito, TransfusionMosquito, InfectedMosquito,
-    StoneTurtle, IronTurtle, SteelTurtle, EmeraldTurtle, RainbowTurtle,
+    StoneTurtle, IronTurtle, SteelTurtle, EmeraldTurtle, RainbowTurtle, Militia,
 }
 
 public partial class Unit : MonoBehaviourPun, IIcon1x1, IIcon1x2

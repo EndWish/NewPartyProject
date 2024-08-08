@@ -54,6 +54,7 @@ public partial class Unit : MonoBehaviourPun, IIcon1x1, IIcon1x2
     [SerializeField] protected Token tokenPrefab;
 
     [SerializeField] protected UnitCanvas unitCanvas;
+    public UnitCanvas UnitCanvas { get { return unitCanvas; } }
     public Image ProfileImage { get { return unitCanvas.ProfileImage; } }
     protected Transform tokensParent;
     protected Transform statusEffectIconParent;
@@ -105,9 +106,6 @@ public partial class Unit : MonoBehaviourPun, IIcon1x1, IIcon1x2
     // 장비 관련 변수
 
     // 이벤트 변수
-
-
-    
     public Action<HitCalculator> OnBeforeCalculateHit;
     public Action<DamageCalculator> OnBeforeCalculateDmg, OnAfterCalculateDmg;
     public Action<Attack, AttackTargetsSetting> OnBecomeAttackTarget;
@@ -555,7 +553,7 @@ public partial class Unit : MonoBehaviourPun, IIcon1x1, IIcon1x2
         yield break;
     }
 
-    // 배리어 추가/삭제
+    // 배리어 추가/삭제 및 관련 함수
     [PunRPC] protected void AddBarrierRPC(int viewId) {
         if (viewId == -1)
             return;
@@ -569,9 +567,9 @@ public partial class Unit : MonoBehaviourPun, IIcon1x1, IIcon1x2
             });
     }
     public void AddBarrier(Barrier barrier) {
+        OnAddBarrier?.Invoke(barrier);
         barrier.Target = this;
         photonView.RPC("AddBarrierRPC", RpcTarget.All, barrier.photonView.ViewID);
-        OnAddBarrier?.Invoke(barrier);
     }
     [PunRPC] protected void RemoveBarrierRPC(int viewId) {
         if (viewId == -1)
@@ -588,6 +586,12 @@ public partial class Unit : MonoBehaviourPun, IIcon1x1, IIcon1x2
         while (0 < Barriers.Count) {
             Barriers.Last().Destroy();
         }
+    }
+
+    public float GetBarriersAmount() {
+        float amount = 0;
+        UsefulMethod.ActionAll(Barriers, (barrier) => { amount += barrier.Amount; });
+        return amount;
     }
 
     // 파티 관련 함수
@@ -623,7 +627,6 @@ public partial class Unit : MonoBehaviourPun, IIcon1x1, IIcon1x2
     public List<Sprite> GetIcons1x1() {
         return new List<Sprite> { GetIcon1x1() };
     }
-
     public Sprite GetIcon1x2() {
         return SharedData?.GetIcon1x2() ?? Unit.NullIcon1x2;
     }

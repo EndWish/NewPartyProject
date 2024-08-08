@@ -3,6 +3,11 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 
+public enum TextIconIndex
+{
+    BarrierAmount = 63,
+}
+
 public static class TooltipText
 {
     public static string GetFlexibleFloat(float num) {
@@ -15,6 +20,9 @@ public static class TooltipText
 
     public static string GetIcon(StatType statType) {
         return "<sprite=" + (int)statType + ">";
+    }
+    public static string GetIcon(TextIconIndex textIconIndex) {
+        return "<sprite=" + (int)textIconIndex + ">";
     }
 
     public static string SetFont(string str, bool bold, bool italic, string color) { 

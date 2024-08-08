@@ -3,9 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using static System.Collections.Specialized.BitVector32;
-using static UnityEngine.GraphicsBuffer;
 
-public class ShockBlowSkill : PassiveSkill
+public class ShockBlowSkill : PassiveSkill, IStatusEffectIconable, IRightUpperTextableIcon
 {
     protected int stack = 0;
     [SerializeField] protected int maxStack;
@@ -13,15 +12,10 @@ public class ShockBlowSkill : PassiveSkill
     [SerializeField] protected float strMul;
 
     [SerializeField] protected GameObject fx;
-    [SerializeField] protected StatusEffectIcon seIconPrefab;
-    protected StatusEffectIcon seIcon = null;
 
     protected override void Awake() {
         base.Awake();
         Name = "충격타";
-
-        seIcon = Instantiate(seIconPrefab);
-        InitIcon();
     }
 
     protected void OnDestroy() {
@@ -33,17 +27,6 @@ public class ShockBlowSkill : PassiveSkill
     [PunRPC]
     protected virtual void StackRPC(int stack) {
         this.stack = Mathf.Min(stack, maxStack);
-        if(0 < stack) {
-            seIcon.gameObject.SetActive(true);
-            seIcon.BgImg.color = Color.gray;
-            seIcon.RightLowerText.text = stack.ToString();
-            if (stack == maxStack) {
-                seIcon.BgImg.color = Color.magenta;
-            }
-        }
-        else {
-            seIcon.gameObject.SetActive(false);
-        }
     }
     public int Stack {
         get { return stack; }
@@ -56,17 +39,12 @@ public class ShockBlowSkill : PassiveSkill
             Owner.CoOnUseToken -= this.CoOnUseToken;
             Owner.CoOnHitDmg -= this.CoOnHitDmg;
             Owner.CoOnHitMiss -= this.CoOnHitMiss;
-
-            seIcon.transform.SetParent(null);
         }
         base.OwnerRPC(viewId);
         if (Owner != null) {
             Owner.CoOnUseToken += this.CoOnUseToken;
             Owner.CoOnHitDmg += this.CoOnHitDmg;
             Owner.CoOnHitMiss += this.CoOnHitMiss;
-
-            seIcon.transform.SetParent(Owner.StatusEffectIconParent);
-            seIcon.transform.localScale = Vector3.one;
         }
     }
 
@@ -109,15 +87,26 @@ public class ShockBlowSkill : PassiveSkill
         yield break;
     }
 
-    public virtual void InitIcon() {
-        seIcon.IconImg.sprite = this.IconSp;
-        seIcon.GetTooltipTitle = () => Name;
-        seIcon.GetTooltipRightUpperText = () => "패시브";
-        seIcon.BgImg.color = Color.gray;
-        
-        seIcon.GetTooltipDescription = GetDescription;
-
-        Stack = Stack; // 아이콘 내용을 적용하기 위해서 호출
+    // IStatusEffectIconable, IRightUpperTextableIcon
+    public bool IsSEVisible() {
+        return 0 < stack;
     }
-
+    public Color GetBgColor() {
+        if (stack == maxStack) {
+            return Color.magenta;
+        }
+        return Color.gray;
+    }
+    public string GetTooltipTitleText() {
+        return Name;
+    }
+    public string GetTooltipRightUpperText() {
+        return "특수";
+    }
+    public string GetDescriptionText() {
+        return GetDescription();
+    }
+    public string GetRightUpperText() {
+        return Stack.ToString();
+    }
 }

@@ -78,13 +78,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   unitDataList:
-  - sharedData: {fileID: 11400000, guid: 797a9696db78cf744b6aa01b6bbfb05d, type: 2}
+  - sharedData: {fileID: 11400000, guid: 843aee955274b564fa8082437b4ba2aa, type: 2}
     growthLevel: 0
-  - sharedData: {fileID: 11400000, guid: 797a9696db78cf744b6aa01b6bbfb05d, type: 2}
+  - sharedData: {fileID: 11400000, guid: a98a6293dd1c94247884d61bb5b3126d, type: 2}
     growthLevel: 0
-  - sharedData: {fileID: 11400000, guid: 797a9696db78cf744b6aa01b6bbfb05d, type: 2}
+  - sharedData: {fileID: 11400000, guid: a98a6293dd1c94247884d61bb5b3126d, type: 2}
     growthLevel: 0
-  - sharedData: {fileID: 11400000, guid: 797a9696db78cf744b6aa01b6bbfb05d, type: 2}
+  - sharedData: {fileID: 11400000, guid: a98a6293dd1c94247884d61bb5b3126d, type: 2}
     growthLevel: 0
 --- !u!114 &3096687417838399773
 MonoBehaviour:
@@ -146,7 +146,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8d2599869d6d47845b2a63abc4e6e4c7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 20
+  speed: 2
 --- !u!114 &3990162917133888367
 MonoBehaviour:
   m_ObjectHideFlags: 0

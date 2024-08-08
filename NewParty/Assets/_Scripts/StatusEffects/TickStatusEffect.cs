@@ -3,14 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class TickStatusEffect : StatusEffect, ITickStatusEffect
+public abstract class TickStatusEffect : StatusEffect, ITickStatusEffect, IRightLowerTextableIcon
 {
     protected int tick = 1;
 
     [PunRPC]
     protected virtual void TickRPC(int tick) {
         this.tick = tick;
-        seIcon.RightLowerText.text = tick.ToString();
     }
     public int Tick {
         get { return tick; }
@@ -19,5 +18,9 @@ public abstract class TickStatusEffect : StatusEffect, ITickStatusEffect
             if (value <= 0)
                 this.Destroy();
         }
+    }
+
+    public string GetRightLowerText() {
+        return tick.ToString();
     }
 }

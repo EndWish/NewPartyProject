@@ -19,8 +19,7 @@ public class AntiSkillBuff : TurnStatusEffect
     protected float dmgMul = 0f;
     [SerializeField] GameObject FXPrefab;
 
-    protected override void OnDestroy() {
-        base.OnDestroy();
+    protected void OnDestroy() {
         if (Target != null) {
             Target.CoOnBeginTick -= CoOnBeginTurn;
             Target.OnAfterCalculateDmg -= OnAfterCalculateDmg;
@@ -52,7 +51,7 @@ public class AntiSkillBuff : TurnStatusEffect
         }
     }
 
-    public override string GetDescription() {
+    public override string GetDescriptionText() {
         return string.Format("{0}턴간 (#스킬 공격)에 피격시 피해량을 {1:F1}%낮춘다.", Turn, (1f - dmgMul) * 100f);
     }
 

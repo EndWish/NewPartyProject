@@ -22,6 +22,9 @@ public class UnitStateUI : MonoBehaviour
 
     [SerializeField, EnumNamedArrayAttribute(typeof(StatType))] 
     private TextMeshProUGUI[] statTexts;
+    [SerializeField] private TextMeshProUGUI barrierText;
+
+    [SerializeField] UnitStatueEffectStateUI unitSEStateUI;
 
     private void Awake() {
         skillActionBtns.InsertRange(0, skillActionsParent.GetComponentsInChildren<SkillActionBtn>());
@@ -51,8 +54,11 @@ public class UnitStateUI : MonoBehaviour
         leftArrow.SetActive(skillActionBtnOffset != 0);
         rightArrow.SetActive(skillActionBtnOffset != skillActionBtnMaxOffset);
 
+        // 유닛 상태이상 아이콘들 업데이트
+        unitSEStateUI.UpdatePage(targetUnit);
+
         // 프로필 업데이트
-        profileImg.sprite = targetUnit?.ProfileImage.sprite;
+        profileImg.sprite = targetUnit?.GetIcon1x2();
         growthLevelText.text = targetUnit == null ? "" : GrowthLevelToStr(targetUnit.GrowthLevel);
 
         // 능력치 텍스트 표시
@@ -102,6 +108,7 @@ public class UnitStateUI : MonoBehaviour
                     break;
             }
         }
+        barrierText.text = targetUnit == null ? "-" : "(" + TooltipText.GetFlexibleFloat(targetUnit.GetBarriersAmount()) + ")";
 
         // 키보드 입력
         List<KeyCode> keyCodes = new List<KeyCode> { KeyCode.Q, KeyCode.W, KeyCode.E, KeyCode.R, KeyCode.T, KeyCode.Y, KeyCode.U };
@@ -120,15 +127,6 @@ public class UnitStateUI : MonoBehaviour
             StartCoroutine(UnitOfTurn.GetComponent<TokenSelector>().AutoSelect());
         }
 
-    }
-
-    private string FloatToNormalStr(float value) {
-        if (100 <= value)
-            return string.Format("{0:G}", value);
-        return string.Format("{0:F2}", value);
-    }
-    private string FloatToPercentStr(float value) {
-        return string.Format("{0:F1}%", value * 100f);
     }
 
     public void RaiseSkillActionBtnOffset() {

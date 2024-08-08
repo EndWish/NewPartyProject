@@ -16,8 +16,7 @@ public class StunTurnDebuff : TurnStatusEffect
         return statusEffect;
     }
 
-    protected override void OnDestroy() {
-        base.OnDestroy();
+    protected void OnDestroy() {
         if (Target != null) {
             Target.CoOnEndMyTurn -= CoOnBeginTurn;
             Target.Tags.SubTag(Tag.기절);
@@ -45,7 +44,7 @@ public class StunTurnDebuff : TurnStatusEffect
         }
     }
 
-    public override string GetDescription() {
+    public override string GetDescriptionText() {
         return string.Format("{0} 턴이 끝날때 까지 아무런행동을 할 수 없다.", Turn);
     }
 

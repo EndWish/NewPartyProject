@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 
-public class BasicBarrierOverload : StatStatusEffect
+public class BasicBarrierOverload : StatStatusEffect, IRightUpperTextableIcon
 {
     static protected float coefficient = 0.9f;
 
@@ -69,7 +69,7 @@ public class BasicBarrierOverload : StatStatusEffect
         }
     }
 
-    public override string GetDescription() {
+    public override string GetDescriptionText() {
         return string.Format(
             new StringBuilder()
             .Append("기본 배리어를 사용할 때마다 과부하 스택이 상승한다.\n")
@@ -87,4 +87,7 @@ public class BasicBarrierOverload : StatStatusEffect
         }
     }
 
+    public string GetRightUpperText() {
+        return stack.ToString();
+    }
 }

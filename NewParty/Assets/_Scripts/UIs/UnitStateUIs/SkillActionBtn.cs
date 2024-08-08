@@ -19,7 +19,7 @@ public class SkillActionBtn : ActionBtn
 
         targetUnit = unit;
         targetSkill = skill;
-        iconImg.sprite = targetSkill.IconSp;
+        iconImg.sprite = targetSkill.GetIcon1x1();
         CostText.text = targetSkill is ActiveSkill ? ((ActiveSkill)targetSkill).Cost.ToString() : "";
 
         if (!MeetActiveBasicCondition()) {

@@ -15,8 +15,7 @@ public class ProtectStatusEffect : TurnStatusEffect
         return statusEffect;
     }
 
-    protected override void OnDestroy() {
-        base.OnDestroy();
+    protected void OnDestroy() {
         if (Target != null) {
             Target.CoOnBeginTick -= CoOnBeginTurn;
             Target.OnBecomeAttackTarget -= OnBecomeAttackTarget;
@@ -38,7 +37,7 @@ public class ProtectStatusEffect : TurnStatusEffect
         }
     }
 
-    public override string GetDescription() {
+    public override string GetDescriptionText() {
         return string.Format("{0}턴간 보호를 받습니다. 보호를 받는 유닛은 자신이 자신이 공격의 타겟이 되었을 때 스킬 시전자가 대신 타겟이 되어준다." +
             "\n만약 시전자와 동시에 공격의 타겟이 된다면 보호스킬이 발동되지 않는다." +
             "\n시전자가 기절할 경우 보호 스킬이 취소된다." +

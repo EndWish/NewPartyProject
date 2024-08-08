@@ -25,8 +25,7 @@ public class StatStatusEffect : StatusEffect
     protected StatForm statForm;
     protected float value = 1f;
 
-    protected override void OnDestroy() {
-        base.OnDestroy();
+    protected virtual void OnDestroy() {
         ReversApply();
     }
 
@@ -91,11 +90,10 @@ public class StatStatusEffect : StatusEffect
     }
 
     protected void SetIconSp(Sprite sprite) {
-        IconSp = sprite;
-        seIcon.IconImg.sprite = sprite;
+        iconSprite = sprite;
     }
 
-    public override string GetDescription() {
+    public override string GetDescriptionText() {
         string verb = Form == StatusEffectForm.Buff ? "»ó½Â" : "°¨¼Ò";
 
         if (statForm == StatForm.AbnormalAdd) {

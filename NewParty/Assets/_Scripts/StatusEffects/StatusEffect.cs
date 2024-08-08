@@ -2,13 +2,14 @@ using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public enum StatusEffectForm
 {
     None, Special, Buff, Debuff,
 }
 
-public abstract class StatusEffect : MonoBehaviourPun
+public abstract class StatusEffect : MonoBehaviourPun, IStatusEffectIconable
 {
     static public string GetPrefabPath() {
         return "Prefabs/StatusEffects/";
@@ -25,10 +26,7 @@ public abstract class StatusEffect : MonoBehaviourPun
         return statusEffect;
     }
 
-    [SerializeField] protected StatusEffectIcon seIconPrefab;
-    protected StatusEffectIcon seIcon = null;
-
-    [SerializeField] public Sprite IconSp;
+    [SerializeField, FormerlySerializedAs("IconSp")] protected Sprite iconSprite;
     public string Name;
     public StatusEffectForm form;
 
@@ -40,16 +38,6 @@ public abstract class StatusEffect : MonoBehaviourPun
     protected virtual void Awake() {
         if (InitTags != null)
             Tags.AddTag(InitTags);
-
-        seIcon = Instantiate(seIconPrefab);
-    }
-
-    protected virtual void Start() {
-        InitIcon();
-    }
-
-    protected virtual void OnDestroy() {
-        Destroy(seIcon.gameObject);
     }
 
     [PunRPC] protected virtual void CasterRPC(int viewId) {
@@ -68,9 +56,6 @@ public abstract class StatusEffect : MonoBehaviourPun
         target = (viewId == -1 ? null : PhotonView.Find(viewId).GetComponent<Unit>());
         transform.parent = target?.transform;
         transform.localPosition = Vector3.zero;
-
-        seIcon.transform.SetParent(Target?.StatusEffectIconParent);
-        seIcon.transform.localScale = Vector3.one;
     }
     public virtual Unit Target {
         get { return target; }
@@ -85,40 +70,6 @@ public abstract class StatusEffect : MonoBehaviourPun
         get { return form; }
         set { photonView.RPC("FormRPC", RpcTarget.All, value); }
     }
-
-    public virtual void InitIcon() {
-        seIcon.IconImg.sprite = this.IconSp;
-        seIcon.GetTooltipTitle = () => Name;
-        seIcon.GetTooltipRightUpperText = () => {
-            switch (Form) {
-                case StatusEffectForm.Buff:
-                    return "버프";
-                case StatusEffectForm.Debuff:
-                    return "디버프";
-                case StatusEffectForm.Special:
-                    return "패시브";
-                default:
-                    return "형식 없음";
-            }
-        };
-        switch (Form) {
-            case StatusEffectForm.Buff:
-                seIcon.BgImg.color = Color.green; break;
-            case StatusEffectForm.Debuff:
-                seIcon.BgImg.color = Color.red; break;
-            case StatusEffectForm.Special:
-                seIcon.BgImg.color = Color.gray; break;
-            default:
-                seIcon.BgImg.color = Color.black; break;
-        }
-
-        
-
-        seIcon.GetTooltipDescription = GetDescription;
-
-    }
-
-    public abstract string GetDescription();
 
     protected string FloatToNormalStr(float value) {
         if (100 <= value)
@@ -138,4 +89,42 @@ public abstract class StatusEffect : MonoBehaviourPun
         photonView.RPC("DestroyRPC", RpcTarget.AllBuffered);
     }
 
+    // IStatusEffectIconable
+    public Sprite GetIcon1x1() {
+        return iconSprite;
+    }
+    public List<Sprite> GetIcons1x1() {
+        return new List<Sprite> { iconSprite };
+    }
+    public bool IsSEVisible() {
+        return true;
+    }
+    public Color GetBgColor() {
+        switch (Form) {
+            case StatusEffectForm.Buff:
+                return Color.green;
+            case StatusEffectForm.Debuff:
+                return Color.red;
+            case StatusEffectForm.Special:
+                return Color.gray;
+            default:
+                return Color.black;
+        }
+    }
+    public string GetTooltipTitleText() {
+        return Name;
+    }
+    public string GetTooltipRightUpperText() {
+        switch (Form) {
+            case StatusEffectForm.Buff:
+                return "버프";
+            case StatusEffectForm.Debuff:
+                return "디버프";
+            case StatusEffectForm.Special:
+                return "특수";
+            default:
+                return "형식 없음";
+        }
+    }
+    public abstract string GetDescriptionText();
 }

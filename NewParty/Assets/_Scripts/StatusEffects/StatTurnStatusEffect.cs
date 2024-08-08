@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 
-public class StatTurnStatusEffect : StatStatusEffect, ITurnStatusEffect
+public class StatTurnStatusEffect : StatStatusEffect, ITurnStatusEffect, IRightLowerTextableIcon
 {
     public static StatTurnStatusEffect Create(Unit caster, Unit target, StatForm statForm, StatType statType, StatusEffectForm statusEffectForm, float value, int turn) {
         StatTurnStatusEffect statusEffect = StatusEffect.Instantiate<StatTurnStatusEffect>();
@@ -31,7 +31,6 @@ public class StatTurnStatusEffect : StatStatusEffect, ITurnStatusEffect
     [PunRPC]
     protected virtual void TurnRPC(int turn) {
         this.turn = turn;
-        seIcon.RightLowerText.text = turn.ToString();
     }
     public int Turn {
         get { return turn; }
@@ -51,12 +50,16 @@ public class StatTurnStatusEffect : StatStatusEffect, ITurnStatusEffect
             Target.CoOnBeginMyTurn += CoOnBeginTurn;
     }
 
-    public override string GetDescription() {
-        return new StringBuilder().Append(Turn).Append("턴 동안 ").Append(base.GetDescription()).ToString();
+    public override string GetDescriptionText() {
+        return new StringBuilder().Append(Turn).Append("턴 동안 ").Append(base.GetDescriptionText()).ToString();
     }
 
     protected IEnumerator CoOnBeginTurn() {
         Turn -= 1;
         yield break;
+    }
+
+    public string GetRightLowerText() {
+        return turn.ToString();
     }
 }

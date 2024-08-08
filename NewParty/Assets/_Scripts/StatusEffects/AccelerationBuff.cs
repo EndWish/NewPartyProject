@@ -4,7 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 
-public class AccelerationBuff : StatStatusEffect, ITickStatusEffect
+public class AccelerationBuff : StatStatusEffect, ITickStatusEffect, IRightLowerTextableIcon
 {
     public static AccelerationBuff Create(Unit caster, Unit target, int tick, float speedMul) {
         AccelerationBuff statusEffect = StatusEffect.Instantiate<AccelerationBuff>();
@@ -27,7 +27,6 @@ public class AccelerationBuff : StatStatusEffect, ITickStatusEffect
 
     [PunRPC] protected virtual void TickRPC(int tick) {
         this.tick = tick;
-        seIcon.RightLowerText.text = tick.ToString();
     }
     public int Tick {
         get { return tick; }
@@ -67,7 +66,7 @@ public class AccelerationBuff : StatStatusEffect, ITickStatusEffect
         Target.UpdateFinalStat(StatType.Speed);
     }
 
-    public override string GetDescription() {
+    public override string GetDescriptionText() {
         return string.Format( "{0:G}틱 동안 속도가 x{1:F1} 로 상승한다.", Tick, speedMul);
     }
 
@@ -76,4 +75,7 @@ public class AccelerationBuff : StatStatusEffect, ITickStatusEffect
         yield break;
     }
 
+    public string GetRightLowerText() {
+        return tick.ToString();
+    }
 }

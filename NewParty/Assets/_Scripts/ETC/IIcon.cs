@@ -21,3 +21,13 @@ public interface IIcons1x2
 {
     public List<Sprite> GetIcons1x2();
 }
+
+public interface IRightLowerTextableIcon
+{
+    public string GetRightLowerText();
+}
+
+public interface IRightUpperTextableIcon
+{
+    public string GetRightUpperText();
+}

@@ -18,8 +18,7 @@ public class BleedingTurnDebuff : TurnStatusEffect
 
     protected float dmg = 0f;
 
-    protected override void OnDestroy() {
-        base.OnDestroy();
+    protected void OnDestroy() {
         if (Target != null) {
             Target.CoOnBeginMyTurn -= CoOnBeginTurn;
             Target.Tags.SubTag(Tag.출혈);
@@ -50,7 +49,7 @@ public class BleedingTurnDebuff : TurnStatusEffect
         }
     }
 
-    public override string GetDescription() {
+    public override string GetDescriptionText() {
         return string.Format("출혈을 일으켜 {0:G}턴간 턴이 시작할 때 {1} 의 (#출혈)데미지를 준다.", Turn, FloatToNormalStr(dmg));
     }
 

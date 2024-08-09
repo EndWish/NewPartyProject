@@ -71,7 +71,11 @@ public static class TooltipText
 
         return "<b><color=white>" + numStr + "%</b></color>";
     }
-    
+    public static string SetPositivePrefix(int num) {
+        if (0 < num)
+            return "+" + num.ToString();
+        return num.ToString();
+    }
 
 
 }

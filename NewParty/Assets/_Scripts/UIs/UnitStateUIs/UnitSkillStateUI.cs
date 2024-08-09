@@ -1,35 +1,34 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.EventSystems;
 
-public class UnitStatueEffectStateUI : MonoBehaviour
+public class UnitSkillStateUI : MonoBehaviour
 {
-    [SerializeField] private Transform seIconsParent;
-    private List<StatusEffectIcon2> seIconList = new List<StatusEffectIcon2>();
+    [SerializeField] private Transform skillIconsParent;
+    private List<SkillIcon> skillIconList = new List<SkillIcon>();
     private int offset = 0;
     private int maxOffset = 0;
 
     [SerializeField] private GameObject leftArrow, rightArrow;
 
     private void Awake() {
-        seIconList.InsertRange(0, seIconsParent.GetComponentsInChildren<StatusEffectIcon2>());
+        skillIconList.InsertRange(0, skillIconsParent.GetComponentsInChildren<SkillIcon>());
     }
 
     public void UpdatePage(Unit unit) {
-        if(unit != null) {
-            List<IStatusEffectIconable> seIconableList = unit.UnitCanvas.GetVisibleSEIconables();
+        if (unit != null) {
+            List<Skill> skillList = unit.Skills;
 
-            maxOffset = Mathf.Max(0, seIconableList.Count - seIconList.Count);
+            maxOffset = Mathf.Max(0, skillList.Count - skillIconList.Count);
             offset = Mathf.Clamp(offset, 0, maxOffset);
-            for (int iconIndex = 0; iconIndex < seIconList.Count; ++iconIndex) {
+            for (int iconIndex = 0; iconIndex < skillIconList.Count; ++iconIndex) {
                 int iconableIndex = offset + iconIndex;
-                if(iconableIndex < seIconableList.Count) {
-                    seIconList[iconIndex].gameObject.SetActive(true);
-                    seIconList[iconIndex].UpdateIcon(seIconableList[iconableIndex]);
+                if (iconableIndex < skillList.Count) {
+                    skillIconList[iconIndex].gameObject.SetActive(true);
+                    skillIconList[iconIndex].UpdateIcon(skillList[iconableIndex]);
                 }
                 else {
-                    seIconList[iconIndex].gameObject.SetActive(false);
+                    skillIconList[iconIndex].gameObject.SetActive(false);
                 }
             }
 
@@ -37,8 +36,8 @@ public class UnitStatueEffectStateUI : MonoBehaviour
             rightArrow.SetActive(offset != maxOffset);
         }
         else {
-            for (int iconIndex = 0; iconIndex < seIconList.Count; ++iconIndex) {
-                seIconList[iconIndex].gameObject.SetActive(false);
+            for (int iconIndex = 0; iconIndex < skillIconList.Count; ++iconIndex) {
+                skillIconList[iconIndex].gameObject.SetActive(false);
             }
             leftArrow.SetActive(false);
             rightArrow.SetActive(false);
@@ -60,5 +59,4 @@ public class UnitStatueEffectStateUI : MonoBehaviour
             RaiseOffset();
         }
     }
-
 }

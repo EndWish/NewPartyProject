@@ -70,14 +70,14 @@ public class MassTransfusionSkill : ActiveSkill
         photonView.RPC("CreateFXRPC", RpcTarget.All);
     }
 
-    public override string GetDescription() {
+    public override string GetDescriptionText() {
         return string.Format("체력을 {0}소모하여 자신의 파티원들을 {1}만큼 체력을 회복시킨다. 그리고 자신에게 {2}턴간 회복력을 {3}증가시킨다.",
             TooltipText.SetDamageFont(CalculateHpCost()),
             TooltipText.SetDamageFont(CalculateRecoverHp(CalculateHpCost())),
             TooltipText.SetCountFont(turn),
             TooltipText.SetMulFont(healingMul));
     }
-    public override string GetDetailedDescription() {
+    public override string GetDetailedDescriptionText() {
         return string.Format("체력을 {0} = (현재{4}{5}%)소모하여 자신의 파티원들을 {1} = (소모한 체력 + {6}{7}%)만큼 체력을 회복시킨다. 그리고 자신에게 {2}턴간 회복력을 {3}증가시킨다.",
             TooltipText.SetDamageFont(CalculateHpCost()),
             TooltipText.SetDamageFont(CalculateRecoverHp(CalculateHpCost())),

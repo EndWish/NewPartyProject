@@ -45,7 +45,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e4827723a43fbfb4c9acfc44ec2d3a40, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  IconSp: {fileID: 21300000, guid: af5a3ae305bbfc7418de1701d57f26d6, type: 3}
+  iconSprite: {fileID: 21300000, guid: af5a3ae305bbfc7418de1701d57f26d6, type: 3}
   Cost: 5
   turn: 3
   criChaMul: 1.5

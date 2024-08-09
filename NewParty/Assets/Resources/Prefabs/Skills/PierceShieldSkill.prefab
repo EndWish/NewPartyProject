@@ -45,7 +45,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 41a93464877010e4f9d93863a05a3432, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  IconSp: {fileID: 21300000, guid: 6d1ab1e5132a74646bc08824e0c29656, type: 3}
+  iconSprite: {fileID: 21300000, guid: 6d1ab1e5132a74646bc08824e0c29656, type: 3}
   Cost: 2
   dmgCoefficient: 0.8
   defMul: 0.8

@@ -24,7 +24,8 @@ public class UnitStateUI : MonoBehaviour
     private TextMeshProUGUI[] statTexts;
     [SerializeField] private TextMeshProUGUI barrierText;
 
-    [SerializeField] UnitStatueEffectStateUI unitSEStateUI;
+    [SerializeField] UnitStatusEffectStateUI unitSEStateUI;
+    [SerializeField] UnitSkillStateUI unitSkillStateUI;
 
     private void Awake() {
         skillActionBtns.InsertRange(0, skillActionsParent.GetComponentsInChildren<SkillActionBtn>());
@@ -57,8 +58,11 @@ public class UnitStateUI : MonoBehaviour
         // 유닛 상태이상 아이콘들 업데이트
         unitSEStateUI.UpdatePage(targetUnit);
 
+        // 유닛 스킬 아이콘들 업데이트
+        unitSkillStateUI.UpdatePage(targetUnit);
+
         // 프로필 업데이트
-        profileImg.sprite = targetUnit?.GetIcon1x2();
+        profileImg.sprite = targetUnit?.GetMainSprite1x2();
         growthLevelText.text = targetUnit == null ? "" : GrowthLevelToStr(targetUnit.GrowthLevel);
 
         // 능력치 텍스트 표시

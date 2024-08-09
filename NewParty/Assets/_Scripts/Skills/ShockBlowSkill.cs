@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using static System.Collections.Specialized.BitVector32;
 
-public class ShockBlowSkill : PassiveSkill, IStatusEffectIconable, IRightUpperTextableIcon
+public class ShockBlowSkill : PassiveSkill, IStatusEffectIconable, IIconRightUpperTextable
 {
     protected int stack = 0;
     [SerializeField] protected int maxStack;
@@ -48,13 +48,13 @@ public class ShockBlowSkill : PassiveSkill, IStatusEffectIconable, IRightUpperTe
         }
     }
 
-    public override string GetDescription() {
+    public override string GetDescriptionText() {
         return string.Format("공격 토큰을 {0}개 이상 사용할 경우 충전 상태가 된다. 충전상태에서 기본공격 적중 시 {1}턴간 대상의 공격력을 {2}감소시킨다.",
             TooltipText.SetCountFont(maxStack),
             TooltipText.SetCountFont(turn),
             TooltipText.SetMulFont(strMul));
     }
-    public override string GetDetailedDescription() {
+    public override string GetDetailedDescriptionText() {
         return string.Format("공격 토큰을 {0}개 이상 사용할 경우 충전 상태가 된다. 충전상태에서 기본공격 적중 시 {1}턴간 대상의 공격력을 {2}감소시킨다.",
             TooltipText.SetCountFont(maxStack),
             TooltipText.SetCountFont(turn),
@@ -97,16 +97,8 @@ public class ShockBlowSkill : PassiveSkill, IStatusEffectIconable, IRightUpperTe
         }
         return Color.gray;
     }
-    public string GetTooltipTitleText() {
-        return Name;
-    }
-    public string GetTooltipRightUpperText() {
-        return "특수";
-    }
-    public string GetDescriptionText() {
-        return GetDescription();
-    }
-    public string GetRightUpperText() {
+    
+    public string GetIconRightUpperText() {
         return Stack.ToString();
     }
 }

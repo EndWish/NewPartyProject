@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class TickStatusEffect : StatusEffect, ITickStatusEffect, IRightLowerTextableIcon
+public abstract class TickStatusEffect : StatusEffect, ITickStatusEffect, IIconRightLowerTextable
 {
     protected int tick = 1;
 
@@ -20,7 +20,7 @@ public abstract class TickStatusEffect : StatusEffect, ITickStatusEffect, IRight
         }
     }
 
-    public string GetRightLowerText() {
+    public string GetIconRightLowerText() {
         return tick.ToString();
     }
 }

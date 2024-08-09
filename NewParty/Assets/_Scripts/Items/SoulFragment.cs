@@ -58,8 +58,8 @@ public class SoulFragment : SaveData, IItem
     public string Name { 
         get { return unitSharedData.Name + "ÀÇ ¿µÈ¥ÆÄÆí"; } 
     }
-    public List<Sprite> GetIcons1x1() {
-        return new List<Sprite>(unitSharedData.GetIcons1x1()) { Mark };
+    public List<Sprite> GetMainSprites1x1() {
+        return new List<Sprite>(unitSharedData.GetMainSprites1x1()) { Mark };
     }
 
     protected SoulFragmentSaveFormat ToSaveFormat() {

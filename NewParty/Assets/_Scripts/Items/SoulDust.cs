@@ -27,7 +27,7 @@ public class SoulDust : IItem
         set { num = value; }
     }
 
-    public List<Sprite> GetIcons1x1() {
+    public List<Sprite> GetMainSprites1x1() {
         return new List<Sprite> { Icon1x1 };
     }
 

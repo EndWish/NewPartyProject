@@ -46,8 +46,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 168e9607b78aa3d4387435113cf22b07, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  seIconPrefab: {fileID: 5764242889836973777, guid: 7706b26f50d567a4b8ddff8e05fb9af6, type: 3}
-  IconSp: {fileID: 21300000, guid: 6e2c8aec8a7695c4bbd22b7ae1146dfe, type: 3}
+  iconSprite: {fileID: 21300000, guid: b653279c02faf464dac84d3223ba7ad9, type: 3}
   Name: "\uAE30\uC808"
   form: 3
   InitTags: 8a4e0000

@@ -45,7 +45,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a625dfa6dab76be44abcba306beb6347, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  IconSp: {fileID: 21300000, guid: 2fde58cb0f5914bf29ef086ea2f97348, type: 3}
+  iconSprite: {fileID: 21300000, guid: 2fde58cb0f5914bf29ef086ea2f97348, type: 3}
   Cost: 0
   attackPrefab: {fileID: 5116835108567634080, guid: 6ab574c3700811e408be7faa1df05c91, type: 3}
 --- !u!114 &378218534449263370

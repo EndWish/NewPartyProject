@@ -23,11 +23,11 @@ public class WoundClawSkill : PassiveSkill
         if (Owner != null) Owner.OnBeforeCalculateDmg += this.OnBeforeCalculateDmg;
     }
 
-    public override string GetDescription() {
+    public override string GetDescriptionText() {
         return string.Format("(#출혈)인 적에게 주는 모든 피해가 {0}증가한다.",
             TooltipText.SetMulFont(dmgMul));
     }
-    public override string GetDetailedDescription() {
+    public override string GetDetailedDescriptionText() {
         return string.Format("(#출혈)인 적에게 주는 모든 피해가 {0}증가한다.",
             TooltipText.SetMulFont(dmgMul));
     }

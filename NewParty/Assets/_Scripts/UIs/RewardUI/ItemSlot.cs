@@ -16,7 +16,7 @@ public class ItemSlot : PageViewSlot<IItem>
         base.SlotUpdate(item, index);
 
         // 유닛 이미지 적용
-        Images.Sprites = Data.GetIcons1x1();
+        Images.Sprites = Data.GetMainSprites1x1();
 
         // 텍스트 적용
         numText.text = Data?.Num.ToString();

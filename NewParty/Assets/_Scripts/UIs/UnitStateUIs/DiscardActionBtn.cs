@@ -23,18 +23,14 @@ public class DiscardActionBtn : FixedActionBtn
         }
     }
 
-    protected override string GetTooltipTitle() {
+    public override string GetTooltipTitleText() {
         return "선택한 토큰 버리기";
     }
-
-    protected override string GetTooltipRightUpperText() {
+    public override string GetTooltipRightUpperText() {
         return "토큰 1개 이상 선택";
     }
-
-    protected override string GetTooltipDescription() {
+    public override string GetDescriptionText() {
         return "선택한 토큰을 전부 버리고 턴을 종료한다.";
     }
-    protected override string GetTooltipDetailedDescription() {
-        return "선택한 토큰을 전부 버리고 턴을 종료한다. (#기절)일 때 사용이 불가능 하다.";
-    }
+
 }

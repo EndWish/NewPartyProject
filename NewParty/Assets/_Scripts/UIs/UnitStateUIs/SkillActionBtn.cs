@@ -4,7 +4,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class SkillActionBtn : ActionBtn
+public class SkillActionBtn : ActionBtn, IDetailedDescription
 {
     [SerializeField] protected TextMeshProUGUI CostText;
     protected Skill targetSkill;
@@ -19,15 +19,15 @@ public class SkillActionBtn : ActionBtn
 
         targetUnit = unit;
         targetSkill = skill;
-        iconImg.sprite = targetSkill.GetIcon1x1();
-        CostText.text = targetSkill is ActiveSkill ? ((ActiveSkill)targetSkill).Cost.ToString() : "";
+        iconImg.sprite = targetSkill.GetMainSprite1x1();
+        CostText.text = (targetSkill as IIconRightLowerTextable)?.GetIconRightLowerText() ?? null;
 
         if (!MeetActiveBasicCondition()) {
             Active = false;
             return;
         }
 
-        Active = targetSkill is ActiveSkill && ((ActiveSkill)targetSkill).CanUse();
+        Active = (targetSkill as ActiveSkill)?.CanUse() ?? false;
 
         if (targetSkill != null && targetSkill is PassiveSkill)
             bgImg.color = new Color(0.9f, 0, 0.9f);
@@ -68,18 +68,17 @@ public class SkillActionBtn : ActionBtn
         base.OnCompleteSelection();
     }
 
-    protected override string GetTooltipTitle() {
-        return targetSkill.Name;
+    public override string GetTooltipTitleText() {
+        return targetSkill.GetTooltipTitleText();
+    }
+    public override string GetTooltipRightUpperText() {
+        return targetSkill.GetTooltipRightUpperText();
+    }
+    public override string GetDescriptionText() {
+        return targetSkill.GetDescriptionText();
+    }
+    public string GetDetailedDescriptionText() {
+        return targetSkill.GetDetailedDescriptionText();
     }
 
-    protected override string GetTooltipRightUpperText() {
-        return targetSkill is PassiveSkill ? "패시브" : "액티브";
-    }
-
-    protected override string GetTooltipDescription() {
-        return targetSkill.GetDescription();
-    }
-    protected override string GetTooltipDetailedDescription() {
-        return targetSkill.GetDetailedDescription();
-    }
 }

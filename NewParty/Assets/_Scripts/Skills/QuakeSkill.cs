@@ -36,11 +36,11 @@ public class QuakeSkill : ActiveSkill
         return Owner.TeamType != unit.TeamType;
     }
 
-    public override string GetDescription() {
+    public override string GetDescriptionText() {
         return string.Format("{0}를 주고, 방어율만큼의 확률로 적을 <b><i>기절</i></b> 시킨다.",
             TooltipText.SetDamageFont(CalculateDmg()));
     }
-    public override string GetDetailedDescription() {
+    public override string GetDetailedDescriptionText() {
         return string.Format("{0} = ({1}{2}%)데미지({3})를 주고, 방어율 = ({4} / ({4} + 상대{5}))만큼의 확률로 적을 <b><i>기절</i></b> 시킨다.",
             TooltipText.SetDamageFont(CalculateDmg()),
             TooltipText.GetIcon(StatType.Str),

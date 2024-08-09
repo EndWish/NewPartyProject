@@ -43,12 +43,12 @@ public class AccelerationSkill : ActiveSkill
         photonView.RPC("CreateReinforceFXRPC", RpcTarget.All);
     }
 
-    public override string GetDescription() {
+    public override string GetDescriptionText() {
         return string.Format("{0} 틱 동안 속도가 {1} 상승한다.",
             BattleManager.Instance == null ? "-" : TooltipText.SetCountFont(GetTickNum()),
             TooltipText.SetMulFont(speedMul));
     }
-    public override string GetDetailedDescription() {
+    public override string GetDetailedDescriptionText() {
         return string.Format("{0} = (전투 중인 유닛의 수 x {1})틱 동안 속도가 {2}상승한다.",
             BattleManager.Instance == null ? "-" : TooltipText.SetCountFont(GetTickNum()),
             tickCoefficient,

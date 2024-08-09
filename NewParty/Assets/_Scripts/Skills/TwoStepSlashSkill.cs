@@ -37,11 +37,11 @@ public class TwoStepSlashSkill : ActiveSkill
         return Owner.TeamType != unit.TeamType;
     }
 
-    public override string GetDescription() {
+    public override string GetDescriptionText() {
         return string.Format("적을 두번 베어 공격한다. {0}데미지를 두번 준다.",
             TooltipText.SetDamageFont(CalculateDmg()));
     }
-    public override string GetDetailedDescription() {
+    public override string GetDetailedDescriptionText() {
         return string.Format("적을 두번 베어 공격한다. {0} = ({1}{2}%)데미지({3})를 두번 준다.",
             TooltipText.SetDamageFont(CalculateDmg()),
             TooltipText.GetIcon(StatType.Str),

@@ -45,7 +45,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 013f9e4165acc954083a9a7b8aaa7881, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  IconSp: {fileID: 0}
+  iconSprite: {fileID: 21300000, guid: c6d66c49dda774bdf9addf74c04cc59a, type: 3}
   Cost: 0
 --- !u!114 &378218534449263370
 MonoBehaviour:

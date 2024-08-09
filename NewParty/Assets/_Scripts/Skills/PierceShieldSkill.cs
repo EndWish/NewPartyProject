@@ -38,13 +38,13 @@ public class PierceShieldSkill : ActiveSkill
         return Owner.TeamType != unit.TeamType;
     }
 
-    public override string GetDescription() {
+    public override string GetDescriptionText() {
         return string.Format("적에게 {0}데미지를 주고 {1}턴간 방어력을 {2}감소시킨다.",
             TooltipText.SetDamageFont(CalculateDmg()),
             TooltipText.SetCountFont(turn),
             TooltipText.SetMulFont(defMul));
     }
-    public override string GetDetailedDescription() {
+    public override string GetDetailedDescriptionText() {
         return string.Format("적에게 {0} = ({3}{4}%)데미지({5})를 주고 {1}턴간 방어력을 {2}감소시킨다.",
             TooltipText.SetDamageFont(CalculateDmg()),
             TooltipText.SetCountFont(turn),

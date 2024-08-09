@@ -37,12 +37,12 @@ public class ContinuousBitingSkill : ActiveSkill
         return Owner.TeamType != unit.TeamType;
     }
 
-    public override string GetDescription() {
+    public override string GetDescriptionText() {
         return string.Format("적에게 {0}회 연속으로 공격하여 각각 {1}의 데미지를 준다.",
             TooltipText.SetCountFont(hitNum),
             TooltipText.SetDamageFont(CalculateDmg()));
     }
-    public override string GetDetailedDescription() {
+    public override string GetDetailedDescriptionText() {
         return string.Format("적에게 {0}회 연속으로 공격하여 각각 {1} = ({2}{3}%)의 데미지({4})를 준다.",
             TooltipText.SetCountFont(hitNum),
             TooltipText.SetDamageFont(CalculateDmg()),

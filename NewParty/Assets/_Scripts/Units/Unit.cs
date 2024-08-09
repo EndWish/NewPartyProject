@@ -16,7 +16,7 @@ public enum UnitType : int
     StoneTurtle, IronTurtle, SteelTurtle, EmeraldTurtle, RainbowTurtle, Militia,
 }
 
-public partial class Unit : MonoBehaviourPun, IIcon1x1, IIcon1x2
+public partial class Unit : MonoBehaviourPun, IMainSprite1x1, IMainSprite1x2
 {
     // 공유 정보 //////////////////////////////////////////////////////////////
     static public float MaxActionGauge = 100f;
@@ -621,16 +621,16 @@ public partial class Unit : MonoBehaviourPun, IIcon1x1, IIcon1x2
     }
 
     // IIcon 함수
-    public Sprite GetIcon1x1() {
-        return SharedData?.GetIcon1x1() ?? Unit.NullIcon1x1;
+    public Sprite GetMainSprite1x1() {
+        return SharedData?.GetMainSprite1x1() ?? Unit.NullIcon1x1;
     }
-    public List<Sprite> GetIcons1x1() {
-        return new List<Sprite> { GetIcon1x1() };
+    public List<Sprite> GetMainSprites1x1() {
+        return new List<Sprite> { GetMainSprite1x1() };
     }
-    public Sprite GetIcon1x2() {
-        return SharedData?.GetIcon1x2() ?? Unit.NullIcon1x2;
+    public Sprite GetMainSprite1x2() {
+        return SharedData?.GetMainSprite1x2() ?? Unit.NullIcon1x2;
     }
-    public List<Sprite> GetIcons1x2() {
-        return new List<Sprite> { GetIcon1x2() };
+    public List<Sprite> GetMainSprites1x2() {
+        return new List<Sprite> { GetMainSprite1x2() };
     }
 }

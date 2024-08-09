@@ -44,11 +44,11 @@ public abstract class BasicAttackSkill : ActiveSkill
         return Owner.GetFinalStat(StatType.Str) * (1f + Owner.GetFinalStat(StatType.StackStr) * (tokenStack - 1));
     }
 
-    public override string GetDescription() {
+    public override string GetDescriptionText() {
         return string.Format("적을 공격하여 {0}의 데미지를 준다.", 
             TooltipText.SetDamageFont(CalculateDmg(Mathf.Max(1, Owner.Tokens.FindAll(token => token.IsSelected && token.Type == TokenType.Atk).Count))));
     }
-    public override string GetDetailedDescription() {
+    public override string GetDetailedDescriptionText() {
         return string.Format("적을 공격하여 {0} = ({1}100% + {1}100% x {2} x 추가토큰)의 데미지({3})를 준다.",
             TooltipText.SetDamageFont(CalculateDmg(Mathf.Max(1, Owner.Tokens.FindAll(token => token.IsSelected && token.Type == TokenType.Atk).Count))),
             TooltipText.GetIcon(StatType.Str),

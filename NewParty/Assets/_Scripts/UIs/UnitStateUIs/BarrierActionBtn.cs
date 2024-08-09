@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BarrierActionBtn : FixedActionBtn
+public class BarrierActionBtn : FixedActionBtn, IDetailedDescription
 {
     protected override void UpdateBtn() {
 
@@ -23,18 +23,16 @@ public class BarrierActionBtn : FixedActionBtn
         }
     }
 
-    protected override string GetTooltipTitle() {
+    public override string GetTooltipTitleText() {
         return targetUnit?.BasicBarrierSkill.Name;
     }
-
-    protected override string GetTooltipRightUpperText() {
+    public override string GetTooltipRightUpperText() {
         return "방어 토큰 1개 이상";
     }
-
-    protected override string GetTooltipDescription() {
-        return targetUnit?.BasicBarrierSkill.GetDescription();
+    public override string GetDescriptionText() {
+        return targetUnit?.BasicBarrierSkill.GetDescriptionText();
     }
-    protected override string GetTooltipDetailedDescription() {
-        return targetUnit?.BasicBarrierSkill.GetDetailedDescription();
+    public string GetDetailedDescriptionText() {
+        return targetUnit?.BasicBarrierSkill.GetDetailedDescriptionText();
     }
 }

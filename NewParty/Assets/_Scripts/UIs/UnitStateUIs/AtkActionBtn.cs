@@ -49,18 +49,17 @@ public class AtkActionBtn : FixedActionBtn
         base.OnCompleteSelection();
     }
 
-    protected override string GetTooltipTitle() {
+    public override string GetTooltipTitleText() {
         return targetUnit?.BasicAtkSkill.Name;
     }
-
-    protected override string GetTooltipRightUpperText() {
+    public override string GetTooltipRightUpperText() {
         return "공격 토큰 1개 이상";
     }
+    public override string GetDescriptionText() {
+        return targetUnit?.BasicAtkSkill.GetDescriptionText();
+    }
+    public string GetDetailedDescriptionText() {
+        return targetUnit?.BasicAtkSkill.GetDetailedDescriptionText();
+    }
 
-    protected override string GetTooltipDescription() {
-        return targetUnit?.BasicAtkSkill.GetDescription();
-    }
-    protected override string GetTooltipDetailedDescription() {
-        return targetUnit?.BasicAtkSkill.GetDetailedDescription();
-    }
 }

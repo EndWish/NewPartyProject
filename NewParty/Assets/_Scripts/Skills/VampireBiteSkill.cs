@@ -36,11 +36,11 @@ public class VampireBiteSkill : ActiveSkill
         return Owner.TeamType != unit.TeamType;
     }
 
-    public override string GetDescription() {
+    public override string GetDescriptionText() {
         return string.Format("적에게 {0}데미지를 주고, HP에 준 피해량 만큼 체력을 회복한다.",
             TooltipText.SetDamageFont(CalculateDmg()));
     }
-    public override string GetDetailedDescription() {
+    public override string GetDetailedDescriptionText() {
         return string.Format("적에게 {0} = ({1}{2}%)데미지({3})를 주고, HP에 준 피해량 만큼 체력을 회복한다.",
             TooltipText.SetDamageFont(CalculateDmg()),
             TooltipText.GetIcon(StatType.Str),

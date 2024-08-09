@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class TurnStatusEffect : StatusEffect, ITurnStatusEffect, IRightLowerTextableIcon
+public abstract class TurnStatusEffect : StatusEffect, ITurnStatusEffect, IIconRightLowerTextable
 {
     protected int turn = 1;
 
@@ -20,7 +20,7 @@ public abstract class TurnStatusEffect : StatusEffect, ITurnStatusEffect, IRight
         }
     }
 
-    public string GetRightLowerText() {
+    public string GetIconRightLowerText() {
         return turn.ToString();
     }
 

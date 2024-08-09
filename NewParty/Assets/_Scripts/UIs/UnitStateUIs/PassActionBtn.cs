@@ -24,18 +24,13 @@ public class PassActionBtn : FixedActionBtn
         }
     }
 
-    protected override string GetTooltipTitle() {
+    public override string GetTooltipTitleText() {
         return "패스";
     }
-
-    protected override string GetTooltipRightUpperText() {
-        return "";
+    public override string GetTooltipRightUpperText() {
+        return null;
     }
-
-    protected override string GetTooltipDescription() {
-        return "아무런 행동을 하지 않고 턴을 종료한다.";
-    }
-    protected override string GetTooltipDetailedDescription() {
+    public override string GetDescriptionText() {
         return "아무런 행동을 하지 않고 턴을 종료한다.";
     }
 

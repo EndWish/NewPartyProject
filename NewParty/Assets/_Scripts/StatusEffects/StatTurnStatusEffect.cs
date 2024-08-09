@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 
-public class StatTurnStatusEffect : StatStatusEffect, ITurnStatusEffect, IRightLowerTextableIcon
+public class StatTurnStatusEffect : StatStatusEffect, ITurnStatusEffect, IIconRightLowerTextable
 {
     public static StatTurnStatusEffect Create(Unit caster, Unit target, StatForm statForm, StatType statType, StatusEffectForm statusEffectForm, float value, int turn) {
         StatTurnStatusEffect statusEffect = StatusEffect.Instantiate<StatTurnStatusEffect>();
@@ -59,7 +59,7 @@ public class StatTurnStatusEffect : StatStatusEffect, ITurnStatusEffect, IRightL
         yield break;
     }
 
-    public string GetRightLowerText() {
+    public string GetIconRightLowerText() {
         return turn.ToString();
     }
 }

@@ -34,13 +34,13 @@ public class BandageSkill : ActiveSkill
         return Owner == unit;
     }
 
-    public override string GetDescription() {
+    public override string GetDescriptionText() {
         float hpm = Owner.GetFinalStat(StatType.Hpm);
         return string.Format("{0}~{1} 만큼 회복한다.",
             TooltipText.SetDamageFont(hpm * minCoefficient),
             TooltipText.SetDamageFont(hpm * maxCoefficient));
     }
-    public override string GetDetailedDescription() {
+    public override string GetDetailedDescriptionText() {
         float hpm = Owner.GetFinalStat(StatType.Hpm);
         return string.Format("{0}~{1} 만큼 회복한다.",
             TooltipText.SetDamageFont(hpm * minCoefficient),

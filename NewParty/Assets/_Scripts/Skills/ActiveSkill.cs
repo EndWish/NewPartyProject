@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class ActiveSkill : Skill
+public abstract class ActiveSkill : Skill, IIconRightLowerTextable
 {
     public int Cost;
 
@@ -50,4 +50,12 @@ public abstract class ActiveSkill : Skill
         BattleManager.Instance.ActionCoroutine = CoUse();
     }
     public abstract IEnumerator CoUse();
+
+    public string GetIconRightLowerText() {
+        return Cost.ToString();
+    }
+
+    public override string GetTooltipRightUpperText() {
+        return string.Format("액티브(비용 : {0})", Cost);
+    }
 }

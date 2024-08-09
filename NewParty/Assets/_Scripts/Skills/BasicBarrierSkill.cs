@@ -59,7 +59,7 @@ public class BasicBarrierSkill : ActiveSkill
         return Owner.GetFinalStat(StatType.Shield) * (1f + Owner.GetFinalStat(StatType.StackShield) * (tokenStack - 1));
     }
 
-    public override string GetDescription() {
+    public override string GetDescriptionText() {
         float basicAmount = CalculateAmount(Mathf.Max(1, Owner.Tokens.FindAll(token => token.IsSelected && token.Type == TokenType.Barrier).Count));
         float amountOverloadApplied = basicAmount * GetBasicBarrierOverloadCoefficient();
 
@@ -68,7 +68,7 @@ public class BasicBarrierSkill : ActiveSkill
             TooltipText.SetDamageFont(amountOverloadApplied));
     }
 
-    public override string GetDetailedDescription() {
+    public override string GetDetailedDescriptionText() {
         float basicAmount = CalculateAmount(Mathf.Max(1, Owner.Tokens.FindAll(token => token.IsSelected && token.Type == TokenType.Barrier).Count));
         float amountOverloadApplied = basicAmount * GetBasicBarrierOverloadCoefficient();
 

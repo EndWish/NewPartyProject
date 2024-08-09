@@ -13,7 +13,7 @@ public class SoulSlot : PageViewSlot<SoulFragment>
         base.SlotUpdate(soulFragment, index);
 
         // 유닛 이미지 적용
-        Images.Sprites = Data?.GetIcons1x1() ?? new List<Sprite> { SoulFragment.NullIcon1x1 };
+        Images.Sprites = Data?.GetMainSprites1x1() ?? new List<Sprite> { SoulFragment.NullIcon1x1 };
 
         // 텍스트 적용
         numText.text = Data?.Num.ToString();

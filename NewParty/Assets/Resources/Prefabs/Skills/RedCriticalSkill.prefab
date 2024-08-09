@@ -45,7 +45,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 95982ffc6740a294db3f21172cdd8c98, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  IconSp: {fileID: 21300000, guid: 1d31ef4cce1f26d4a957655c3e26a2e5, type: 3}
+  iconSprite: {fileID: 21300000, guid: 1d31ef4cce1f26d4a957655c3e26a2e5, type: 3}
   turn: 3
   dmgCoefficient: 0.25
   attackPrefab: {fileID: 8166639214731349947, guid: 65f2641af68d0eb4da55bcb38ff94c24, type: 3}

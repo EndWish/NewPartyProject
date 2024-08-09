@@ -33,7 +33,7 @@ public class SoulInventorySlot : SoulSlot, IBeginDragHandler, IEndDragHandler, I
     }
 
     public void OnBeginDrag(PointerEventData eventData) {
-        dragImages.Sprites = Data.GetIcons1x1();
+        dragImages.Sprites = Data.GetMainSprites1x1();
         dragTransform.gameObject.SetActive(true);
     }
 

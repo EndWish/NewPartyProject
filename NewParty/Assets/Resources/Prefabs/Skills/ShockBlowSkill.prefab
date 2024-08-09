@@ -45,12 +45,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 34b16a29caf41324b998470b222ca884, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  IconSp: {fileID: 21300000, guid: 3239e1d7a847fcc439b4dd7338d58ccd, type: 3}
+  iconSprite: {fileID: 21300000, guid: 3239e1d7a847fcc439b4dd7338d58ccd, type: 3}
   maxStack: 5
   turn: 2
   strMul: 0.8
   fx: {fileID: 7962070558698911955, guid: c3f7ab97d371bda4ca5124f50857aca0, type: 3}
-  seIconPrefab: {fileID: 5764242889836973777, guid: 7706b26f50d567a4b8ddff8e05fb9af6, type: 3}
 --- !u!114 &378218534449263370
 MonoBehaviour:
   m_ObjectHideFlags: 0

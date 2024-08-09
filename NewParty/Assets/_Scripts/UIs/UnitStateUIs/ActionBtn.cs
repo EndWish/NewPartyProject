@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public abstract class ActionBtn : MonoBehaviour
+public abstract class ActionBtn : MonoBehaviour, ITooltipable
 {
     [SerializeField] protected Image iconImg;
     [SerializeField] protected Image bgImg;
@@ -23,29 +23,10 @@ public abstract class ActionBtn : MonoBehaviour
         activedBgColor = bgImg.color;
         disactivedBgColor = new Color(0.2f, 0.2f, 0.2f);
     }
-    protected void Update() {
-        if(Input.GetKeyDown(KeyCode.LeftShift) && tooltip != null) {
-            tooltip.DescriptionText.text = GetTooltipDetailedDescription();
-
-            for (int i = 0; i < 2; ++i) {
-                LayoutRebuilder.ForceRebuildLayoutImmediate(tooltip.GetComponent<RectTransform>());
-            }
-        }
-        if (Input.GetKeyUp(KeyCode.LeftShift) && tooltip != null) {
-            tooltip.DescriptionText.text = GetTooltipDescription() + "\n\n[L Shift] 자세히 보기";
-
-            for (int i = 0; i < 2; ++i) {
-                LayoutRebuilder.ForceRebuildLayoutImmediate(tooltip.GetComponent<RectTransform>());
-            }
-        }
-    }
 
     protected bool Active {
         get { return active; }
         set {
-            if (active == value)
-                return;
-
             active = value;
             if (active)
                 OnActive();
@@ -87,29 +68,25 @@ public abstract class ActionBtn : MonoBehaviour
         ActionUnit = null;
     }
 
-    protected abstract string GetTooltipTitle();
-    protected abstract string GetTooltipRightUpperText();
-    protected abstract string GetTooltipDescription();
-    protected abstract string GetTooltipDetailedDescription();
-
     public void OnPointerEnter() {
         tooltip = Tooltip.Instance;
-        tooltip.IconImg.sprite = iconImg.sprite;
-        tooltip.TitleText.text = GetTooltipTitle();
-        tooltip.RightUpperText.text = GetTooltipRightUpperText();
-        tooltip.DescriptionText.text = GetTooltipDescription() + "\n\n[L Shift] 자세히 보기";
-
         tooltip.transform.position = Input.mousePosition;
         tooltip.gameObject.SetActive(true);
-
-        for (int i = 0; i < 2; ++i) {
-            LayoutRebuilder.ForceRebuildLayoutImmediate(tooltip.GetComponent<RectTransform>());
-        }
-
+        tooltip.UpdatePage(this);
     }
     public void OnPointerExit() {
         Tooltip.Instance.gameObject.SetActive(false);
         tooltip = null;
     }
 
+    // ITooltipable
+    public abstract string GetTooltipTitleText();
+    public abstract string GetTooltipRightUpperText();
+    public abstract string GetDescriptionText();
+    public Sprite GetMainSprite1x1() {
+        return iconImg.sprite;
+    }
+    public List<Sprite> GetMainSprites1x1() {
+        return new List<Sprite> { GetMainSprite1x1() };
+    }
 }

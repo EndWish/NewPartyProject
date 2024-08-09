@@ -37,12 +37,12 @@ public class AntiSkillSkill : ActiveSkill
         return Owner.TeamType == unit.TeamType;
     }
 
-    public override string GetDescription() {
+    public override string GetDescriptionText() {
         return string.Format("선택한 파티는 {0}턴간 (#스킬 공격)에 피격시 받는 피해량이 {1}감소한다.",
             TooltipText.SetCountFont(turn),
             TooltipText.SetMulFont(dmgMul));
     }
-    public override string GetDetailedDescription() {
+    public override string GetDetailedDescriptionText() {
         return string.Format("선택한 파티는 {0}턴간 (#스킬 공격)에 피격시 받는 피해량이 {1}감소한다.",
             TooltipText.SetCountFont(turn),
             TooltipText.SetMulFont(dmgMul));

@@ -810,10 +810,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8504772613982864968}
+  - component: {fileID: 1683148984866174497}
   - component: {fileID: 5584973587109328465}
   - component: {fileID: 6282080115050138795}
   - component: {fileID: 7312593482136518099}
-  - component: {fileID: 1683148984866174497}
   m_Layer: 0
   m_Name: UnitCanvas
   m_TagString: Untagged
@@ -847,6 +847,27 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 400, y: 800}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1683148984866174497
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7777550549089106142}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 88f67b7e80f0df94081999f59216d7c5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  actionGaugeFill: {fileID: 7499856031584653304}
+  hpGaugeFill: {fileID: 5844532524280192219}
+  hpGaugeBgFill: {fileID: 5790341427613338624}
+  barrierGaugeFill: {fileID: 2766891105861215436}
+  flagBorderImage: {fileID: 3039245479190687603}
+  profileImage: {fileID: 1078203237539517467}
+  growthLevelText: {fileID: 9121316250125573414}
+  statusEffectIconParent: {fileID: 1065446598790914296}
+  statusEffectIconPrefab: {fileID: 767529166524369190, guid: 7706b26f50d567a4b8ddff8e05fb9af6, type: 3}
 --- !u!223 &5584973587109328465
 Canvas:
   m_ObjectHideFlags: 0
@@ -892,7 +913,7 @@ MonoBehaviour:
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
-  m_PresetInfoIsWorld: 0
+  m_PresetInfoIsWorld: 1
 --- !u!114 &7312593482136518099
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -910,27 +931,6 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
---- !u!114 &1683148984866174497
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7777550549089106142}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 88f67b7e80f0df94081999f59216d7c5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  actionGaugeFill: {fileID: 7499856031584653304}
-  hpGaugeFill: {fileID: 5844532524280192219}
-  hpGaugeBgFill: {fileID: 5790341427613338624}
-  barrierGaugeFill: {fileID: 2766891105861215436}
-  flagBorderImage: {fileID: 3039245479190687603}
-  profileImage: {fileID: 1078203237539517467}
-  growthLevelText: {fileID: 9121316250125573414}
-  statusEffectIconParent: {fileID: 1065446598790914296}
-  statusEffectIconPrefab: {fileID: 6239528646912551291, guid: 7706b26f50d567a4b8ddff8e05fb9af6, type: 3}
 --- !u!1 &8278417432818705093
 GameObject:
   m_ObjectHideFlags: 0

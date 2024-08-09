@@ -352,7 +352,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 961390094030098407}
-  - component: {fileID: 6239528646912551291}
+  - component: {fileID: 767529166524369190}
   - component: {fileID: 1817770812775896367}
   m_Layer: 0
   m_Name: StatusEffectIcon
@@ -385,7 +385,7 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0.23, y: 0.23}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &6239528646912551291
+--- !u!114 &767529166524369190
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -394,7 +394,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 4182560159700807607}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9746f6566e030e24c9f2b199388318f0, type: 3}
+  m_Script: {fileID: 11500000, guid: 7332f87305f76d0458e3ac2fe8e46e38, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   iconImg: {fileID: 3162989245209789977}
@@ -418,8 +418,8 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 6239528646912551291}
-          m_TargetAssemblyTypeName: StatusEffectIcon2, Assembly-CSharp
+        - m_Target: {fileID: 767529166524369190}
+          m_TargetAssemblyTypeName: StatusEffectIcon, Assembly-CSharp
           m_MethodName: OnPointerEnter
           m_Mode: 1
           m_Arguments:
@@ -434,8 +434,8 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 6239528646912551291}
-          m_TargetAssemblyTypeName: StatusEffectIcon2, Assembly-CSharp
+        - m_Target: {fileID: 767529166524369190}
+          m_TargetAssemblyTypeName: StatusEffectIcon, Assembly-CSharp
           m_MethodName: OnPointerExit
           m_Mode: 1
           m_Arguments:

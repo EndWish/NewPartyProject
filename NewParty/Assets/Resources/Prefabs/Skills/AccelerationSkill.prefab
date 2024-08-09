@@ -45,7 +45,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 05cf5426a39f2c54598f95a597cebf6b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  IconSp: {fileID: 21300000, guid: 50e01d107c2e5f34386d7c024f5670e4, type: 3}
+  iconSprite: {fileID: 21300000, guid: 50e01d107c2e5f34386d7c024f5670e4, type: 3}
   Cost: 1
   tickCoefficient: 1
   speedMul: 1.2

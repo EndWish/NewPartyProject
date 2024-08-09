@@ -1,18 +1,14 @@
 using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Serialization;
-using static System.Collections.Specialized.BitVector32;
-using static UnityEngine.GraphicsBuffer;
 
-public abstract class Skill : MonoBehaviourPun, IIcon1x1
+public abstract class Skill : MonoBehaviourPun, IMainSprite1x1, ITooltipable, IDetailedDescription
 {
 
     private Unit owner;
 
-    [FormerlySerializedAs("IconSp")]
     [SerializeField] protected Sprite iconSprite;
 
     public string Name { get; protected set; }
@@ -30,13 +26,19 @@ public abstract class Skill : MonoBehaviourPun, IIcon1x1
         }
     }
 
-    public abstract string GetDescription();
-    public abstract string GetDetailedDescription();
-
-    public Sprite GetIcon1x1() {
+    // IMainSprite1x1
+    public Sprite GetMainSprite1x1() {
         return iconSprite;
     }
-    public List<Sprite> GetIcons1x1() {
+    public List<Sprite> GetMainSprites1x1() {
         return new List<Sprite> { iconSprite };
     }
+
+    // ITooltipable
+    public string GetTooltipTitleText() {
+        return Name;
+    }
+    public abstract string GetTooltipRightUpperText();
+    public abstract string GetDescriptionText();
+    public abstract string GetDetailedDescriptionText();
 }

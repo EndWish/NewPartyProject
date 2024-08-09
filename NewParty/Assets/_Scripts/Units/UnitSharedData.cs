@@ -4,7 +4,7 @@ using System.Text;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "Unit Shared Data", menuName = "Scriptable Object/Unit Shared Data")]
-public class UnitSharedData : ScriptableObject, IIcon1x1, IIcon1x2
+public class UnitSharedData : ScriptableObject, IMainSprite1x1, IMainSprite1x2
 {
     static public UnitSharedData GetAsset(UnitType unitType) {
         StringBuilder sb = new StringBuilder("UnitSharedData/").Append(unitType).Append("SharedData");
@@ -27,19 +27,19 @@ public class UnitSharedData : ScriptableObject, IIcon1x1, IIcon1x2
     public int SoulFragmentValueAsDust;
 
     // ÇÔ¼ö ///////////////////////////////////////////////////////////////////
-    public Sprite GetIcon1x1() {
+    public Sprite GetMainSprite1x1() {
         return IconSprite;
     }
 
-    public List<Sprite> GetIcons1x1() {
-        return new List<Sprite> { GetIcon1x1() };
+    public List<Sprite> GetMainSprites1x1() {
+        return new List<Sprite> { GetMainSprite1x1() };
     }
 
-    public Sprite GetIcon1x2() {
+    public Sprite GetMainSprite1x2() {
         return ProfileSprite;
     }
 
-    public List<Sprite> GetIcons1x2() {
-        return new List<Sprite> { GetIcon1x2() };
+    public List<Sprite> GetMainSprites1x2() {
+        return new List<Sprite> { GetMainSprite1x2() };
     }
 }

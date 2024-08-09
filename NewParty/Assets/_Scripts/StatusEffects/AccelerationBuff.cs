@@ -4,7 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 
-public class AccelerationBuff : StatStatusEffect, ITickStatusEffect, IRightLowerTextableIcon
+public class AccelerationBuff : StatStatusEffect, ITickStatusEffect, IIconRightLowerTextable
 {
     public static AccelerationBuff Create(Unit caster, Unit target, int tick, float speedMul) {
         AccelerationBuff statusEffect = StatusEffect.Instantiate<AccelerationBuff>();
@@ -75,7 +75,7 @@ public class AccelerationBuff : StatStatusEffect, ITickStatusEffect, IRightLower
         yield break;
     }
 
-    public string GetRightLowerText() {
+    public string GetIconRightLowerText() {
         return tick.ToString();
     }
 }

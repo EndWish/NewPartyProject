@@ -27,12 +27,12 @@ public class RedCriticalSkill : PassiveSkill
         if (Owner != null) Owner.CoOnHitDmg += this.CoOnHitDmg;
     }
 
-    public override string GetDescription() {
+    public override string GetDescriptionText() {
         return string.Format("치명타시 출혈을 일으켜 {0}턴간 {1}데미지를 준다.",
             TooltipText.SetCountFont(turn),
             TooltipText.SetDamageFont(CalculateDmg()));
     }
-    public override string GetDetailedDescription() {
+    public override string GetDetailedDescriptionText() {
         return string.Format("치명타시 출혈을 일으켜 {0}턴간 {1} = ({2}{3}%)데미지({4})를 준다.",
             TooltipText.SetCountFont(turn),
             TooltipText.SetDamageFont(CalculateDmg()),

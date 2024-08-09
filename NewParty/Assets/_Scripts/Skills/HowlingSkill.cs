@@ -58,7 +58,7 @@ public class HowlingSkill : ActiveSkill
         photonView.RPC("CreateReinforceFXRPC", RpcTarget.All);
     }
 
-    public override string GetDescription() {
+    public override string GetDescriptionText() {
         return string.Format("아군 파티에게 {0}턴간 치명타 확률을 {1}, 명중을 {2} 상승시키고, 각자 랜덤한 디버프 {3}개를 제거한다",
             TooltipText.SetCountFont(turn),
             TooltipText.SetMulFont(criChaMul),
@@ -66,7 +66,7 @@ public class HowlingSkill : ActiveSkill
             TooltipText.SetCountFont(numDebuffsToRemove));
     }
 
-    public override string GetDetailedDescription() {
+    public override string GetDetailedDescriptionText() {
         return string.Format("아군 파티에게 {0}턴간 치명타 확률을 {1}, 명중을 {2} 상승시키고, 각자 랜덤한 디버프 {3}개를 제거한다",
             TooltipText.SetCountFont(turn),
             TooltipText.SetMulFont(criChaMul),

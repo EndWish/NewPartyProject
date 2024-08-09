@@ -45,12 +45,12 @@ public class SharpenBladeSkill : ActiveSkill
         photonView.RPC("CreateReinforceFXRPC", RpcTarget.All);
     }
 
-    public override string GetDescription() {
+    public override string GetDescriptionText() {
         return string.Format("{0}턴 동안 치명타 확률이 {1}상승한다.",
             TooltipText.SetCountFont(turn),
             TooltipText.SetPercentPointFont(criChaAdd));
     }
-    public override string GetDetailedDescription() {
+    public override string GetDetailedDescriptionText() {
         return string.Format("{0}턴 동안 치명타 확률이 {1}상승한다.",
             TooltipText.SetCountFont(turn),
             TooltipText.SetPercentPointFont(criChaAdd));

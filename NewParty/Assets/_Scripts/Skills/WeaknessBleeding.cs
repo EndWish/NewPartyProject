@@ -23,11 +23,11 @@ public class WeaknessBleeding : PassiveSkill
         if (Owner != null) Owner.OnBeforeCalculateDmg += this.OnBeforeCalculateDmg;
     }
 
-    public override string GetDescription() {
+    public override string GetDescriptionText() {
         return string.Format("(#출혈)중 일때 받는 데미지가 {0}증가한다.",
             TooltipText.SetMulFont(dmgMul));
     }
-    public override string GetDetailedDescription() {
+    public override string GetDetailedDescriptionText() {
         return string.Format("(#출혈)중 일때 받는 데미지가 {0}증가한다.",
             TooltipText.SetMulFont(dmgMul));
     }

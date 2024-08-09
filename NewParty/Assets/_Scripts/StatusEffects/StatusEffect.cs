@@ -26,7 +26,7 @@ public abstract class StatusEffect : MonoBehaviourPun, IStatusEffectIconable
         return statusEffect;
     }
 
-    [SerializeField, FormerlySerializedAs("IconSp")] protected Sprite iconSprite;
+    [SerializeField] protected Sprite iconSprite;
     public string Name;
     public StatusEffectForm form;
 
@@ -90,10 +90,10 @@ public abstract class StatusEffect : MonoBehaviourPun, IStatusEffectIconable
     }
 
     // IStatusEffectIconable
-    public Sprite GetIcon1x1() {
+    public Sprite GetMainSprite1x1() {
         return iconSprite;
     }
-    public List<Sprite> GetIcons1x1() {
+    public List<Sprite> GetMainSprites1x1() {
         return new List<Sprite> { iconSprite };
     }
     public bool IsSEVisible() {

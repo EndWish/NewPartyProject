@@ -49,7 +49,7 @@ public class UnitSlot : PageViewSlot<Unit.Data>
         base.SlotUpdate(unitData, index);
 
         // 유닛 이미지 적용
-        profileImage.sprite = Data?.GetIcon1x2() ?? Unit.NullIcon1x2;
+        profileImage.sprite = Data?.GetMainSprite1x2() ?? Unit.NullIcon1x2;
 
         // 성장 레벨 텍스트
         if (Data == null)

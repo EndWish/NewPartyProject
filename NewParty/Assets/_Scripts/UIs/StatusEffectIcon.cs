@@ -4,7 +4,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class StatusEffectIcon2 : MonoBehaviour
+public class StatusEffectIcon : MonoBehaviour
 {
     [SerializeField] protected Image iconImg;
     [SerializeField] protected Image bgImg;
@@ -21,26 +21,18 @@ public class StatusEffectIcon2 : MonoBehaviour
     public void UpdateIcon(IStatusEffectIconable target) {
         this.target = target;
 
-        IconImg.sprite = target?.GetIcon1x1();
+        IconImg.sprite = target?.GetMainSprite1x1();
         BgImg.color = target == null ? Color.black : target.GetBgColor();
-        RightLowerText.text = (target is IRightLowerTextableIcon) ? ((IRightLowerTextableIcon)target).GetRightLowerText() : null;
-        RightUpperText.text = (target is IRightUpperTextableIcon) ? ((IRightUpperTextableIcon)target).GetRightUpperText() : null;
+        RightLowerText.text = (target as IIconRightLowerTextable)?.GetIconRightLowerText() ?? null;
+        RightUpperText.text = (target as IIconRightUpperTextable)?.GetIconRightUpperText() ?? null;
     }
 
     public void OnPointerEnter() {
         if(target != null) {
             Tooltip tooltip = Tooltip.Instance;
-            tooltip.IconImg.sprite = IconImg.sprite;
-            tooltip.TitleText.text = target.GetTooltipTitleText();
-            tooltip.RightUpperText.text = target.GetTooltipRightUpperText();
-            tooltip.DescriptionText.text = target.GetDescriptionText();
-
             tooltip.transform.position = Input.mousePosition;
             tooltip.gameObject.SetActive(true);
-
-            for (int i = 0; i < 2; ++i) {
-                LayoutRebuilder.ForceRebuildLayoutImmediate(tooltip.GetComponent<RectTransform>());
-            }
+            tooltip.UpdatePage(target);
         }
     }
     public void OnPointerExit() {

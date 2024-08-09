@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 
-public class BasicBarrierOverload : StatStatusEffect, IRightUpperTextableIcon
+public class BasicBarrierOverload : StatStatusEffect, IIconRightUpperTextable
 {
     static protected float coefficient = 0.9f;
 
@@ -87,7 +87,7 @@ public class BasicBarrierOverload : StatStatusEffect, IRightUpperTextableIcon
         }
     }
 
-    public string GetRightUpperText() {
+    public string GetIconRightUpperText() {
         return stack.ToString();
     }
 }

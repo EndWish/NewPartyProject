@@ -46,7 +46,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef126e1b6d8b5a145ad2887ecb4145b1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  IconSp: {fileID: 21300000, guid: 7bd0c5b8ad200a643a33756ee3819484, type: 3}
+  iconSprite: {fileID: 21300000, guid: 7bd0c5b8ad200a643a33756ee3819484, type: 3}
   chance: 0.5
   removeNum: 1
   prevTargetMark: {fileID: 2573678596390029889}

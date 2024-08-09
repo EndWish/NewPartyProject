@@ -21,8 +21,8 @@ public class UnitCanvas : MonoBehaviour
     [SerializeField] protected TextMeshProUGUI growthLevelText;
 
     [SerializeField] protected Transform statusEffectIconParent;
-    [SerializeField] protected StatusEffectIcon2 statusEffectIconPrefab;
-    protected List<StatusEffectIcon2> statusEffectIconList = new List<StatusEffectIcon2>();
+    [SerializeField] protected StatusEffectIcon statusEffectIconPrefab;
+    protected List<StatusEffectIcon> statusEffectIconList = new List<StatusEffectIcon>();
 
     private void Awake() {
         unit = transform.parent.GetComponent<Unit>();

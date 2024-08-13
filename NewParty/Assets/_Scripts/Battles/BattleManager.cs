@@ -6,8 +6,6 @@ using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
-using static Photon.Pun.UtilityScripts.TabViewManager;
-using static System.Runtime.CompilerServices.RuntimeHelpers;
 
 public enum TeamType : int
 {
@@ -31,6 +29,7 @@ public class BattleManager : MonoBehaviourPunCallbacksSingleton<BattleManager>
 
     [SerializeField] private RestSkillManager restSkillManager;
     [SerializeField] private GameObject nextWaveBtn;
+    [SerializeField] private GameObject giveUpBtn;
 
     [SerializeField] private RewardUI rewardUI;
     [SerializeField] private CountDownUI countDownUI;
@@ -47,6 +46,7 @@ public class BattleManager : MonoBehaviourPunCallbacksSingleton<BattleManager>
     // 개인 정보 //////////////////////////////////////////////////////////////
     private int syncCount = 0;
     private bool isAllLoaded = false;
+    private Coroutine runCoroutine = null;
     public IEnumerator ActionCoroutine { get; set; } = null;
 
     // 유니티 함수 ////////////////////////////////////////////////////////////
@@ -74,7 +74,7 @@ public class BattleManager : MonoBehaviourPunCallbacksSingleton<BattleManager>
         restSkillManager.gameObject.SetActive(false);
         countDownUI.gameObject.SetActive(false);
 
-        StartCoroutine(CoRun());
+        runCoroutine = StartCoroutine(CoRun());
     }
 
     protected void Update() {
@@ -155,6 +155,7 @@ public class BattleManager : MonoBehaviourPunCallbacksSingleton<BattleManager>
         myClient.IsLoaded = false;
         myClient.IsReady = false;
         myClient.HasLastRpc = false;
+        myClient.IsGivingUp = false;
 
         #endregion
 
@@ -183,19 +184,35 @@ public class BattleManager : MonoBehaviourPunCallbacksSingleton<BattleManager>
 
             // 파티 스킬 UI 활성화, 다음 웨이브 버튼 활성화
             restSkillManager.gameObject.SetActive(true);
+            giveUpBtn.SetActive(true);
             nextWaveBtn.SetActive(true);
             nextWaveBtn.GetComponentInChildren<TextMeshProUGUI>().text = "다음 웨이브( " + (Wave + 1) + ") ▶";
 
             // 모든 플레이어가 다음 웨이브 버튼을 누를 때 까지 대기
             TestBattlePage = "모든 플레이어가 다음 웨이브 버튼을 누를 때 까지 대기중...";
-            yield return new WaitUntil( () => { 
-                return UsefulMethod.IsAll(clients, (client) => client.IsReady); 
-            });
-            myClient.IsReady = false;
+            if (PhotonNetwork.IsMasterClient) {
+                while (true) {
+                    if(UsefulMethod.IsAll(clients, (client) => client.IsReady)) {
+                        // 모든 플레이어의 레디를 푼다.
+                        UsefulMethod.ActionAll(clients, (client) => { client.IsReady = false; });
+                        break;
+                    }
+                    else if (UsefulMethod.IsAll(clients, (client) => client.IsGivingUp)) {
+                        UsefulMethod.ActionAll(clients, (client) => { client.IsGivingUp = false; });
+                        GiveUpExploration();
+                        break;
+                    }
+                    yield return null;
+                }
+                RaiseSyncCount();
+            }
+            yield return new WaitUntil(() => { return 0 < SyncCount; });
+            DownSyncCount();
 
             // 웨이브 준비에서만 사용되는 UI들 비활성화
             restSkillManager.gameObject.SetActive(false);
             nextWaveBtn.SetActive(false);
+            giveUpBtn.SetActive(false);
 
             #endregion
 
@@ -431,6 +448,37 @@ public class BattleManager : MonoBehaviourPunCallbacksSingleton<BattleManager>
 
     }
 
+    private IEnumerator CoGiveUpExploration() {
+        StopCoroutine(runCoroutine);
+
+        if(nextWaveBtn.activeSelf)
+            nextWaveBtn.SetActive(false);
+
+        if (giveUpBtn.activeSelf)
+            giveUpBtn.SetActive(false);
+
+        if(restSkillManager.gameObject.activeSelf)
+            restSkillManager.gameObject.SetActive(false);
+
+        RewardManager.Instance.CutRewardInHalf();
+        RewardManager.Instance.ReceiveReward();
+        rewardUI.gameObject.SetActive(true);
+        countDownUI.gameObject.SetActive(true);
+        countDownUI.StartCount(5f);
+
+        yield return new WaitForSeconds(5f);
+        BattleSelectable.StopSelectMode();
+        if (PhotonNetwork.IsMasterClient) {
+            PhotonNetwork.LoadLevel("VillageScene");
+        }
+    }
+    [PunRPC] private void GiveUpExplorationRPC() {
+        StartCoroutine(CoGiveUpExploration());
+    }
+    public void GiveUpExploration() {
+        photonView.RPC("GiveUpExplorationRPC", RpcTarget.All);
+    }
+
     [PunRPC] private void RaiseSyncCountRPC() {
         ++syncCount;
     }
@@ -443,8 +491,6 @@ public class BattleManager : MonoBehaviourPunCallbacksSingleton<BattleManager>
     public int SyncCount {
         get { return syncCount; }
     }
-
-
 
     [PunRPC] 
     private void IsAllLoadedRPC(bool result) {
@@ -510,6 +556,9 @@ public class BattleManager : MonoBehaviourPunCallbacksSingleton<BattleManager>
     public void OnClickNextWaveBtn() {
         GameManager.Instance.MyClientData.ToggleReady();
     }
+    public void OnClickGiveUpBtn() {
+        GameManager.Instance.MyClientData.ToggleGivingUp();
+    }
 
     public void ActionTeamUnit(UnityAction<Unit> action, TeamType type) {
         if (Parties[(int)type] == null)
@@ -545,7 +594,6 @@ public class BattleManager : MonoBehaviourPunCallbacksSingleton<BattleManager>
             return;
         }
         unitOfTurn = PhotonView.Find(viewId).GetComponent<Unit>();
-        Debug.Log(Time.frameCount + " UnitOfTurnRPC = " + unitOfTurn.photonView.ViewID);
     }
     public Unit UnitOfTurn {
         get { return unitOfTurn; }

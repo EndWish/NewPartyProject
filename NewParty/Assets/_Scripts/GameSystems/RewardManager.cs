@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -25,11 +26,14 @@ public class RewardManager : MonoBehaviourSingleton<RewardManager>
         }
     }
 
-
-
     public void ClearReward() {
         SoulDust = 0;
         ItemList.Clear();
     }
 
+    public void CutRewardInHalf() {
+        UsefulMethod.ActionAll(ItemList, (item) => {
+            item.Num = (item.Num + 1) / 2;
+        });
+    }
 }

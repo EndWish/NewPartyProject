@@ -17,6 +17,11 @@ public class ReadyUI : MonoBehaviour
 
     private void Start() {
         GameManager.Instance.OnChangeDungeonInfo += OnChangeDungeonInfo;
+
+        NodeName targetDungeonName = UserData.Instance.TargetDungeon;
+        if (targetDungeonName != NodeName.None) {
+            GameManager.Instance.SetDungeonInfo(DungeonNodeInfo.Get(targetDungeonName));
+        }
     }
 
     private void OnDestroy() {

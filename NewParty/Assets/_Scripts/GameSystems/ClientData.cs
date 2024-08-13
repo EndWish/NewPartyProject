@@ -9,6 +9,7 @@ public class ClientData : MonoBehaviourPun
     public string Nickname {  get; set; }
     private bool isReady = false;
     private bool hasLastRpc = false;
+    private bool isGivingUp = false;
     private bool isLoaded  = false;
     
 
@@ -24,9 +25,26 @@ public class ClientData : MonoBehaviourPun
 
     // 함수 ///////////////////////////////////////////////////////////////////
 
+    // 포기 관련 함수
+    [PunRPC]
+    private void IsGivingUpRPC(bool result) {
+        isGivingUp = result;
+        if (isGivingUp)
+            isReady = false;
+    }
+    public bool IsGivingUp {
+        get { return isGivingUp; }
+        set { photonView.RPC("IsGivingUpRPC", RpcTarget.AllBufferedViaServer, value); }
+    }
+    public void ToggleGivingUp() {
+        photonView.RPC("IsGivingUpRPC", RpcTarget.AllBufferedViaServer, !IsGivingUp);
+    }
+
     // 레디 관련 함수
     [PunRPC] private void IsReadyRPC(bool result) {
         isReady = result;
+        if (isReady)
+            isGivingUp = false;
     }
     public bool IsReady { 
         get { return isReady; }

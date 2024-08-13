@@ -74,15 +74,6 @@ public class GameManager : MonoBehaviourPunCallbacksSingleton<GameManager>
         PhotonNetwork.Destroy(MyClientData.gameObject);
     }
 
-    public override void OnCreatedRoom() {
-        base.OnCreatedRoom();
-
-        NodeName targetDungeonName = UserData.Instance.TargetDungeon;
-        if(targetDungeonName != NodeName.None) {
-            SetDungeonInfo(DungeonNodeInfo.Get(targetDungeonName));
-        }
-    }
-
     // ÇÔ¼ö ///////////////////////////////////////////////////////////////////
     public void AddClientData(ClientData clientData) {
         ClientDataList.Add(clientData);

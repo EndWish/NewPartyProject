@@ -5,7 +5,7 @@ using UnityEngine;
 public interface IItem : IMainSprites1x1
 {
     public string Name { get; }
-    public int Num { get; }
+    public int Num { get; set; }
 
     public void InsertTo(UserData userData);
     public void InsertTo(List<IItem> list);
